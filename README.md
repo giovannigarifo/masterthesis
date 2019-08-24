@@ -1,2 +1,3 @@
 # masterthesis
-written in LaTex
+
+Written in LaTex using the class TOPtesi.

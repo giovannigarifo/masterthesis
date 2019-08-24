@@ -1,0 +1,172 @@
+% use UTF-8 encoding in editors such as TeXworks
+% !TEX encoding = UTF-8 Unicode
+% !TEX TS-program = pdflatex
+
+\documentclass[%
+    corpo=13.5pt,
+    twoside,
+%    stile=classica,
+    oldstyle,
+%    autoretitolo,
+    tipotesi=magistrale,
+    greek,
+    evenboxes
+]{toptesi}
+
+\usepackage[utf8]{inputenc}% codifica d'entrata
+\usepackage[T1]{fontenc}%    codifica dei font
+\usepackage{lmodern}%        scelta dei font
+
+% Vedere la documentazione toptesi-it.pdf per le
+% attenzioni che bisogna usare al fine di ottenere un file
+% veramente conforme alle norme per l'archiviabilità.
+
+\usepackage{hyperref}
+\hypersetup{%
+    pdfpagemode={UseOutlines},
+    bookmarksopen,
+    pdfstartview={FitH},
+    colorlinks,
+    linkcolor={blue},
+    citecolor={blue},
+    urlcolor={blue}
+  }
+
+%%%%%%% Definizioni locali
+\newtheorem{osservazione}{Osservazione}% Standard LaTeX
+\ExtendCaptions{english}{Abstract}{Acknowledgements}
+
+
+
+\begin{document}\errorcontextlines=9
+
+% set english ad primary language
+\english
+
+%%%%%%%%%%%%%%%%%%%%
+% BEGIN front page %
+%%%%%%%%%%%%%%%%%%%%
+\begin{ThesisTitlePage}*
+
+\ateneo{Politecnico di Torino}
+\nomeateneo{DEPARTMENT OF CONTROL AND COMPUTER ENGINEERING}
+\CorsoDiLaureaIn{Master of Science in}
+\corsodilaurea{Computer Engineering}
+\TesiDiLaurea{Master Degree Thesis}
+
+\titolo{Deep Learning on Polito Knowledge Graph}
+\sottotitolo{Leveraging Relational GCN for link prediction between nodes of a newly built publications graph}
+
+\CandidateName{Candidate}
+\candidato{Giovanni \textsc{Garifo}}
+
+\AdvisorName{Supervisors}
+\relatore{Prof.~Antonio Vetrò}
+\secondorelatore{Prof.~Juan Carlos De Martin}
+\sedutadilaurea{\textsc{Academic~Year} 2018-2019}%
+
+\logosede[6cm]{logopolito}
+\end{ThesisTitlePage}
+%%%%%%%%%%%%%%%%%%
+% END front page %
+%%%%%%%%%%%%%%%%%%
+
+
+% offset rilegatura
+%\setbindingcorrection{3mm}
+
+\makeatletter
+\newenvironment{miadedica}{
+    \clearpage
+    \if@twoside
+        \ifodd\c@page\else\thispagestyle{empty}\null\clearpage\fi
+    \fi
+    \thispagestyle{empty}%
+    \list{}{\labelwidth\z@
+    \leftmargin.73\textwidth
+    \parindent\z@
+    \raggedright\LARGE\itshape}\item[]
+    \normalsize
+}
+
+\begin{miadedica}
+    To Monia\\
+    To my Grandfather
+\end{miadedica}
+
+
+\paginavuota
+\sommario
+
+Summary here, one page
+
+
+\ringraziamenti
+
+Acknowledgements here, half page
+
+
+\tablespagetrue\figurespagetrue % normalmente questa riga non serve ed e' commentata
+\indici
+
+\mainmatter
+
+\chapter{Introduction}
+
+\section{First section}
+
+first section here
+
+Le grandezze in gioco sono evidenziate nella figura \ref{fig:orbita}.
+\begin{figure}[ht]\centering
+\setlength{\unitlength}{0.01\textwidth}
+\begin{picture}(40,30)(30,0)
+\put(50,15){\circle{20}}
+\put(47,15){\circle*{1}}
+\put(30,0){\line(0,1){30}}
+\put(30,30){\line(1,0){40}}
+\put(70,30){\line(0,-1){30}}
+\put(70,0){\line(-1,0){40}}
+\end{picture}
+\caption{Orbita del generico satellite; si noti l'eccentricit\`a dell'orbita rispetto al pianeta.}\label{fig:orbita}
+\end{figure}
+
+\section{Second section}
+
+
+%\blankpagestyle{headings}
+
+
+
+\chapter{Background}
+\section{a section}
+
+\subsection{a subsection}
+
+\chapter{State of the art}
+
+\chapter{Approach and Methodology}
+
+\chapter{Development and Implementation}
+
+\chapter{Evaluation}
+
+\chapter{Conclusions}
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+% BEGIN bibliography %
+%%%%%%%%%%%%%%%%%%%%%%
+\begin{thebibliography}{9}
+\bibitem{gal} G.~Galilei, {\em Nuovi studii sugli astri medicei}, Manuzio,
+        Venetia, 1612.
+\bibitem{tor1} E.~Torricelli, in ``La pressione barometrica'', {\em Strumenti
+        Moderni}, Il Porcellino, Firenze, 1606.
+\bibitem{tor2} E.~Torricelli e A.~Vasari, in ``Delle misure'', {\em Atti Nuovo
+        Cimento}, vol.~III, n.~2 (feb. 1607), p.~27--31.
+\bibitem{duane1964} Duane J.T., \emph{Learning Curve Approach To Reliability
+		Monitoring}, IEEE Transactions on Aerospace, Vol. 2, pp. 563-566, 1964
+\end{thebibliography}
+
+
+\end{document}
