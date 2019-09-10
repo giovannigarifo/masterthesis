@@ -325,11 +325,89 @@ human knowledge in a specific field, thus it's completess is restricted
 by the human understanding.
 
 
-\section{Learning on graphs}
+\section{Learning on Graphs}
 
-\subsection{representation learning: embeddings}
+\subsection{Representation learning}
 
-\subsection{tecniche di ML sui grafi per node embeddings}
+
+The common task of all machine learning (ML) algorithms is to learn a model from
+the available data, so that it could later process and recognize unseen inputs
+thanks to the parameters learnt during the training phase. Given that
+ML algorithms requires a vector representation of the input data to be able
+to process it, another important task in the ML field is the learning of vector
+representations, knows as representation learning.
+
+Natural Language Processing (NLP) is one of the research branches that in
+the past years has made a great use of machine learning algorithms. The
+critical task in NLP is to learn representations that are able to embed
+the word meaning. One of the most succesful algorithms when
+dealing with representation learning of words is Word2Vec, where the model
+obtained is trained to learn a vector representation for each word in a
+vocaboulary. In the vector space of the learnt representations, words that
+have similar meaning have higher cosine similarity with respect to
+dissimilar ones. In Word2Vec, the concept of meaning of a word is
+related to the context in which such word is frequently used, so two
+words are recognize as similar if they're used in similar contexts. In
+example, the representations learnt for the words "man" and "woman" have
+roughly the same cosine similarity as the representations learnt for the
+words "King" and "Queen".
+
+When dealing with graphs, things become a little more complicated. The
+challenge is trying to learn a vector representation for each node
+starting from the node features. Early approaches required these
+features to be engineered from the ground up, which
+required not only a relevant amount of effort, but also a deep
+understanding of the domain of interest. This has long been one of the
+main obstacles when dealing with representation learning tasks, since who
+has knowledge of the domain and who has to engineer the features were
+often not the same individual.
+
+In the latest years a big shift towards deep architectures has been made
+in machine learning, mainly thanks to the development of highly
+parallelized architectures that are able to efficiently compute
+at the hardware level vector and matrix multiplications.
+Deep learning (DL) algorithms are able to extract the relevant features from
+the raw data, eliminating the need of handmade features, by applying simple
+mathematical operations, such as convolution, to the input data.
+An example of one the most succesful applications of DL is in
+image recognition, where the matrix representation of the input
+images are convolved with self-trained filters that are able to
+extract the relevant features needed to recognize the subject represented
+in the input image.
+
+Deep learning techniques have prooved to function well also in the field of
+representation learning for graph data, this should not give rise to surprise,
+given that as can be seen in figure \ref{fig:pixels-as-graph}, a digital image
+is composed by pixels which can be thought of as nodes in a graph, where
+each pixel is connected by an edge to it's first neighbours. This suggests that
+the techniques used when dealing with images can be adapted, with
+some major changes, to the field of representation learning on graphs.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.4]{img/pixels-as-graph.png}
+    \caption{A digital image can be thought of as a graph.}
+    \label{fig:pixels-as-graph} %used with \ref{imglabel}
+    \end{figure}
+
+The problems when working with graph data is that commonly graphs
+are built to describe complex systems, such as the knowledge of a
+domain or field for knowledge graphs, and thus are composed of
+a fairly high amount of nodes and edges. The matrices used to
+store the graph structure can thus explode in dimensionality, so as
+to became impractical as input data.
+A different kind of approach must be taken when working on machine
+learning on graphs, whit respect to other field of study.
+
+
+\subsection{Learning from Knowledge Bases}
+
+
+
+
+
+
+
 
 
 \chapter{State of the art}
