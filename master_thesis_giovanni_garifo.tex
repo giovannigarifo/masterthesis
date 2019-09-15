@@ -283,9 +283,9 @@ in it's knowledge base.
 From an implementation perspective, knowledge bases can be created to
 describe a specific domain by defining an ontology and a vocabulary for
 such domain using OWL and RDF Schema, and then by describing the concepts
-of such domain using the RDF Model and Syntax. The RDF document can then be
-stored in a triplestore that can be queryed using SPARQL. The biggest effort
-when building knowledge bases is to have a correctly understanding and prior
+of such domain using the RDF Model and Syntax. The RDF document obtained
+can then be stored in a triplestore and queryed using SPARQL. The biggest effort
+when building knowledge bases is to have a correct understanding and prior
 knowledge of the domain of interest, to avoid the risk of mischaracterizing
 and misrepresenting concepts.
 
@@ -339,7 +339,7 @@ in such parameters.
 ML algorithms requires the input data to be available in a
 machine-understandable vector representation. An important task
 in the ML field is the learning of such representations, task knows
-as representation learning (RL).
+as representation learning.
 
 Natural Language Processing (NLP) is one of the research branches that in
 the past years has made a great use of machine learning algorithms both for
@@ -352,11 +352,11 @@ which such word is frequently used, so two words are recognize as similar if
 they're used in similar contextes, thus in the vector space of the learnt
 representations words that have similar meaning have higher cosine similarity
 with respect to dissimilar ones.
-For intance, the cosine similarity between the word vectors of "man" and "woman"
-is roughly the same as the one between the words "King" and "Queen", since such
-words are used in similar contexes. This can led to new scenario for
+For intance, the cosine similarity between the word vectors of "Man" and "King"
+is roughly the same as the one between the words "Woman" and "Queen", since such
+words are used in similar contexes. This can led to new scenarios for
 language recognition and processing, since it allows to perform vector
-operations on such words which can led to interesting results, as can be seen
+operations on such words which brought interesting results, as can be seen
 in figure \ref{fig:word2vec}.
 
 \begin{figure}[h]
@@ -399,9 +399,9 @@ are at the basis of any machine learning task.
 Deep Learning (DL) algorithms are able to extract relevant features from
 raw data by applying simple mathematical operations, such as convolution, to
 the input data.
-An example of one the most succesful applications of DL is in
-image recognition, where the matrix representations of the input
-images are convolved with self-trained filters that are able to
+An example of one of the most succesful applications of DL is in
+image recognition, where matrix representations of images are
+convolved with self-trained filters that are able to
 extract the relevant features needed to recognize patterns present
 in the input images.
 
@@ -485,13 +485,13 @@ A consequences of applying this rule to all nodes is that at the l-th layer
 the feature vectors of nodes that are at a $l$ hop distance from the node $i$
 will be embedded in its feature vector, because the feature vectors of such
 nodes were embedded, at the previous layer, by the immediate neighbors of
-node $i$, which are now passing the information of their surrounding to it.
+node $i$, which are now passing the informations of their surrounding to it.
 So the amount of layers of the network is a parameter that controls how much
 informations for farest nodes has to be collected from each node embedding.
 
-This means that each node is characterized by it's surroundings,
+This means that each node is characterized by it's context,
 just like it happens in Word2Vec, but in a non-Euclidean domain.
-So for example, in a social graph where each person is characterized by it's
+So for example, in a social graph where each person is characterized by its
 friends, interests, places visited and so on, two people will have similar
 embeddings if they are connected to similar nodes.
 
