@@ -17,6 +17,7 @@
 \usepackage[T1]{fontenc}%    codifica dei font
 \usepackage{lmodern}%        scelta dei font
 \usepackage{listings}       % code listing
+\usepackage{mathtools}      % math
 
 % Vedere la documentazione toptesi-it.pdf per le
 % attenzioni che bisogna usare al fine di ottenere un file
@@ -132,12 +133,12 @@ representaion of the knowledge of such domain.
 \newline
 Modern machine learning techniques can be used to mine latent informations
 from such graphs. One of the main challenges in this field is how to learn
-meaningful representations of the graph nodes that embed the underlying
-knowledge. Such representations can be then used to evaluate new
-links inside the graph, task commonly known as link prediction, or to classify
-unseen nodes. Deep learning techniques have proved to be first class citizens when
-dealing with representation learning tasks, being able to learn the latent
-representation of nodes without any prior knowledge other than the graph structure,
+meaningful representations of entities and relations that embed
+the underlying knowledge. Such representations can the be used to evaluate
+new links inside the graph or to classify unseen nodes.
+Deep learning techniques have proved to be first class citizens when
+dealing with representation learning tasks, being able to learn latent
+representations without any prior knowledge other than the graph structure,
 so as not to require any feature engineering.
 
 
@@ -236,7 +237,7 @@ for digital resources.
 \centering
 \includegraphics[scale=0.6]{img/owl-ontology-example.png}
 \caption{An example of ontology defined using OWL and RDF Schema.}
-\label{fig:owl-ontology-example} %used with \ref{imglabel}
+\label{fig:owl-ontology-example}
 \end{figure}
 
 SPARQL is a query language for triplestores, a class of Database
@@ -302,7 +303,7 @@ navigating the knowledge base and taking decisions like in a rule-based system.
 \centering
 \includegraphics[scale=0.4]{img/geranium-knowledge-base-example.png}
 \caption{An extract of the Polito Knowledge Graph.}
-\label{fig:geranium-knowledge-base-example} %used with \ref{imglabel}
+\label{fig:geranium-knowledge-base-example}
 \end{figure}
 
 
@@ -329,84 +330,185 @@ by the human understanding.
 
 \subsection{Representation learning}
 
-
-The common task of all machine learning (ML) algorithms is to learn a model from
-the available data, so that it could later process and recognize unseen inputs
-thanks to the parameters learnt during the training phase. Given that
-ML algorithms requires a vector representation of the input data to be able
-to process it, another important task in the ML field is the learning of vector
-representations, knows as representation learning.
+Machine learning (ML) algorithms are used to learn models from the
+available data, with the final goal to obtain a set of parameters
+that are fine-tuned to identify seen characteristics in the data
+used for training. The models obtained can be later used to
+recognize unseen inputs by leveraging the knowledge embedded
+in such parameters.
+ML algorithms requires the input data to be available in a
+machine-understandable vector representation. An important task
+in the ML field is the learning of such representations, task knows
+as representation learning (RL).
 
 Natural Language Processing (NLP) is one of the research branches that in
-the past years has made a great use of machine learning algorithms. The
-critical task in NLP is to learn representations that are able to embed
-the word meaning. One of the most succesful algorithms when
-dealing with representation learning of words is Word2Vec, where the model
-obtained is trained to learn a vector representation for each word in a
-vocaboulary. In the vector space of the learnt representations, words that
-have similar meaning have higher cosine similarity with respect to
-dissimilar ones. In Word2Vec, the concept of meaning of a word is
-related to the context in which such word is frequently used, so two
-words are recognize as similar if they're used in similar contexts. In
-example, the representations learnt for the words "man" and "woman" have
-roughly the same cosine similarity as the representations learnt for the
-words "King" and "Queen".
+the past years has made a great use of machine learning algorithms both for
+language recognition and for embedding words meaning into words vectors.
+One of the most succesful algorithms when dealing with representation learning
+of words is Word2Vec, where the model obtained is trained to learn a vector
+representation for each word in a vocabulary.
+In Word2Vec, the concept of meaning of a word is related to the context in
+which such word is frequently used, so two words are recognize as similar if
+they're used in similar contextes, thus in the vector space of the learnt
+representations words that have similar meaning have higher cosine similarity
+with respect to dissimilar ones.
+For intance, the cosine similarity between the word vectors of "man" and "woman"
+is roughly the same as the one between the words "King" and "Queen", since such
+words are used in similar contexes. This can led to new scenario for
+language recognition and processing, since it allows to perform vector
+operations on such words which can led to interesting results, as can be seen
+in figure \ref{fig:word2vec}.
 
-When dealing with graphs, things become a little more complicated. The
-challenge is trying to learn a vector representation for each node
-starting from the node features. Early approaches required these
-features to be engineered from the ground up, which
-required not only a relevant amount of effort, but also a deep
-understanding of the domain of interest. This has long been one of the
-main obstacles when dealing with representation learning tasks, since who
-has knowledge of the domain and who has to engineer the features were
-often not the same individual.
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.4]{img/word2vec.png}
+    \caption{
+        Word vectors allows to perform vector operations, the results
+        obtained reflect the fact that Word2Vec is capable of embed the
+        meaning of such words.
+    }
+    \label{fig:word2vec}
+    \end{figure}
+
+The idea that words can be characterized by the context in which they're used
+can be generalized and used into other fields of research, such as
+the field of representation learning on graphs.
+
+Graphs are composed by nodes and edges, and are used to describe complex
+systems, such as social networks or the interactions in a molecular biology
+system. To apply machine learning algorithms to such data structures, in order
+to analyze the available data and predict new facts, vector representations of
+such nodes and edges are needed. Such vector representations are often
+refered to as "embeddings".
+
+Early approaches required these representations to be learned from feature
+vectors that where handcrafted from the ground up, task that required not
+only a relevant amount of effort, but also a deep understanding of the domain
+of interest. This has long been one of the main obstacles when dealing with
+representation learning tasks, since who has knowledge of the domain and who
+has to engineer the features were unlikely the same individual.
+
+
+\subsection{Deep Learning on graphs}
 
 In the latest years a big shift towards deep architectures has been made
 in machine learning, mainly thanks to the development of highly
 parallelized architectures that are able to efficiently compute
-at the hardware level vector and matrix multiplications.
-Deep learning (DL) algorithms are able to extract the relevant features from
-the raw data, eliminating the need of handmade features, by applying simple
-mathematical operations, such as convolution, to the input data.
+at the hardware level vector and matrix multiplications, operations that
+are at the basis of any machine learning task.
+Deep Learning (DL) algorithms are able to extract relevant features from
+raw data by applying simple mathematical operations, such as convolution, to
+the input data.
 An example of one the most succesful applications of DL is in
-image recognition, where the matrix representation of the input
+image recognition, where the matrix representations of the input
 images are convolved with self-trained filters that are able to
-extract the relevant features needed to recognize the subject represented
-in the input image.
+extract the relevant features needed to recognize patterns present
+in the input images.
 
-Deep learning techniques have prooved to function well also in the field of
+Deep learning techniques have proven to function well also in the field of
 representation learning for graph data, this should not give rise to surprise,
 given that as can be seen in figure \ref{fig:pixels-as-graph}, a digital image
 is composed by pixels which can be thought of as nodes in a graph, where
 each pixel is connected by an edge to it's first neighbours. This suggests that
 the techniques used when dealing with images can be adapted, with
-some major changes, to the field of representation learning on graphs.
+some major changes, to the field of representation learning on graphs, but
+also in other fields of research, such as learning on manifolds.
+
 
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.4]{img/pixels-as-graph.png}
     \caption{A digital image can be thought of as a graph.}
-    \label{fig:pixels-as-graph} %used with \ref{imglabel}
-    \end{figure}
+    \label{fig:pixels-as-graph}
+\end{figure}
 
 The problems when working with graph data is that commonly graphs
 are built to describe complex systems, such as the knowledge of a
 domain or field for knowledge graphs, and thus are composed of
 a fairly high amount of nodes and edges. The matrices used to
 store the graph structure can thus explode in dimensionality, so as
-to became impractical as input data.
-A different kind of approach must be taken when working on machine
-learning on graphs, whit respect to other field of study.
+to became impractical as input data. Moreover, graphs aren't
+regular structures with given shape and size, like a matrix of pixels
+for images, but they live in an irregular domain which led to highly
+irregular structures.
+The first problem can be solved by randomly sampling the graph at each
+training epoch, the immediate drawback being that more than one epoch
+is required to train over all nodes. The second problem can instead be
+solved by adapting know algorithms to work on highly irregular domains.
+One of the possible approaches, which has prooven to work well, is
+the one based on convolutions.
+
+Graph Convolutional Networks (GCNs) are a class of semi-supervised
+deep learning algorthms for graphs which are based on the the same
+convolution and backpropagation operations as the so famous
+Convolutional Neural Networks (CNNs) used for feature learning on
+images.
+The main difference between CNNs and GCNs is in the architecture of
+the neural network, and so in how the convolution is performed, instead
+the backpropagation phase is the same as the one used to update the
+parameters of CNNs, with the loss function being task-specific.
+In a CNN the input matrix of each network layer, which is the pixel matrix
+of the input image for the first, is convolved with a convolutional filter,
+whose parameters are then updated during the backpropagation phase.
+
+GCNs works differently, but similarly, by convolving at the l-th layer
+of the network the feature vector of each node with the feature
+vectors of it's l-nearest neighbors, this is done by applying the following
+transformation:
+
+\begin{equation}
+H^{l+1}=\sigma(\tilde{D}^{-1/2}\tilde{A}\tilde{D}^{-1/2}H^lW^l)
+\end{equation}
+
+Where $H^{l}$ is the output of the previous layer or, for the input layer, the
+nodes feature matrix where each row is commonly initialized
+as a one-hot encoded feature vector. $\tilde{A}$ is the adjacency matrix
+of the graph summed with the identity matrix to add self loops of nodes,
+$\tilde{D}$ is the node degree matrix of $\tilde{A}$ and is used to
+normalize it, $W^l$ is the weight matrix of the layer, that is shared
+among all nodes for each layer, just like the convolutional filter in a CNN,
+and $\sigma()$ is a non linear activation function, like $ReLU$.
+
+Analyzing the forward rule for a single node make it more clear how the
+embedding of a node is updated through the convolution:
+
+\begin{equation}
+    h^{(l+1)}_{i}=\sigma(\sum_{j\in\eta_{i}} \frac{1}{c_{ij}}h_j^{(l)}W^{{(l)}})
+\end{equation}
+
+Setting aside the normalization costant $c_{ij}$ which is obtained from the
+multiplication between the adjancency and degree matrices, at each layer the
+updated feature vector of the node $i$ is obtained by summing over all the
+nodes in its neighborhood the result of the multiplication between the
+neighbors feature vectors and the weight matrix of the layer.
+A consequences of applying this rule to all nodes is that at the l-th layer
+the feature vectors of nodes that are at a $l$ hop distance from the node $i$
+will be embedded in its feature vector, because the feature vectors of such
+nodes were embedded, at the previous layer, by the immediate neighbors of
+node $i$, which are now passing the information of their surrounding to it.
+So the amount of layers of the network is a parameter that controls how much
+informations for farest nodes has to be collected from each node embedding.
+
+This means that each node is characterized by it's surroundings,
+just like it happens in Word2Vec, but in a non-Euclidean domain.
+So for example, in a social graph where each person is characterized by it's
+friends, interests, places visited and so on, two people will have similar
+embeddings if they are connected to similar nodes.
 
 
-\subsection{Learning from Knowledge Bases}
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.4]{img/gcn.png}
+    \caption{First layer of a GCN updating a node feature vector by embedding
+        the features of adjacent nodes.}
+    \label{fig:gcn}
+    \end{figure}
 
-
-
-
-
-
+The node embeddings obtained by applying a GCN or one of its variants can
+then be used to perform some learning task on the graph, like classification
+of unseen nodes or link prediction of non-existent edges, the latter being
+one of the most interesting task because it empowers most of the
+recommendation systems available in the industry.
 
 
 
