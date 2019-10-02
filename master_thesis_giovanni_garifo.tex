@@ -18,6 +18,7 @@
 \usepackage{lmodern}%        scelta dei font
 \usepackage{listings}       % code listing
 \usepackage{mathtools}      % math
+\usepackage{url}            % URLs usage: \url{https://example.com}
 
 % Vedere la documentazione toptesi-it.pdf per le
 % attenzioni che bisogna usare al fine di ottenere un file
@@ -118,23 +119,23 @@ Acknowledgements here, half page
 \section{Motivation}
 
 Graphs are used to empower some of the most complex IT services available
-today. They can be used to represent almost any kind of information, and
-they are particurlarly capable of representing the structure of complex
-system, thus to express the relations between its elements.
-\newline
-\newline
-In the past ten years, a lot of effort has been put into trying to leverage the power
+today, an example among all being the Google Search Engine
+\footnote{\url{https://en.wikipedia.org/wiki/Knowledge_Graph}}.
+They can be used to represent almost any kind of information, and they are
+particurlarly capable of representing the structure of complex systems and
+describe the relationships between their elements.
+
+Over the last decade, much effort has been made to try to leverage the power
 of graphs to represent human knowledge and to build search tools capable of
-query and understand the semantic relations inside such graphs. RDF graphs are a
+querying and understanding the semantic relations within them. RDF graphs are a
 particular class of graphs that can be used to build knowledge
 repositories. Given a domain and an ontology, they allows to build a structured
-representaion of the knowledge of such domain.
-\newline
-\newline
-Modern machine learning techniques can be used to mine latent informations
+representation of the knowledge in such domain.
+
+Modern machine learning techniques can be used to mine latent information
 from such graphs. One of the main challenges in this field is how to learn
 meaningful representations of entities and relations that embed
-the underlying knowledge. Such representations can the be used to evaluate
+the underlying knowledge. Such representations can then be used to evaluate
 new links inside the graph or to classify unseen nodes.
 Deep learning techniques have proved to be first class citizens when
 dealing with representation learning tasks, being able to learn latent
@@ -157,31 +158,37 @@ so as not to require any feature engineering.
 
 \section{Semantic Web}
 
-\subsection{From a Web of content to a Web of data}
+\subsection{From a Web of contents to a Web of data}
 
-The World Wide Web has been developed as a tool to easily access documents
-and to navigate through them by following hyperlinks. This simple description
-already resembles the structure of a graph: we can think of documents as
-nodes, and of hyperlinks as edges. The unstoppable growth of the "web graph" led to
-the emergence of new tools to extricate in such complexity. Search engines have been
-developed to easily navigate such a giant graph, by scoring search results based on
-trivial statistics, such as the number of times a document has been linked.
+The \emph{World Wide Web} has been developed as a tool to easily access
+documents and to navigate through them by following hyperlinks.
+This simple description already resembles the structure of a graph: we can
+think of documents as nodes, and of hyperlinks as edges. The unstoppable growth
+of the "web graph" led to the emergence of new tools to extricate in such
+complexity. Search engines have been developed to easily navigate such a giant
+graph, by scoring search results based on trivial statistics, such as the number
+of times a document has been linked, as in the case of the PageRank
+\footnote{\url{https://wikipedia.org/wiki/PageRank}} algorithm developed by
+Google.
 \newline
 
-The Web rapidly became one of the most disruptive technology ever built, but it's power
-was limited to the fact that it was exploitable only by human beings. To build a more
-comprehensive system, where informations can be not only machine-readable, but
-machine-understandable, thus to allow new usage of such a giant source of informations,
-the WWW had to move from a web of content, to a web of data.
+The Web rapidly became one of the most innovative technology ever built,
+allowing to retrive information quickly and easily as never before.
+The next evolutionary step has been to think about a Web not only exploitable by
+human beings but also by machines. In order to build such a comprehensive
+system, where information can be not only machine-readable, but
+machine-understandable, the World Wide Web had to move from a web of content, to
+a web of data.
 \newline
 
 The World Wide Web Consortium (W3C) introduced the Semantic Web as an extention
-to the prior standard of the WWW. It's primary goal has been
-to define a framework to describe and query semantic informations contained
+to the prior standard of the WWW. Its primary goal has been
+to define a framework to describe and query semantic information contained
 in the documents available on the web, so as to allow machines to understand
-the semantic informations contained in web pages. In the vision of Tim
+the semantic information contained in web pages. In the vision of Tim
 Berners-Lee, the father of WWW, this will bring to the transition from a
-World Wide Web to a Giant Global Graph, the GGG, where a
+World Wide Web to a Giant Global Graph
+\footnote{\url{https://en.wikipedia.org/wiki/Giant_Global_Graph}}, where a
 web page contains metadata that provides to a machine the needed information to
 understand the concepts and meanings expressed in it.
 
@@ -199,7 +206,7 @@ The three key components of the Semantic Web standards are:
 
 OWL is a language used to define ontologies. In this context, an ontology
 is defined as a collection of concepts, relations and constraints between
-these concepts that allows to describe an area of interest or a domain.
+these concepts that describes an area of interest or a domain.
 OWL allows to classify things in terms of their meaning by describing
 their belonging to classes and subclasses defined by the ontology: if
 a thing is defined as member of a class, this means that it shares the
@@ -208,7 +215,7 @@ such classification is a taxonomy that defines a hierarchy of how things
 are semantically interrelated in the domain under analysis.
 The instances of OWL classes are called individuals, and can be related
 with other individuals or classes by means of properties. Each individual
-can be characterized with additional informations using literals, that
+can be characterized with additional information using literals, that
 represent data values like strings, dates or integers.
 \newline
 
@@ -249,7 +256,7 @@ of variables, whose definition is preceded by a question mark.
 
 The syntax of SPARQL is heavily derived from SQL, with some
 minor adaptations to be more suited for querying graphs data. The
-following is an example of query which select all the labels
+following is an example of query which selects all the labels
 (human-readable description of a resource) of all the entities that
 matches the given resource type.
 
@@ -268,17 +275,19 @@ matches the given resource type.
 
 \subsection{Knowledge Bases as knowledge repositories}
 
-Even if the raise of the Semantic Web has suffered a stunting in its growth
-due to the complexity of it's vision, many new project empowered by it's
-enabling technologies have arise. Efforts have been put by profit and
+Even if the raise of the Semantic Web has suffered a slowdown in its growth
+due to the complexity of its vision, many new projects have been born from its
+enabling technologies. Efforts have been put by profit and
 non-profit organizations in trying to build complex knowledge repositories
 starting from the knowledge already present in the Web. An example among all
-is the DBpedia project, which developed a structured knowledge base from the
-unstructured data available on Wikipedia. Another example is the so called
-"Knowledge Graph" made by Google, which is used to enhance it's search engine
-and virtual assistant capabilities, allowing to retrieve punctual informations
-about everything that has been classified in it's ontology and described
-in it's knowledge base.
+is the DBpedia\footnote{\url{https://wiki.dbpedia.org/}} project, which
+developed a structured knowledge base from the unstructured data available on
+Wikipedia.
+Another example is the so called
+\emph{Knowledge Graph}\footnote{\url{https://blog.google/products/search/introducing-knowledge-graph-things-not/}}
+made by Google, which is used to enhance its search engine and virtual assistant
+capabilities, allowing to retrieve punctual information about everything that
+has been classified in its ontology and described in its knowledge base.
 
 From an implementation perspective, knowledge bases can be created to
 describe a specific domain by defining an ontology and a vocabulary for
@@ -291,11 +300,11 @@ and misrepresenting concepts.
 
 If all the requirements and cautions are met, a well formed knowledge base may
 prove to be a critical resource for an organization. It allows not only to
-build new services upon it, but also to improve the existing knowledge inside the
-company by performing reasoning upon the available knowledge, thus
+build new services upon it, but also to improve the existing knowledge inside
+the organization by performing reasoning upon the available knowledge, thus
 to discover implicit facts that can be derived from existing relationships.
-Another field of applications is the development of Expertise Systems, AI software
-that emulates the behaviour of a human decision-making process by
+Another field of applications is the development of Expert Systems, AI
+software that emulates the behaviour of a human decision-making process by
 navigating the knowledge base and taking decisions like in a rule-based system.
 
 
@@ -307,12 +316,10 @@ navigating the knowledge base and taking decisions like in a rule-based system.
 \end{figure}
 
 
-In a Big Data era, knowledge bases can't be any less. The vastity of human
-knowledge is reflected onto the complexity of the graphs
-builded from it. Today's knowledge bases are commonly composed by tens of
+Today's knowledge bases are commonly composed by tens of
 thousands nodes and by hundreds of thousands of edges, such giant data
 structures pose many challenges.
-Not only storing and querying giant graphs requires the adoption
+Not only storing and querying giant graphs requires the adoption of
 specialized DBMS that are capable of efficiently store and query the RDF
 input representation, but also doing analysis and gathering statistics from
 such giant graphs requires the adoption of highly efficient algorithms in
@@ -320,9 +327,9 @@ order to retrieve the desired output in an acceptable time.
 
 The availability of such a complex and informative data structure leads
 to the opening of interesting scenarios, especially when thinking about
-the latent informations that can be extracted from it. In
+the latent information that can be extracted from it. In
 fact, a knowledge base is a structured representation of the
-human knowledge in a specific field, thus it's completess is restricted
+human knowledge in a specific field, thus its comprehensiveness is restricted
 by the human understanding.
 
 
@@ -336,7 +343,7 @@ that are fine-tuned to identify seen characteristics in the data
 used for training. The models obtained can be later used to
 recognize unseen inputs by leveraging the knowledge embedded
 in such parameters.
-ML algorithms requires the input data to be available in a
+ML algorithms require the input data to be available in a
 machine-understandable vector representation. An important task
 in the ML field is the learning of such representations, task knows
 as representation learning.
@@ -344,18 +351,19 @@ as representation learning.
 Natural Language Processing (NLP) is one of the research branches that in
 the past years has made a great use of machine learning algorithms both for
 language recognition and for embedding words meaning into words vectors.
-One of the most succesful algorithms when dealing with representation learning
-of words is Word2Vec, where the model obtained is trained to learn a vector
-representation for each word in a vocabulary.
+One of the most successful algorithms when dealing with representation learning
+of words is Word2Vec \footnote{\url{https://arxiv.org/abs/1301.3781}}, where
+the model obtained is trained to learn a vector representation for each word in
+a vocabulary.
 In Word2Vec, the concept of meaning of a word is related to the context in
-which such word is frequently used, so two words are recognize as similar if
-they're used in similar contextes, thus in the vector space of the learnt
+which such word is frequently used, so two words are recognized as similar if
+they're used in similar contexts, thus in the vector space of the learnt
 representations words that have similar meaning have higher cosine similarity
 with respect to dissimilar ones.
 For intance, the cosine similarity between the word vectors of "Man" and "King"
 is roughly the same as the one between the words "Woman" and "Queen", since such
-words are used in similar contexes. This can led to new scenarios for
-language recognition and processing, since it allows to perform vector
+words are used in similar contexes. This has open up new scenarios for
+language recognition and processing, since it allowed to perform vector
 operations on such words which brought interesting results, as can be seen
 in figure \ref{fig:word2vec}.
 
@@ -382,7 +390,7 @@ such nodes and edges are needed. Such vector representations are often
 refered to as "embeddings".
 
 Early approaches required these representations to be learned from feature
-vectors that where handcrafted from the ground up, task that required not
+vectors that where handcrafted, task that required not
 only a relevant amount of effort, but also a deep understanding of the domain
 of interest. This has long been one of the main obstacles when dealing with
 representation learning tasks, since who has knowledge of the domain and who
@@ -399,7 +407,7 @@ are at the basis of any machine learning task.
 Deep Learning (DL) algorithms are able to extract relevant features from
 raw data by applying simple mathematical operations, such as convolution, to
 the input data.
-An example of one of the most succesful applications of DL is in
+An example of one of the most successful applications of DL is in
 image recognition, where matrix representations of images are
 convolved with self-trained filters that are able to
 extract the relevant features needed to recognize patterns present
@@ -434,7 +442,7 @@ irregular structures.
 The first problem can be solved by randomly sampling the graph at each
 training epoch, the immediate drawback being that more than one epoch
 is required to train over all nodes. The second problem can instead be
-solved by adapting know algorithms to work on highly irregular domains.
+solved by adapting known algorithms to work on highly irregular domains.
 One of the possible approaches, which has prooven to work well, is
 the one based on convolutions.
 
@@ -485,9 +493,9 @@ A consequences of applying this rule to all nodes is that at the l-th layer
 the feature vectors of nodes that are at a $l$ hop distance from the node $i$
 will be embedded in its feature vector, because the feature vectors of such
 nodes were embedded, at the previous layer, by the immediate neighbors of
-node $i$, which are now passing the informations of their surrounding to it.
+node $i$, which are now passing the information of their surrounding to it.
 So the amount of layers of the network is a parameter that controls how much
-informations for farest nodes has to be collected from each node embedding.
+information for farest nodes has to be collected from each node embedding.
 
 This means that each node is characterized by it's context,
 just like it happens in Word2Vec, but in a non-Euclidean domain.
