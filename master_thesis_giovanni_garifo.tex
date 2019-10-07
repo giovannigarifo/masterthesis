@@ -498,7 +498,7 @@ will be embedded in its feature vector, because the feature vectors of such
 nodes were embedded, at the previous layer, by the immediate neighbors of
 node $i$, which are now passing the information of their surrounding to it.
 So the amount of layers of the network is a parameter that controls how much
-information for furthest nodes has to be collected from each node embedding.
+information from furthest nodes has to be collected by each node embedding.
 
 \begin{figure}[h]
     \centering
@@ -508,8 +508,8 @@ information for furthest nodes has to be collected from each node embedding.
     \label{fig:gcn}
 \end{figure}
 
-This means that each node embedding will be characterized by its context,
-just like it happens in Word2Vec, but in a non-Euclidean domain.
+The result is that each node embedding will be characterized by
+its context, just like it happens in Word2Vec, but in a non-Euclidean domain.
 So for example, in a social graph where each person is characterized by its
 friends, interests, places visited and so on, two people will have similar
 embeddings if they are connected to similar nodes.
@@ -541,6 +541,7 @@ nodes with different relations will have the same node embedding, even if it's
 clear that their characteristics are not the same. To overcome this limitation,
 changes to the basic GCN architecture have been proposed, so to obtain
 models that works well when applied to multi-relational graphs.
+\newline
 
 Relational Graph Convolutional Networks \cite{schlichtkrull2018} (RGCNs) are an
 extension of GCNs that are focused on modeling multi-relational graphs composed
@@ -563,11 +564,11 @@ rule to update the embedding of a node at the \emph{l} layer is the following:
 \end{equation}
 
 Where $h_i$ is the embedding (or, for the first layer, the input feature
-vector) of the node \emph{i}, $W_0$ is the learnt parameter vector for the
+vector) of the node \emph{i}, $W_0$ is the learnt filter for the
 relation between the node and itself (called self loop), $\CMcal{N}_i^r$ is the
 set of indices of the neighbors of node \emph{i} under the relation
 $r\in\CMcal{R}$, with $\CMcal{R}$ being the set of all the relations present in
-the graph. $W_r$ is the vector of learnt parameters for the relation $r$.
+the graph. $W_r$ is the learnt filter for the relation $r$.
 As for the GCN architecture, $\sigma$ is a non linear activation function
 and $c_{i,j}$ is a normalization constant, commonly initialized
 to $|\CMcal{N}_i^r|$.
@@ -579,6 +580,27 @@ feature vectors of neighboring nodes are relation specific, this means that
 the kind of relation that connect the node to its neighbors has an important
 role in determining the node embedding.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{img/rgcn-encoder.png}
+    \caption{RGCN encoder model. Image taken from \cite{schlichtkrull2018}.}
+    \label{fig:rgcn-encoder}
+\end{figure}
+
+Some form of regularization is required in order to avoid overfitting on rare
+relations, thus to obtain a more generalized model, and also to avoid
+the rapid growth in the number of parameters of the network for
+highly multi-relational graphs. One of the solutions proposed by the original
+paper \cite{schlichtkrull2018} is to decompose each relation filter $W_r$
+using basis decomposition:
+
+\begin{equation}
+    W_r^{(l)} = \sum_{b=1}^B a_{r,b}^{(l)} V_b^{(l)}
+\end{equation}
+
+This allows to store only the relation specific coefficients and the basis,
+which will be shared by all the relations.
+
 The model obtained by training an RGCN can then be used to build an encoder
 that given as input a graph, gives as output the embeddings of all nodes and
 the relations parameters. Then a factorization method can be used to
@@ -586,12 +608,13 @@ evaluate unseen facts inside the graph, exploiting the embeddings obtained.
 Such methods are used as scoring functions in order to obtain, starting from
 the entities embeddings, a real value that can be used to score the unseen
 triples under evaluation.
+\newline
 
 DistMult \cite{yang2014} is one of the most common and simple factorization
 methods used to score unseen triples. Given as input the embeddings of the
 source node and destination node, and the relation parameter vector
-transformed in a diagonal matrix $R_r\in\mathbb{R}^{d \times d}$, it computes
-an associated score as a real value:
+transformed into a diagonal matrix $R_r\in\mathbb{R}^{d \times d}$, it computes
+an associated real valued score:
 
 \begin{equation}
     f(s,r,o) = e_s^T R_r e_o
@@ -602,17 +625,38 @@ wether the triple $(s,r,o)$ is a good candidate to be added to the graph, an
 high score is to be interpreted as a high confidence of the model
 in the fact that the triple should belong to the knowledge graph.
 
-
-
 \chapter{Approach and methodology}
 
 \subsection{Polito Knowledge Graph empowering tools}
 
 IRIS dump, topic extraction with TMF, RDFlib.
 
+
+
 \subsection{Machine Learning tools}
 
-Deep Graph Library, hardware used.
+* rgcn complessa, usa un sacco di parametri, creare rete da zero
+    molto complesso senza strumenti adeguati
+
+* Deep Graph Library in soccorso, breve descrizione sul progetto, citazione
+    del paper
+
+* Spiegare architettura di dgl, spiegando il message passing framerwork
+
+
+
+
+
+
+
+
+* hardware used.
+
+
+
+
+
+
 
 \chapter{Related work}
 
