@@ -18,8 +18,11 @@
 \usepackage{lmodern}%        scelta dei font
 \usepackage{listings}       % code listing
 \usepackage{mathtools}      % math
+\usepackage{eucal}          % math calligraphy
+\usepackage{amsfonts}         % blackboard bold letters (like R for real values)
 \usepackage{url}            % URLs usage: \url{https://example.com}
 \usepackage{cite}           % cite bibtex entries
+
 
 % Vedere la documentazione toptesi-it.pdf per le
 % attenzioni che bisogna usare al fine di ottenere un file
@@ -464,7 +467,7 @@ of the network the feature vector of each node with the feature
 vectors of its l-nearest neighbors, this is done by applying the following
 transformation:
 
-\begin{equation}
+\begin{equation} \label{gcn1}
 H^{l+1}=\sigma(\tilde{D}^{-1/2}\tilde{A}\tilde{D}^{-1/2}H^lW^l)
 \end{equation}
 
@@ -480,8 +483,8 @@ and $\sigma()$ is a non linear activation function, like $ReLU$.
 Analyzing the forward rule for a single node make it more clear how the
 embedding of a node is updated through the convolution:
 
-\begin{equation}
-    h^{(l+1)}_{i}=\sigma(\sum_{j\in\eta_{i}} \frac{1}{c_{ij}}h_j^{(l)}W^{{(l)}})
+\begin{equation} \label{gcn2}
+    h^{(l+1)}_{i}=\sigma(\sum_{j\in\eta_{i}} \frac{1}{c_{i,j}}h_j^{(l)}W^{{(l)}})
 \end{equation}
 
 Setting aside the normalization costant $c_{ij}$ which is obtained from the
@@ -520,7 +523,85 @@ recommendation systems available in the industry.
 
 \subsection{Link prediction on Knowledge Graphs}
 
-Detailed description of the Relation GCN algorithm.
+Predicting new facts is one of the most common task in the field
+of knowledge graph completion. The goal of such task is to evaluate unseen
+triples in order to evaluate wether or not there are good candidates to be
+included in the knowledge base.
+Link prediction can be done in two steps, by firstly train an encoder model
+that is able to embed the node features and produce meaningful embeddings,
+and then by applying a factorization model that is able to score the unseen
+triples under evaluation.
+
+Deep learning techniques such as GCN can be exploited to obtain meaningful
+embeddings of nodes, but fall short when
+dealing with knowledge graphs due to the inability of taking into account
+the diversity of the relations between the nodes. In example, using a GCN, two
+nodes that  have the same neighborhood but are connected to the surrounding
+nodes with different relations will have the same node embedding, even if it's
+clear that their characteristics are not the same. To overcome this limitation,
+changes to the basic GCN architecture have been proposed, so to obtain
+models that works well when applied to multi-relational graphs.
+
+Relational Graph Convolutional Networks \cite{schlichtkrull2018} (RGCNs) are an
+extension of GCNs that are focused on modeling multi-relational graphs composed
+by directed edges, and thus are particularly capable of embedding both
+nodes and relations of a knowledge graph.
+RGCNs can be used for both link prediction and node classification tasks.
+
+The idea behind this new architecture is to have different set of parameters
+for different relations.
+At each step inside the network, the feature vector of a node is updated by
+convolving its first neighbors features with a convolutional filter that is
+different based on the kind of relation that connects the nodes. The forward
+rule to update the embedding of a node at the \emph{l} layer is the following:
+
+\begin{equation}
+    h^{(l+1)}_{i} = \sigma \left(
+        W_0^{(l)}h_i^{(l)} + \sum_{r\in\CMcal{R}}\sum_{j\in\CMcal{N}_i^r}
+        \frac{1}{c_{i,r}} W_r^{(l)} h_j^{(l)}
+    \right)
+\end{equation}
+
+Where $h_i$ is the embedding (or, for the first layer, the input feature
+vector) of the node \emph{i}, $W_0$ is the learnt parameter vector for the
+relation between the node and itself (called self loop), $\CMcal{N}_i^r$ is the
+set of indices of the neighbors of node \emph{i} under the relation
+$r\in\CMcal{R}$, with $\CMcal{R}$ being the set of all the relations present in
+the graph. $W_r$ is the vector of learnt parameters for the relation $r$.
+As for the GCN architecture, $\sigma$ is a non linear activation function
+and $c_{i,j}$ is a normalization constant, commonly initialized
+to $|\CMcal{N}_i^r|$.
+
+As can be seen the update rule looks similar to the one for GCNs (\ref{gcn2}),
+with the major difference that in the case of a RGCN the parameters used to
+convolve the
+feature vectors of neighboring nodes are relation specific, this means that
+the kind of relation that connect the node to its neighbors has an important
+role in determining the node embedding.
+
+The model obtained by training an RGCN can then be used to build an encoder
+that given as input a graph, gives as output the embeddings of all nodes and
+the relations parameters. Then a factorization method can be used to
+evaluate unseen facts inside the graph, exploiting the embeddings obtained.
+Such methods are used as scoring functions in order to obtain, starting from
+the entities embeddings, a real value that can be used to score the unseen
+triples under evaluation.
+
+DistMult \cite{yang2014} is one of the most common and simple factorization
+methods used to score unseen triples. Given as input the embeddings of the
+source node and destination node, and the relation parameter vector
+transformed in a diagonal matrix $R_r\in\mathbb{R}^{d \times d}$, it computes
+an associated score as a real value:
+
+\begin{equation}
+    f(s,r,o) = e_s^T R_r e_o
+\end{equation}
+
+The score obtained by applying such function can then be used to evaluate
+wether the triple $(s,r,o)$ is a good candidate to be added to the graph, an
+high score is to be interpreted as a high confidence of the model
+in the fact that the triple should belong to the knowledge graph.
+
 
 
 \chapter{Approach and methodology}
