@@ -22,6 +22,7 @@
 \usepackage{amsfonts}         % blackboard bold letters (like R for real values)
 \usepackage{url}            % URLs usage: \url{https://example.com}
 \usepackage{cite}           % cite bibtex entries
+\usepackage{hyperref}       % internal references to text, chapters ecc
 
 
 % Vedere la documentazione toptesi-it.pdf per le
@@ -62,7 +63,8 @@
 \TesiDiLaurea{Master Degree Thesis}
 
 \titolo{Deep Learning on Polito Knowledge Graph}
-\sottotitolo{Leveraging Relational GCN for link prediction between nodes of a newly built publications graph}
+\sottotitolo{Leveraging Relational GCN for link prediction between nodes of a
+newly built publications graph}
 
 \CandidateName{Candidate}
 \candidato{Giovanni \textsc{Garifo}}
@@ -123,29 +125,60 @@ Acknowledgements here, half page
 \section{Motivation}
 
 Graphs are used to empower some of the most complex IT services available
-today, an example among all being the Google search engine
+today, an example among all is the Google search engine
 \footnote{\url{https://blog.google/products/search/introducing-knowledge-graph-things-not/}}.
 They can be used to represent almost any kind of information, and they are
 particurlarly capable of representing the structure of complex systems and
 describe the relationships between their elements.
 
-Over the last decade, much effort has been made in trying to leverage the power
+Over the last decade, much effort has been put in trying to leverage the power
 of graphs to represent human knowledge and to build search tools capable of
 querying and understanding the semantic relations within them. RDF graphs are a
 particular class of graphs that can be used to build knowledge
-repositories. Given a domain and an ontology, they allows to build a structured
+bases. Given a domain and an ontology, RDF graphs allows to build a structured
 representation of the knowledge in such domain.
 
 Modern machine learning techniques can be used to mine latent information
 from such graphs. One of the main challenges in this field is how to learn
 meaningful representations of entities and relations that embed
 the underlying knowledge. Such representations can then be used to evaluate
-new links inside the graph or to classify unseen nodes.
+new links within the graph or to classify unseen nodes.
 Deep learning techniques have proved to be first class citizens when
 dealing with representation learning tasks, being able to learn latent
 representations without any prior knowledge other than the graph structure,
 so as not to require any feature engineering.
 
+\section{Goal and contribution}
+
+Today scholarly data can be accessed through web portals that allow to retrieve
+scientific papers published by researchers. One example is the IRIS
+portal\footnote{\url{https://iris.polito.it/}}, that stores all the
+publications of the Turin Polytechnic University researchers.
+IRIS allow to retrieve publications by field of interest, matching the user
+input with the keywords inserted by the author.
+The current implementation has some main limitations: ambiguity may arise,
+having papers that deals with the same subject represented by different
+keywords, or having acronyms or misspelled keywords that refer to the
+same argument.
+The system is thus not able to search for \emph{semantic concepts}, but only
+for a character string that is matched against the keywords available in the
+database, which are not unique and prone to lexical error.
+
+Building a new semantic empowered search engine can be one of the
+possible solutions to overcome such limitations, allowing for coherent and
+precise results to be retrieved.
+At the foundations of this new semantic search engine there must be a data
+structure capable of representing semantic relations and concepts. Once such
+knowledge base of the scholarly data is obtained, it can be enhanced by
+automatically extracting latent information through the use of advanced
+machine learning algorithms.
+
+In the next chapters we are going to present a newly built structured and
+semantically coherent representation of the scholarly data produced by the
+Turin Polytechnic University, and how implicit facts can be automatically
+extracted from such knowledge repository by leveraging knowledge base
+completion techniques, implemented by means of an advanced deep learning
+algorithm.
 
 
 \section{Thesis structure}
@@ -167,8 +200,8 @@ so as not to require any feature engineering.
 The World Wide Web has been developed as a tool to easily access
 documents and to navigate through them by following hyperlinks.
 This simple description already resembles the structure of a graph: we can
-think of documents as nodes, and of hyperlinks as edges. The unstoppable growth
-of the \emph{Web graph} led to the emergence of new tools to extricate in such
+think of documents as nodes and hyperlinks as edges. The unstoppable growth
+of the \emph{Web graph} led to the raise of new tools to extricate in such
 complexity. Search engines have been developed to easily navigate such a giant
 graph, initially by scoring search results based on trivial statistics, such
 as the number of times a document has been linked, as in the case of the
@@ -239,7 +272,7 @@ that defines a basic vocabulary for describing RDF resources and the
 relationships between them. Many vocabularies have been built on top of
 RDFS, such as the Friend of a Friend (FOAF) vocabulary \cite{brickley2007}, for
 describing social networks, or the one maintained by the Dublin Core Metadata
-Initiative \footnote{\url{https://www.dublincore.org/}}, that defines common
+Initiative \cite{weibel1998}, that defines common
 terms used in the definition of metadata for digital resources.
 
 \begin{figure}[ht]
@@ -257,10 +290,10 @@ been designed to be as simple as possible, in example by allowing the use
 of variables, whose definition is preceded by a question mark.
 
 The syntax of SPARQL is heavily derived from SQL, with some
-minor adaptations to be more suited for querying graphs data. The
+minor adaptations to be more suited for querying graph data. The
 following is an example of query which selects all the labels
 (human-readable description of a resource) of all the entities that
-matches the given resource type.
+match the given resource type.
 
 \begin{lstlisting}[
         language=sparql,
@@ -281,7 +314,7 @@ Even if the raise of the Semantic Web has suffered a slowdown in its growth
 due to the complexity of its vision, many new projects were born from its
 enabling technologies. Efforts have been put by profit and
 non-profit organizations in trying to build complex knowledge repositories
-starting from the knowledge already present in the Web. An example among all
+starting from the knowledge already available in the Web. An example among all
 is the DBpedia\footnote{\url{https://wiki.dbpedia.org/}} project, which
 developed a structured knowledge base from the unstructured data available on
 Wikipedia.
@@ -344,7 +377,7 @@ by the human understanding.
 Machine learning (ML) algorithms are used to learn models from the
 available data, with the final goal to obtain a set of parameters
 that are fine-tuned to identify seen characteristics in the data
-used for training. The models obtained can be later used to
+used for training. The obtained models can be used to
 recognize unseen inputs by leveraging the knowledge embedded
 in such parameters.
 ML algorithms require the input data to be available in a
@@ -363,13 +396,19 @@ In Word2Vec, the concept of meaning of a word is related to the context in
 which such word is frequently used, so two words are recognized as similar if
 they're used in similar contexts, thus in the vector space of the learnt
 representations words that have similar meaning have higher cosine similarity
+\footnote{
+    Cosine similarity is a heuristic method to measure the
+    similarity between two vectors by computing the cosine of the angle between
+    them:
+    $similarity = cos(\theta) = \frac{A \cdot B}{\Vert A \Vert \Vert B \Vert}$
+}
 with respect to dissimilar ones.
 For instance, the cosine similarity between the word vectors of "Man" and "King"
 is roughly the same as the one between the words "Woman" and "Queen", since such
 words are used in similar contexts. This has open up new scenarios for
 language recognition and processing, since it allowed to perform vector
 operations on such words which brought interesting results, as can be seen
-in figure \ref{fig:word2vec}.
+in Figure \ref{fig:word2vec}.
 
 \begin{figure}[h]
     \centering
@@ -382,16 +421,19 @@ in figure \ref{fig:word2vec}.
     \label{fig:word2vec}
     \end{figure}
 
-The idea that words can be characterized by the context in which they're used
-can be generalized and used into other fields of research, such as
+This idea of words characterized by the context in which they're used
+can be generalized and applied to other fields of research, such as
 the field of representation learning on graphs.
 
 Graphs are composed by nodes and edges, and are used to describe complex
 systems, such as social networks or the interactions in a molecular biology
-system. To apply machine learning algorithms to such data structures, in order
-to analyze the available data and predict new facts, vector representations of
-such nodes and edges are needed. Such vector representations are often
-referred to as \emph{embeddings}.
+system. To apply machine learning algorithms to such data structures
+vector representations of nodes and edges are needed in order
+to be able to learn from the available data and predict new facts.
+Such vector representations are often referred to as \emph{embeddings} because
+they should embed the characteristics of the graph nodes, so that similar nodes
+have similar embeddings. In example, in a scholarly knowledge base publications
+with same authors and similar subjects should have similar embeddings.
 
 Early approaches required these representations to be learned from feature
 vectors that where handcrafted, task that required not
@@ -417,9 +459,9 @@ convolved with self-trained filters that are able to
 extract the relevant features needed to recognize patterns present
 in the input images.
 
-Deep learning techniques have proven to function well also in the field of
-representation learning for graph data, this should not give rise to surprise,
-given that as can be seen in figure \ref{fig:pixels-as-graph}, a digital image
+Deep learning techniques have proven to perform well also in the field of
+representation learning for graph data.
+As can be seen in figure \ref{fig:pixels-as-graph}, a digital image
 is composed by pixels which can be thought of as nodes in a graph, where
 each pixel is connected by an edge to its immediate neighbors. This suggests
 that the techniques used when dealing with images can be adapted, with
@@ -433,36 +475,35 @@ also in other fields of research, such as learning on manifolds.
     \label{fig:pixels-as-graph}
 \end{figure}
 
-The problems when working with graph data is that commonly graphs
+The issue of working with graph data is that commonly graphs
 are built to describe complex systems, such as the knowledge of a
 domain or field for knowledge graphs, and thus are composed of
 a fairly high amount of nodes and edges. The matrices used to
-store the graph structure can thus explode in dimensionality, so as
-to became impractical as input data. Moreover, graphs aren't
-regular structures with given shape and size, like a matrix of pixels
+store the graph structure can thus explode in dimensionality, becoming
+impractical as input data. Moreover, graphs are not
+regular structures with a given shape and size, such a matrix of pixels
 for images, but they live in an irregular domain which led to highly
 irregular structures.
-The first problem can be solved by randomly sampling the graph at each
+The first issue can be solved by randomly sampling the graph at each
 training epoch, the immediate drawback being that more than one epoch
-is required to train over all nodes. The second problem can instead be
-solved by adapting known algorithms to work on highly irregular domains.
+is required to train over all nodes. The second issue can instead be
+solved by adapting known algorithms to work on irregular domains.
 One of the possible approaches, which has proven to work well, is
 the one based on convolutions.
 
 Graph Convolutional Networks (GCNs) \cite{kipf2016} are a class of
 semi-supervised deep learning algorithms for graphs which are based on the
-same convolution and backpropagation operations as the so famous
+same convolution and backpropagation operations as the well known
 Convolutional Neural Networks (CNNs) used for feature learning on
 images.
-The main difference between CNNs and GCNs is in the architecture of
-the neural network, and so in how the convolution is performed, instead
-the backpropagation phase is the same as the one used to update the
-parameters of CNNs, with the loss function being task-specific.
+The main difference between CNNs and GCNs is in how the convolution is
+performed, instead the backpropagation phase is the same as the one
+used to update the parameters of CNNs, with a task-specific loss function.
 In a CNN the input matrix of each network layer, which is the pixel matrix
 of the input image for the first layer, is convolved with a convolutional
 filter, whose parameters are then updated during the backpropagation phase.
 
-GCNs works differently, but similarly, by convolving at the l-th layer
+GCNs works similarly by convolving at the l-th layer
 of the network the feature vector of each node with the feature
 vectors of its l-nearest neighbors, this is done by applying the following
 transformation:
@@ -472,16 +513,16 @@ H^{l+1}=\sigma(\tilde{D}^{-1/2}\tilde{A}\tilde{D}^{-1/2}H^lW^l)
 \end{equation}
 
 Where $H^{l}$ is the output of the previous layer or, for the input layer, the
-nodes feature matrix where each row is commonly initialized
+node features matrix where each row is commonly initialized
 as a one-hot encoded feature vector. $\tilde{A}$ is the adjacency matrix
 of the graph summed with the identity matrix to add self loops of nodes,
 $\tilde{D}$ is the node degree matrix of $\tilde{A}$ and is used to
 normalize it, $W^l$ is the weight matrix of the layer, that is shared
 among all nodes for each layer, just like the convolutional filter in a CNN,
-and $\sigma()$ is a non linear activation function, like $ReLU$.
+and $\sigma()$ is a non linear activation function, for example $ReLU$.
 
-Analyzing the forward rule for a single node make it more clear how the
-embedding of a node is updated through the convolution:
+The forward rule to update the embedding of a single node at each
+layer of the network is the following:
 
 \begin{equation} \label{gcn2}
     h^{(l+1)}_{i}=\sigma(\sum_{j\in\eta_{i}} \frac{1}{c_{i,j}}h_j^{(l)}W^{{(l)}})
@@ -508,52 +549,87 @@ information from furthest nodes has to be collected by each node embedding.
     \label{fig:gcn}
 \end{figure}
 
-The result is that each node embedding will be characterized by
+As a result of the propagation step each node embedding will be characterized by
 its context, just like it happens in Word2Vec, but in a non-Euclidean domain.
 So for example, in a social graph where each person is characterized by its
 friends, interests, places visited and so on, two people will have similar
 embeddings if they are connected to similar nodes.
 
 The node embeddings obtained by applying a GCN or one of its variants can
-then be used to perform some learning task on the graph, like classification
-of unseen nodes or link prediction of non-existent edges, the latter being
-one of the most interesting task because it empowers most of the
-recommendation systems available in the industry.
+then be used to perform some learning task on the graph, two examples are
+the classification of unseen nodes or the link prediction of non-existent
+edges. The last example is one of the most interesting tasks because it empowers
+most of the recommendation systems available in the industry.
 
 
 \subsection{Link prediction on Knowledge Graphs}
+\label{subsec:linkprediction}
 
 Predicting new facts is one of the most common task in the field
-of knowledge graph completion. The goal of such task is to evaluate unseen
-triples in order to evaluate wether or not there are good candidates to be
-included in the knowledge base.
-Link prediction can be done in two steps, by firstly train an encoder model
-that is able to embed the node features and produce meaningful embeddings,
-and then by applying a factorization model that is able to score the unseen
-triples under evaluation.
+of knowledge graph completion. The goal of such task is to evaluate if unseen
+good candidates to be included in the knowledge base.
+Link prediction requires two main step:
+
+\begin{enumerate}
+    \item Train an encoder model
+    that is able to embed the node features and produce meaningful embeddings.
+    \item Apply a factorization model that is able to score the unseen
+    triples under evaluation.
+\end{enumerate}
 
 Deep learning techniques such as GCN can be exploited to obtain meaningful
-embeddings of nodes, but fall short when
-dealing with knowledge graphs due to the inability of taking into account
-the diversity of the relations between the nodes. In example, using a GCN, two
-nodes that  have the same neighborhood but are connected to the surrounding
-nodes with different relations will have the same node embedding, even if it's
-clear that their characteristics are not the same. To overcome this limitation,
-changes to the basic GCN architecture have been proposed, so to obtain
-models that works well when applied to multi-relational graphs.
+node embeddings, but fall short when dealing with graphs where
+nodes are connected by different relations (multi-relational graphs).
+In fact, if we use a single layer GCN to obtain the embeddings of two nodes
+that share the same neighborhood, but are connected to the neighbors via
+different relations, we'll obtain almost the same embeddings, even if it's
+clear that they do not share the same characteristics. For example in a
+producer-consumer framework one node could be the producer while the other
+the consumer, having both a common neighborhood of nodes
+which are produced by the former and consumed by the latter.
+If a GCN is used, the embeddings obtained would be very similar, even if
+the two nodes clearly don't have the same role and don't belong to the
+same class.
+
+To overcome this limitation, changes to the basic GCN architecture have been
+proposed, so to obtain models that works well when applied to multi-relational
+graphs.
 \newline
 
-Relational Graph Convolutional Networks \cite{schlichtkrull2018} (RGCNs) are an
+Relational Graph Convolutional Networks \cite{schlichtkrull2018} (R-GCNs) are an
 extension of GCNs that are focused on modeling multi-relational graphs composed
 by directed edges, and thus are particularly capable of embedding both
 nodes and relations of a knowledge graph.
-RGCNs can be used for both link prediction and node classification tasks.
+R-GCNs can be used for both link prediction and node classification tasks.
 
-The idea behind this new architecture is to have different set of parameters
+At an high level the R-GCN architecture can be seen as a special case of
+the \emph{message passing framework} \cite{gilmer2017}, which groups together
+under a common scheme most of the existing neural models for graph data.
+The framework defines two major phases: a per-edge message computation and a
+per-node message reduction.
+In the first phase a function or linear transformation is applied to each edge
+to obtain an edge specific message.
+Then, in the reduce phase, the embedding of each node is updated by aggregating
+together all the messages of the incoming edges.
+
+This two phases can be grouped together through by the following equation:
+
+\begin{equation}
+    h_i^{(l+1)} = \sigma \left(
+            \sum_{m\in{\CMcal{M}_i}} g_m(h_i^{(l)}, h_j^{(l)})
+        \right)
+\end{equation}
+
+Where $\CMcal{M}_i$ is the set of incoming messages for node $i$ and
+$g_m$ is a message specific transformation.
+\newline
+
+The idea behind R-GCN is to have different set of parameters
 for different relations.
 At each step inside the network, the feature vector of a node is updated by
 convolving its first neighbors features with a convolutional filter that is
-different based on the kind of relation that connects the nodes. The forward
+different based on the kind of relation that connects the nodes.
+The forward
 rule to update the embedding of a node at the \emph{l} layer is the following:
 
 \begin{equation}
@@ -564,17 +640,22 @@ rule to update the embedding of a node at the \emph{l} layer is the following:
 \end{equation}
 
 Where $h_i$ is the embedding (or, for the first layer, the input feature
-vector) of the node \emph{i}, $W_0$ is the learnt filter for the
+vector) of the node \emph{i}, $W_0$ is the learnt kernel for the
 relation between the node and itself (called self loop), $\CMcal{N}_i^r$ is the
 set of indices of the neighbors of node \emph{i} under the relation
 $r\in\CMcal{R}$, with $\CMcal{R}$ being the set of all the relations present in
-the graph. $W_r$ is the learnt filter for the relation $r$.
+the graph. $W_r$ is the learnt kernel for the relation $r$.
 As for the GCN architecture, $\sigma$ is a non linear activation function
 and $c_{i,j}$ is a normalization constant, commonly initialized
 to $|\CMcal{N}_i^r|$.
 
+From a message passing framework perspective, the message function (per-edge
+transformation) is equal to the linear transformation $W_rh_j$, and the reduce
+function (per-node transformation) is just the sum of
+all the messages computed for the incoming edges of each node.
+
 As can be seen the update rule looks similar to the one for GCNs (\ref{gcn2}),
-with the major difference that in the case of a RGCN the parameters used to
+with the major difference that in the case of a R-GCN the parameters used to
 convolve the
 feature vectors of neighboring nodes are relation specific, this means that
 the kind of relation that connect the node to its neighbors has an important
@@ -583,7 +664,7 @@ role in determining the node embedding.
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.5]{img/rgcn-encoder.png}
-    \caption{RGCN encoder model. Image taken from \cite{schlichtkrull2018}.}
+    \caption{R-GCN encoder model. Image taken from \cite{schlichtkrull2018}.}
     \label{fig:rgcn-encoder}
 \end{figure}
 
@@ -598,13 +679,13 @@ using basis decomposition:
     W_r^{(l)} = \sum_{b=1}^B a_{r,b}^{(l)} V_b^{(l)}
 \end{equation}
 
-This allows to store only the relation specific coefficients and the basis,
+This allows to store only the relation-specific coefficients and the basis,
 which will be shared by all the relations.
 
-The model obtained by training an RGCN can then be used to build an encoder
+The model obtained by training an R-GCN can then be used to build an encoder
 that given as input a graph, gives as output the embeddings of all nodes and
 the relations parameters. Then a factorization method can be used to
-evaluate unseen facts inside the graph, exploiting the embeddings obtained.
+evaluate unseen facts inside the graph, exploiting the resulting embeddings.
 Such methods are used as scoring functions in order to obtain, starting from
 the entities embeddings, a real value that can be used to score the unseen
 triples under evaluation.
@@ -625,32 +706,14 @@ wether the triple $(s,r,o)$ is a good candidate to be added to the graph, an
 high score is to be interpreted as a high confidence of the model
 in the fact that the triple should belong to the knowledge graph.
 
+
+
 \chapter{Approach and methodology}
 
-\subsection{Polito Knowledge Graph empowering tools}
-
-IRIS dump, topic extraction with TMF, RDFlib.
-
-
-
-\subsection{Machine Learning tools}
-
-* rgcn complessa, usa un sacco di parametri, creare rete da zero
-    molto complesso senza strumenti adeguati
-
-* Deep Graph Library in soccorso, breve descrizione sul progetto, citazione
-    del paper
-
-* Spiegare architettura di dgl, spiegando il message passing framerwork
-
-
-
-
-
-
-
-
-* hardware used.
+% in questo capitolo devo introdurre la pipeline e spiegare ad alto livello
+% ogni blocco cosa fa, spiegherò COME è stato fatto nell'implementazione (e con
+% quali tool)
+% posso citare alcuni paper che implementano il MessagePassingFramework (vedi video)
 
 
 
@@ -660,15 +723,17 @@ IRIS dump, topic extraction with TMF, RDFlib.
 
 \chapter{Related work}
 
-Open Academic Graph as example of existing Scientific KG.
+% Open Academic Graph as example of existing Scientific KG.
 
-CSO Classifier as example of existing topic extraction tool for scientific
-publications.
+% CSO Classifier as example of existing topic extraction tool for scientific publications.
 
-Closing with: to the best of my knowledge I'm the first to use RGCN for
-link prediction on a scientific KG.
+% Closing with: to the best of my knowledge I'm the first to use R-GCN for
+% link prediction on a scientific KG. (menzionare però che è stato già fatto
+% utilizzando altri algoritmi)
 
 \chapter{Development and implementation}
+
+
 
 \subsection{Creating Polito Knowledge Graph}
 
@@ -678,7 +743,7 @@ link prediction on a scientific KG.
 
 \chapter{Evaluation}
 
-evaluating the result obtained from link prediction
+% evaluating the result obtained from link prediction
 
 \chapter{Conclusions and future work}
 
