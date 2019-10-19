@@ -395,12 +395,12 @@ learn a vector representation for each word in a vocabulary.
 In Word2Vec, the concept of meaning of a word is related to the context in
 which such word is frequently used, so two words are recognized as similar if
 they're used in similar contexts, thus in the vector space of the learnt
-representations words that have similar meaning have higher cosine similarity
-\footnote{
+representations words that have similar meaning have higher
+cosine similarity\footnote{
     Cosine similarity is a heuristic method to measure the
     similarity between two vectors by computing the cosine of the angle between
     them:
-    $similarity = cos(\theta) = \frac{A \cdot B}{\Vert A \Vert \Vert B \Vert}$
+    $similarity(A,B) = cos(\theta) = \frac{A \cdot B}{\Vert A \Vert \Vert B \Vert}$
 }
 with respect to dissimilar ones.
 For instance, the cosine similarity between the word vectors of "Man" and "King"
@@ -710,10 +710,143 @@ in the fact that the triple should belong to the knowledge graph.
 
 \chapter{Approach and methodology}
 
-% in questo capitolo devo introdurre la pipeline e spiegare ad alto livello
-% ogni blocco cosa fa, spiegherò COME è stato fatto nell'implementazione (e con
-% quali tool)
-% posso citare alcuni paper che implementano il MessagePassingFramework (vedi video)
+This chapter introduces the software architecture developed to build, enhance
+and visualize the Polito Knowledge Graph (PKG), a scholarly RDF graph that
+represent in a structured and semantically coherent way the publications
+produced by the researchers of the Polytechnic University of Turin.
+
+The architecture, which is showed in Figure \ref{fig:pipeline}, is structured
+as a pipeline composed of three main building blocks:
+
+\begin{enumerate}
+    \item The \emph{graph builder}, which creates a first version of the
+    RDF graph.
+    \item The \emph{graph enhancer}, which implements ML techniques to predict
+    unseen facts. Such facts can then be added to the graph to improve its
+    completeness.
+    \item The \emph{viewer component}, a web application that allows to query
+    and visualize the graph data.
+\end{enumerate}
+
+At an higher level the components of the architecture can be divided in
+producers and consumers, where the former produces the graph data, and the
+latter consumes the data produced.
+The \emph{builder} act as producer taking as input the IRIS data
+and producing a set of RDF statements that together composes the
+Polito Knowledge Graph.
+The \emph{enhancer} act as both a producer and a consumer, given that it
+takes as input the PKG and use it to predict unseen facts that can be
+later added to it as RDF statements.
+The \emph{viewer} consumes the graph by storing it a triplestore and exposing
+a public web interface for querying and visualizing the data.
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.8]{img/pipeline_white-bg.png}
+    \caption{Pipelined software architecture developed to build,
+    enhance and visualize the Polito Knowledge Graph.}
+    \label{fig:pipeline}
+\end{figure}
+
+
+\section{Builder architecture}
+
+The graph builder input is a database dump of
+IRIS\footnote{\url{https://iris.polito.it/}}, which is the platform
+used by the Polytechnic University of Turin to store and share all the
+publications made by its researchers. The dump is a JSON file that contains
+all the information available for every scientific paper published in a period
+of five years that goes from 2013 to 2017.
+
+The builder role is to translate all the information contained in the dump in a
+set of semantically coherent RDF triples. To do so, an ontology that
+describes the domain of the IRIS scholarly data has been defined.
+
+The builder uses as reference the defined ontology to analyze each record in
+the JSON dump, and build facts as RDF triples by matching the information
+contained in the record with the concepts defined by the ontology.
+For example, given that a publication may have more then one contributor, the
+ontology differentiates the principal author from the contributors by using two
+different statements to tie the corresponding entities to the publication.
+
+One of the fields of the publication record is the abstract. We wanted to
+tie each publication to its main topics, to do so we used the abstract
+as input text for TellMeFirst \cite{rocha2015}, a tool for the automatic
+extraction of semantic keywords from texts. This keywords, to which from now
+on we'll refer to as \emph{topics}, are retrieved from the DBpedia taxonomy
+and are uniquely identified by their corresponding URI.
+Exploiting TellMeFirst we are able to automatically tie each publication to
+its relevant topics, by adding the corresponding RDF statements to the graph.
+This has as consequence that the topics are added to the graph, and being
+uniquely identified, all the publications that share a topic are
+bounded to the same topic entity.
+
+The result of this process is a semantically coherent description of all the
+publications linked with their authors, contributors and relevant topics.
+The set of all this RDF statements composes the Polito Knowledge Graph.
+
+
+\section{Enhancer architecture}
+
+Once the RDF graph has been built, it could be used as input for the enhancer
+module, whose main role is to leverage ML techniques to predict new triples
+that could be good candidates to be included in the graph.
+
+The enhancer architecture is splitted in three main components:
+
+\begin{enumerate}
+    \item The dataset builder.
+    \item The model trainer.
+    \item The link evaluator.
+\end{enumerate}
+
+The first component is in charge of translating the RDF graph into a usable
+dataset for the model trainer, given that RDF statements cannot be used as
+input data for the link prediction algorithm.
+The dataset will then be splitted into three disjoint sets: one for training,
+one for validation and one for testing.
+The model trainer uses this three sets to train a link predictor. The train
+set is used to train the model at each epoch, while the validation set
+is used to evaluate which model parameters to keep, identifying the best epoch.
+The test set is used to evaluate the accuracy of the model loaded with the best
+epoch parameters upon unseen triples.
+
+Once the model has been trained, it can be used to predict unseen facts.
+The link evaluator loads the best model found during the training phase and
+uses it to evaluate unseen facts.
+The evaluator creates an set of unseen RDF triples and produces a score for
+each of them. Only the triples that obtain an high score (and so an high
+probability to be true facts) and are correct in domain and range with respect
+to the ontology are kept.
+The predicted triples are then saved as RDF statements and could be added
+to the RDF graph, obtaining an enhanced knowledge graph completed with
+latent information automatically extracted.
+
+\section{Viewer architecture}
+
+The last component of the architecture is the viewer, which is composed of a
+triplestore, an API layer, and a front end web interface.
+
+The triplestore is a specialized DBMS for storing and retrieving RDF
+statements.
+It stores an online copy of the Polito Knowledge Graph and expose a
+SPARQL endpoint that allows to query the graph itself.
+
+The API layer exposes a REST API that allows to retrieve the information
+contained in the graph without the need of SPARQL queries. It accept HTTP
+requests with URL-encoded parameters and proceeds to query the SPARQL endpoint
+of the triplestore by matching the parameters upon some predefined queries.
+Then it translates the response obtained from the triplestore in a JSON,
+which is sended back to the requesting client, which is typically the front end.
+
+The front end is a responsive web application that act as the entry point for
+the user, mimicking the functionalities of a modern search engine. It allows
+to query and visualize the data contained in the graph by
+performing HTTP requests to the API layer and displaying the results received
+in a structured and comprehensible way.
+
+
 
 
 
@@ -732,6 +865,10 @@ in the fact that the triple should belong to the knowledge graph.
 % utilizzando altri algoritmi)
 
 \chapter{Development and implementation}
+
+% nell'implementazione (e con quali tool)
+% posso citare alcuni paper che implementano il MessagePassingFramework (vedi
+% video https://vimeo.com/238221016)
 
 
 
