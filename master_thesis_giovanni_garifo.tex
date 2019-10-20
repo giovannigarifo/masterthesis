@@ -711,9 +711,11 @@ in the fact that the triple should belong to the knowledge graph.
 \chapter{Approach and methodology}
 
 This chapter introduces the software architecture developed to build, enhance
-and visualize the Polito Knowledge Graph (PKG), a scholarly RDF graph that
-represent in a structured and semantically coherent way the publications
-produced by the researchers of the Polytechnic University of Turin.
+and visualize the Polito Knowledge Graph (PKG), an academic RDF graph
+built to organize in a structured and semantically coherent way the publications
+produced by the researchers of the Polytechnic University of Turin. The graph
+also includes publication-related entities, such as authors, journals,
+and field of study.
 
 The architecture, which is showed in Figure \ref{fig:pipeline}, is structured
 as a pipeline composed of three main building blocks:
@@ -847,22 +849,80 @@ performing HTTP requests to the API layer and displaying the results received
 in a structured and comprehensible way.
 
 
-
-
-
-
-
-
-
 \chapter{Related work}
 
-% Open Academic Graph as example of existing Scientific KG.
+% Open Academic Graph
+In the past years there has been a growing interest in scientific
+knowledge graphs, both by academic institutions and by private organizations.
+An example is the Open Academic
+Graph\footnote{\url{https://www.openacademic.ai/oag/}} (OAC), an academic
+knowledge graph built by unifying two of the largest
+scientific KG available, the Microsoft Academic
+Graph\footnote{\url{https://academic.microsoft.com/}}
+and AMiner\footnote{\url{https://www.aminer.cn/}}.
+It has been publicly released to allow
+the study of citation networks, papers content and more.
+The first version of the graph, released in 2017, has been
+built by merging together the aforementioned graphs and by linking the
+matching publications, obtaining a graph that is composed by more then three
+hundred million publications. In the first version the only type of entity
+in the graph was the publication: authors, journals, and all the other
+publications information were added as attributes, and not as entities.
 
-% CSO Classifier as example of existing topic extraction tool for scientific publications.
+In January 2019 the second version of the OAC has been released, adding even
+more publications to the graph. However, the biggest change of this new
+version is the addition of authors and venues as graph entities,
+instead of being simple publications attributes.
 
-% Closing with: to the best of my knowledge I'm the first to use R-GCN for
-% link prediction on a scientific KG. (menzionare però che è stato già fatto
-% utilizzando altri algoritmi)
+However, the OAC doesn't contain the publications topics as graph
+entities, but as author keywords, thus being prone to the same limitations of
+IRIS: the keywords are the ones chosen by the authors and are not
+referencing to semantic concepts, being simple character strings.
+\newline
+
+% wiser
+Regarding the development of tools similar to the Polito Knowledge Graph
+by other academic institutions, an example of employment of knowledge graphs
+and natural language processing techniques is Wiser\cite{cifariello2019}, an
+expertise search tool developed by the University of Pisa and publicly released
+at the beginning of 2019.
+The KG of Wiser is composed of approximately 1'500 authors, 65'000 publications
+and 35'000 topics. This numbers will be compared to the one of the Polito
+Knowledge Graph in the following chapter.
+The main function of Wiser is to allow the search of expertise in a given
+research field.
+The system has proven to be particularly effective, representing a strategic
+tool and being actively used by the university technological transfer office.
+\newline
+
+% CSO Classifier and Computer Science Ontology
+As saw in the previous chapter, one of the main components of the PKG
+pipeline is TellMeFirst, tool used to automatically extract the topics of
+interest from the publications abstracts. By automatically extracting the
+topics, TMF allows to add them as entities in the Polito Knowledge Graph,
+so that each publication is directly linked to its main topics, and each topic
+is linked to all the publications of which it is a subject (reverse relation).
+
+Other tools that are able to extract the subjects of a publication exists, an
+example is the CSO Classifier \cite{salatino2019}. This tool is able to
+automatically classify a research paper according to the Computer Science
+Ontology\footnote{\url{https://cso.kmi.open.ac.uk/home}} (CSO), an automatically
+generated ontology of research topics in computer science.
+The fact that the CSO Classifier relies on a predefined ontology has some
+disadvantages with respect to TellMeFirst, the biggest being the fact that the
+Computer Science Ontology is restricted to the computer science field only,
+while TMF, using DBpedia as its source of knowledge, is able to extract
+topics (and so classify a research paper) regarding every field of research.
+However, the approach of CSO Classifier has also its advantages: being the
+ontology more restricted, the classification could be more accurate, and the
+structure of the ontology itself may be tailorized for such classification task.
+
+% R-GCN
+Regarding the prediction of unseen links inside the graph, to the best of our
+knowledge we are the first to employ a Relational GCN for the completion task
+of a scholarly knowledge graph.
+
+
 
 \chapter{Development and implementation}
 
