@@ -1,0 +1,491 @@
+{
+  "type": "items",
+  "expand": [
+    "bitstreams",
+    "history",
+    "all"
+  ],
+  "name": "",
+  "handle": "11583/1653585",
+  "metadata": {
+    "dc.ugov.validation": [
+      {
+        "value": "2015-02-05 13:41:11",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.ugov.dtmod": [
+      {
+        "value": "2015-02-05 13:41:11",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.iris.validastatocineca": [
+      {
+        "value": "SUCCESSO",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.cilea.sitodocentein": [
+      {
+        "value": "23499",
+        "authority": null,
+        "place": 1
+      },
+      {
+        "value": "899",
+        "authority": null,
+        "place": 2
+      },
+      {
+        "value": "4311",
+        "authority": null,
+        "place": 3
+      },
+      {
+        "value": "6075",
+        "authority": null,
+        "place": 4
+      },
+      {
+        "value": "7602",
+        "authority": null,
+        "place": 5
+      }
+    ],
+    "dc.identifier.uri": [
+      {
+        "value": "http://hdl.handle.net/11583/1653000",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.iris.validadatasdop": [
+      {
+        "value": "2018-09-04T02:13:24Z",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.ugov.livsicurezza": [
+      {
+        "value": "0",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.ugov.flvalidato": [
+      {
+        "value": "si",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.ugov.cderrmiur": [
+      {
+        "value": "OK",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.ugov.flwssyncmiur": [
+      {
+        "value": "si",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.description.abstract": [
+      {
+	"value":"HERE GOES THE ABSTRACT HERE GOES THE ABSTRACT HERE GOES THE ABSTRACT"
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.description.fulltext": [
+      {
+        "value": "none",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.publisher.country": [
+      {
+        "value": "ITA",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.ugov.idanagproprietario": [
+      {
+        "value": "971",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.description.fulltextoriginal": [
+      {
+        "value": "none",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.identifier.citation": [
+      {
+        "value": "",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.date.accessioned": [
+      {
+        "value": "2015-06-30T15:42:20Z",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.contributor.country": [
+      {
+        "value": "FRA",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.date.issued": [
+      {
+        "value": "2014",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.ugov.nometipoministero": [
+      {
+        "value": "Brevetto",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.ugov.cderruniv": [
+      {
+        "value": "SCHED",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.description.provenance": [
+      {
+        "value": "",
+        "authority": null,
+        "place": 1
+      },
+      {
+        "value": "",
+        "authority": null,
+        "place": 2
+      }
+    ],
+    "dc.title": [
+      {
+        "value": "PUBLICATION TITLE HERE.",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.language.iso": [
+      {
+        "value": "eng",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.type.driver": [
+      {
+        "value": "info:eu-repo/semantics/patent",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.iris.validacodiceupload": [
+      {
+        "value": "20200",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.cilea.datasdop": [
+      {
+        "value": "2018-09-04T02:13:24Z",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.description.allpeople": [
+      {
+        "value": "LIST OF ALL AUTHORS NAMES AND SURNAMES",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.type.full": [
+      {
+        "value": "6 Brevetti::6.1 Brevetto",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.iris.validamessaggiocineca": [
+      {
+        "value": "Tipologia assegnata: 285. Brevetto",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.ugov.idtipoministero": [
+      {
+        "value": "285",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.type": [
+      {
+        "value": "6.1 Brevetto",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.ugov.dtwselabmiur": [
+      {
+        "value": "2015-01-04 13:36:38",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.description.numberofauthors": [
+      {
+        "value": "6",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.ugov.classaux2": [
+      {
+        "value": "3 - Politecn. di Torino et al",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.authority.people": [
+      {
+        "value": "AUTHOR NAME AND SURNAME",
+        "authority": "rp00000",
+        "place": 1
+      },
+      {
+        "value": "COAUTHOR NAME AND SURNAME",
+        "authority": "rp00000",
+        "place": 2
+      }
+    ],
+    "dc.cilea.datacineca": [
+      {
+        "value": "2018-09-04T02:13:000",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.ugov.flwssyncuniv": [
+      {
+        "value": "no",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.ugov.created": [
+      {
+        "value": "2007-11-16 15:04:16",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.description.allpeopleoriginal": [
+      {
+        "value": "AUTHOR AND COAUTHOR NAMES AND SURNAMES",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.cilea.messaggiocineca": [
+      {
+        "value": "Tipologia assegnata: 285. Brevetto",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.cilea.statocineca": [
+      {
+        "value": "SUCCESSO",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.miur.identifier": [
+      {
+        "value": "2928275",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.cilea.codiceupload": [
+      {
+        "value": "20200",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.identifier.patentno": [
+      {
+        "value": "EP 2010848 B1",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.ugov.dtins": [
+      {
+        "value": "2010-06-22 17:10:44",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.ugov.definitive": [
+      {
+        "value": "2012-10-25 21:47:11",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.ugov.identifier": [
+      {
+        "value": "1653585",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.type.miur": [
+      {
+        "value": "285",
+        "authority": null,
+        "place": 1
+      }
+    ],
+    "dc.date.available": [
+      {
+        "value": "2015-06-30T15:42:20Z",
+        "authority": null,
+        "place": 1
+      }
+    ]
+  },
+  "internalAuthors": [
+    {
+      "author": "AUTHOR NAME AND SURNAME",
+      "authority": "rp00000",
+      "share": -1,
+      "order": -1,
+      "confidence": 600
+    },
+    {
+      "author": "COAUTHOR NAME AND SURNAME",
+      "authority": "rp00000",
+      "share": -1,
+      "order": -1,
+      "confidence": 600
+    }
+  ],
+  "workFlowValidationRule": -1,
+  "submitterNetID": "23499",
+  "archived": true,
+  "submitterID": 1221,
+  "snapshot": false,
+  "identifierToDisseminate": 40885,
+  "workFlowValidationStatus": 0,
+  "simpleItemStatus": 2,
+  "inWorkFlow": false,
+  "inWorkspace": false,
+  "earlyDraft": true,
+  "withdrawn": false,
+  "collectionHandle": "11583/2614421",
+  "inputFormId": 6164,
+  "submitter": {
+    "id": 1221,
+    "firstName": "",
+    "lastName": "",
+    "email": "",
+    "netid": ""
+  },
+  "reopened": false,
+  "itemId": 40885,
+  "collection": {
+    "name": "6.1 Brevetto",
+    "handle": "11583/2614421",
+    "id": 38,
+    "type": 3
+  },
+  "lastModifiedISO": "2018-09-03T09:55:07.108+02:00",
+  "lookupValues": {
+    "contextidab": "|32938|",
+    "year": "2014",
+    "identifierScopus": null,
+    "isbn": null,
+    "book": null,
+    "subdate": null,
+    "spage": null,
+    "source": null,
+    "title": "",
+    "statoupload": "SUCCESSO",
+    "identifierPubmed": null,
+    "fsitodocentelocked": "false",
+    "contextdept": "|573|579|582|",
+    "autoclaim": null,
+    "stitle": null,
+    "contextuser": "|899|4311|6075|7602|23499|",
+    "contextfaculty": "|534|547|",
+    "tipologiasitodocente": "285",
+    "jtitle": null,
+    "codiceupload": "20200",
+    "summary": "2014",
+    "identifierIsi": null,
+    "contextssd": "|478|27180|",
+    "issue": null,
+    "citation": "",
+    "sitodocentenoninviare": null,
+    "jissn": null,
+    "fsitodocentedef": "true",
+    "fulltextsd": "3NONE",
+    "fulltextvalidation": "|NONE|",
+    "sitodocentein": "23499, 899, 4311, 6075, 7602",
+    "volume": null,
+    "sitodocentesync": "true",
+    "ancestatus": null,
+    "dataopsd": "2018-09-04T02:13:24Z",
+    "messaggioupload": "Tipologia assegnata: 285. Brevetto",
+    "epage": null,
+    "itemvalidation": "|miur_success|",
+    "contributors": "",
+    "sissn": null,
+    "fsitodocente": null,
+    "doi": null
+  },
+  "lastModified": 1535961307108,
+  "owner": {
+    "id": -1,
+    "firstName": null,
+    "lastName": null,
+    "email": null,
+    "netid": null
+  },
+  "self": "/rest/api/v1/items/40885"
+} 
