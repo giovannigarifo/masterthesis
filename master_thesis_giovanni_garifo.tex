@@ -19,10 +19,15 @@
 \usepackage{listings}       % code listing
 \usepackage{mathtools}      % math
 \usepackage{eucal}          % math calligraphy
-\usepackage{amsfonts}         % blackboard bold letters (like R for real values)
+\usepackage{amsfonts}       % blackboard bold letters (like R for real values)
 \usepackage{url}            % URLs usage: \url{https://example.com}
 \usepackage{cite}           % cite bibtex entries
 \usepackage{hyperref}       % internal references to text, chapters ecc
+
+\usepackage{tabularx, booktabs}       % tables
+\newcolumntype{b}{X}
+\newcolumntype{m}{>{\hsize=.5\hsize}X}
+\newcolumntype{s}{>{\hsize=.4\hsize}X}
 
 \usepackage{color}
 \definecolor{gray}{rgb}{0.4,0.4,0.4}
@@ -151,15 +156,19 @@ Acknowledgements here, half page
 Graphs are used to empower some of the most complex IT services available
 today, an example among all is the Google search engine
 \footnote{\url{https://blog.google/products/search/introducing-knowledge-graph-things-not/}}.
-They can be used to represent almost any kind of information, and they are
-particurlarly capable of representing the structure of complex systems and
+Graphs can be used to represent almost any kind of information, and they are
+particularly capable of representing the structure of complex systems and
 describe the relationships between their elements.
 
 Over the last decade, much effort has been put in trying to leverage the power
 of graphs to represent human knowledge and to build search tools capable of
-querying and understanding the semantic relations within them. RDF graphs are a
+querying and understanding the semantic relations within them.
+RDF\footnote{The Resource Description Framework will be introduced in
+section \ref{subsec:semanticweb}} graphs are a
 particular class of graphs that can be used to build knowledge
-bases. Given a domain and an ontology, RDF graphs allows to build a structured
+bases. Ontologies are used to shape such knowledge bases, in order to have a
+semantically coherent representation of the domain knowledge.
+Given a domain and an ontology, RDF graphs allows to build a structured
 representation of the knowledge in such domain.
 
 Modern machine learning techniques can be used to mine latent information
@@ -169,37 +178,48 @@ the underlying knowledge. Such representations can then be used to evaluate
 new links within the graph or to classify unseen nodes.
 Deep learning techniques have proved to be first class citizens when
 dealing with representation learning tasks, being able to learn latent
-representations without any prior knowledge other than the graph structure,
-so as not to require any feature engineering.
+representations without any prior knowledge other than the graph structure.
+
 
 \section{Goal and contribution}
 
-Today scholarly data can be accessed through web portals that allow to retrieve
-scientific papers published by researchers. One example is the IRIS
-portal\footnote{\url{https://iris.polito.it/}}, that stores all the
-publications of the Turin Polytechnic University researchers.
-IRIS allow to retrieve publications by field of interest, matching the user
-input with the keywords inserted by the author.
-The current implementation has some main limitations: ambiguity may arise,
-having papers that deals with the same subject represented by different
-keywords, or having acronyms or misspelled keywords that refer to the
-same argument.
-The system is thus not able to search for \emph{semantic concepts}, but only
-for a character string that is matched against the keywords available in the
-database, which are not unique and prone to lexical error.
+% issue
+Knowledge sharing is one of the main goals of research organizations. In
+particular, universities are among the most interested in making publicly
+available their research results. Today most universities have embraced the Open
+Science movement, making their scientific publications publicly available
+through web portals.
+An example is IRIS\footnote{\url{https://iris.polito.it/}}, which
+stores all the scientific papers produced by the Polytechnic University of
+Turin, publicly sharing them through Open Access.
+IRIS allows to explore the published papers by searching for a field of study,
+matching it with the keywords inserted by the authors of the publications.
+This implementation has some limitations: being inserted by the authors, there
+could be more keywords that refers to the same scientific topic.
+Moreover, the author may have inserted acronyms or misspelled some words.
+The consequence is that the search engine of IRIS is unable to correctly
+retrieve all the publications about a specific research topic, because the
+system cannot match the searched field of study with an unambiguous
+\emph{semantic entity}, but only with character strings that are not
+uniquely identified or semantically linked each other, and also prone to
+lexical errors.
 
-Building a new semantic empowered search engine can be one of the
-possible solutions to overcome such limitations, allowing for coherent and
+% goal
+Our goal is to overcome such limitations and enabling new possibilities for
+exploring and obtaining insights about the scientific community of the
+Polytechnic University of Turin. A new semantic-empowered search engine can be
+one of the possible solutions to obtain this results, allowing for coherent and
 precise results to be retrieved.
 At the foundations of this new semantic search engine there must be a data
 structure capable of representing semantic relations and concepts. Once such
-knowledge base of the scholarly data is obtained, it can be enhanced by
-automatically extracting latent information through the use of advanced
-machine learning algorithms.
+knowledge base of the scholarly data is obtained, it can be enhanced and
+completed by automatically extracting latent information through the use of
+advanced machine learning algorithms.
 
+% contribution
 In the next chapters we are going to present a newly built structured and
 semantically coherent representation of the scholarly data produced by the
-Turin Polytechnic University, and how implicit facts can be automatically
+Polytechnic University of Turin, and how implicit facts can be automatically
 extracted from such knowledge repository by leveraging knowledge base
 completion techniques, implemented by means of an advanced deep learning
 algorithm.
@@ -219,16 +239,16 @@ algorithm.
 
 \section{Semantic Web}
 
-\subsection{From a Web of contents to a Web of data}
+\subsection{From a Web of Contents to a Web of Data}
 
 The World Wide Web has been developed as a tool to easily access
 documents and to navigate through them by following hyperlinks.
 This simple description already resembles the structure of a graph: we can
 think of documents as nodes and hyperlinks as edges. The unstoppable growth
-of the \emph{Web graph} led to the raise of new tools to extricate in such
-complexity. Search engines have been developed to easily navigate such a giant
-graph, initially by scoring search results based on trivial statistics, such
-as the number of times a document has been linked, as in the case of the
+of the \emph{Web graph} led to the raise of new tools to explore such
+complexity. Search engines have been developed to easily navigate such a
+giant graph. First approaches were based on analytics evaluations,
+such as the number of times a document has been linked, as in the case of the
 PageRank \cite{page1999} algorithm developed by Google.
 \newline
 
@@ -244,7 +264,7 @@ a web of data.
 The World Wide Web Consortium (W3C) introduced the Semantic Web as an extention
 to the prior standard of the WWW. Its primary goal has been
 to define a framework to describe and query semantic information contained
-in the documents available on the web, so as to allow machines to understand
+in the documents available on the Web, so as to allow machines to understand
 the semantic information contained in web pages. In the vision of Tim
 Berners-Lee, the father of WWW, this would bring to the transition from a
 World Wide Web to a Giant Global Graph
@@ -254,11 +274,12 @@ information to understand the concepts and meanings expressed in it.
 
 
 \subsection{The Semantic Web building blocks}
+\label{subsec:semanticweb}
 
 The three key components of the Semantic Web standard are:
 \begin{enumerate}
-\item OWL: the Web Ontology Language
-\item RDF: the Resource Description Framework
+\item OWL: the Web Ontology Language\cite{mcguinness2004}
+\item RDF: the Resource Description Framework\cite{lassila1998}
 \item SPARQL: The SPARQL Protocol and RDF Query Language
 \end{enumerate}
 \bigskip
@@ -278,7 +299,7 @@ can be characterized with additional information using literals, that
 represent data values like strings, dates or integers.
 \newline
 
-RDF is a XML-based framework that defines a standard model for the
+The Resource Description Framework defines a standard model for the
 description, modelling and interchange of resources on the Web.
 
 The first component of the framework is the \emph{RDF Model and Syntax},
@@ -293,11 +314,12 @@ object (a literal or another resource).
 
 The second component of the framework is the \emph{RDF Schema} (RDFS),
 that defines a basic vocabulary for describing RDF resources and the
-relationships between them. Many vocabularies have been built on top of
-RDFS, such as the Friend of a Friend (FOAF) vocabulary \cite{brickley2007}, for
-describing social networks, or the one maintained by the Dublin Core Metadata
-Initiative \cite{weibel1998}, that defines common
-terms used in the definition of metadata for digital resources.
+relationships between them. Many of the vocabularies and ontologies available
+today are built on top of RDFS, such as the Friend of a Friend (FOAF)
+ontology \cite{brickley2007}, for describing social networks, or the one
+maintained by the Dublin Core Metadata Initiative \cite{weibel1998}, that
+defines common terms and relations used in the definition of metadata for
+digital resources.
 
 \begin{figure}[ht]
 \centering
@@ -309,8 +331,8 @@ terms used in the definition of metadata for digital resources.
 SPARQL is a query language for triplestores, a class of Database
 Management Systems (DBMS) specialized in storing RDF databases. Such DBMS
 often expose endpoints that can be used to query the database and obtain
-results. Given the complexity of the data stored, the query language has
-been designed to be as simple as possible, in example by allowing the use
+results. Given the complexity of the stored data, the query language has
+been designed to be as simple as possible, for instance by allowing the use
 of variables, whose definition is preceded by a question mark.
 
 The syntax of SPARQL is heavily derived from SQL, with some
@@ -334,13 +356,38 @@ match the given resource type.
 
 \subsection{Knowledge Bases as knowledge repositories}
 
-Even if the raise of the Semantic Web has suffered a slowdown in its growth
+% table: comparison of some of the biggest existing KG
+\begin{table}
+    \footnotesize
+    \centering
+    \caption{Comparison of some of the biggest industry-scale knowledge graphs
+        developed to this date. Table adapted from \url{https://cacm.acm.org/magazines/2019/8/238342}}
+    \label{tab:kg-comparison}
+
+    \begin{tabularx}{1.0\textwidth}{ s b b m }
+            \toprule
+        & \textbf{Data model} & \textbf{Graph size} & \textbf{Development stage} \\
+            \midrule
+        \textbf{Microsoft} & Entities, relations and attributes defined in an ontology. & 2 billion entities and 55 billion facts. & Actively used in products. \\
+            \midrule
+        \textbf{Google} & Strongly typed entities, relations with domain and range inference. & 1 billion entities, 70 billion assertions. & Actively used in products. \\
+            \midrule
+        \textbf{Facebook} & All of the attributes and relations are structured and strongly typed. & 50 million primary entities, 500 million assertions. & Actively used in products. \\
+            \midrule
+        \textbf{eBay} & Entities and relation, well-structured and strongly typed. & 100 million products, more than 1 billion triples. & Early stages of development. \\
+            \midrule
+        \textbf{IBM} & Entities and relations with evidence information associated with them. & Various sizes. Proven on scales documents >100 million, relationships >5 billion, entities >100 million. & Actively used in products and by clients. \\
+            \bottomrule
+    \end{tabularx}
+\end{table}
+
+Even though the raise of the Semantic Web has suffered a slowdown in its growth
 due to the complexity of its vision, many new projects were born from its
 enabling technologies. Efforts have been put by profit and
 non-profit organizations in trying to build complex knowledge repositories
 starting from the knowledge already available in the Web. An example among all
 is the DBpedia\footnote{\url{https://wiki.dbpedia.org/}} project, which
-developed a structured knowledge base from the unstructured data available on
+developed a structured knowledge base from the semi-structured data available on
 Wikipedia.
 Another example is the
 \emph{Google Knowledge Graph}\footnote{\url{https://blog.google/products/search/introducing-knowledge-graph-things-not/}},
@@ -348,42 +395,43 @@ which is used to enhance the Google search engine and virtual assistant
 capabilities, allowing to retrieve punctual information about everything that
 has been classified in its ontology and described in its knowledge base, or
 the \emph{Open Academic Graph}\footnote{\url{https://www.openacademic.ai/oag/}},
-a Scientific Knowledge Graph that contains, describes and links more then
-three hundred million academic papers.
+a Scientific Knowledge Graph that collects more then three hundred million
+academic papers. A comparison between some of the biggest knowledge graphs
+developed to this date is available in Table \ref{tab:kg-comparison}.
 
 From an implementation perspective, knowledge bases can be created to
 describe a specific domain by defining an ontology and a vocabulary for
 such domain using OWL and RDF Schema, and then by describing the concepts
 of such domain using the RDF Model and Syntax. The RDF document obtained
-can then be stored in a triplestore and queryed using SPARQL. The biggest effort
-when building knowledge bases is to have a correct understanding and prior
+can then be stored in a triplestore and queryed using SPARQL. The main effort
+in building knowledge bases is to have a correct understanding and prior
 knowledge of the domain of interest, to avoid the risk of mischaracterizing
 and misrepresenting concepts.
 
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.4]{img/geranium-knowledge-base-example.png}
-    \caption{An extract of the Polito Knowledge Graph that will be introduced and
-    described in the following chapters.}
+    \caption{An extract of the Polito Knowledge Graph whose details will be
+    described in section \ref{sec:buildingpkg}.}
     \label{fig:geranium-knowledge-base-example}
 \end{figure}
 
 If all the requirements and cautions are met, a well formed knowledge base may
-prove to be a critical resource for an organization. It allows not only to
-build new services upon it, but also to improve the existing knowledge inside
-the organization by performing reasoning upon the available knowledge, thus
-to discover implicit facts that can be derived from existing relationships.
-Another field of applications is the development of Expert Systems, AI
-software that emulates the behavior of a human decision-making process by
+prove to be a critical resource for an organization. It permits to
+build new services upon it, and also to improve the existing knowledge inside
+the organization by performing reasoning upon the available knowledge, in order
+to derive implicit facts strting from the existing entities and relationships.
+Another field of applications is the development of Expert Systems\footnote{\url{https://en.wikipedia.org/wiki/Expert_system}},
+AI software that emulates the behavior of a human decision-making process by
 navigating the knowledge base and taking decisions like in a rule-based system.
 
 Today's knowledge bases are commonly composed by tens of
-thousands nodes and by hundreds of thousands of edges, such giant data
-structures pose many challenges.
-Not only storing and querying giant graphs requires the adoption of
+thousands nodes and by hundreds of thousands of edges.
+Considering such dimensions, storing and querying giant graphs requires
+the adoption of
 specialized DBMS that are capable of efficiently store and query the RDF
-input representation, but also doing analysis and gathering statistics from
-such giant graphs requires the adoption of highly efficient algorithms in
+input representation. Moreover, performing analysis and gathering statistics
+from such giant graphs requires the adoption of highly efficient algorithms in
 order to retrieve the desired output in an acceptable time.
 
 The availability of such a complex and informative data structure leads
@@ -499,7 +547,7 @@ also in other fields of research, such as learning on manifolds.
     \label{fig:pixels-as-graph}
 \end{figure}
 
-The issue of working with graph data is that commonly graphs
+One of the issues when working with graph data is that commonly graphs
 are built to describe complex systems, such as the knowledge of a
 domain or field for knowledge graphs, and thus are composed of
 a fairly high amount of nodes and edges. The matrices used to
@@ -510,7 +558,7 @@ for images, but they live in an irregular domain which led to highly
 irregular structures.
 The first issue can be solved by randomly sampling the graph at each
 training epoch, the immediate drawback being that more than one epoch
-is required to train over all nodes. The second issue can instead be
+is required to train over all graph nodes. The second issue can instead be
 solved by adapting known algorithms to work on irregular domains.
 One of the possible approaches, which has proven to work well, is
 the one based on convolutions.
@@ -518,8 +566,8 @@ the one based on convolutions.
 Graph Convolutional Networks (GCNs) \cite{kipf2016} are a class of
 semi-supervised deep learning algorithms for graphs which are based on the
 same convolution and backpropagation operations as the well known
-Convolutional Neural Networks (CNNs) used for feature learning on
-images.
+Convolutional Neural Networks\cite{krizhevsky2012} (CNNs) used for feature
+learning on images.
 The main difference between CNNs and GCNs is in how the convolution is
 performed, instead the backpropagation phase is the same as the one
 used to update the parameters of CNNs, with a task-specific loss function.
@@ -529,41 +577,67 @@ filter, whose parameters are then updated during the backpropagation phase.
 
 GCNs works similarly by convolving at the l-th layer
 of the network the feature vector of each node with the feature
-vectors of its l-nearest neighbors, this is done by applying the following
-transformation:
+vectors of its l-nearest neighbors by means of a convolutional filter.
+This operation is done by applying the following transformation:
 
 \begin{equation} \label{gcn1}
-H^{l+1}=\sigma(\tilde{D}^{-1/2}\tilde{A}\tilde{D}^{-1/2}H^lW^l)
+H^{(l+1)}=\sigma(\tilde{D}^{-1/2}\tilde{A}\tilde{D}^{-1/2}H^{(l)}W^{(l)})
 \end{equation}
 
-Where $H^{l}$ is the output of the previous layer or, for the input layer, the
-node features matrix where each row is commonly initialized
-as a one-hot encoded feature vector. $\tilde{A}$ is the adjacency matrix
-of the graph summed with the identity matrix to add self loops of nodes,
+Where $H^{(l)} \in\mathbb{R}^{N \times d^{(l)}}$ is the nodes hidden
+representation matrix, which is the output of the previous layer, with $N$ being
+the number of nodes in the graph and $d^{(l)}$ being the dimensionality of
+the current layer. For the first
+layer, $H^{0}$ is equal to the input feature matrix $X$, where each row can be
+initialized with the respective node feature or with a one-hot encoded vector.
+For the last layer, $H^{(l+1)}$ is the embeddings matrix.
+$\tilde{A}$ is an adjacency matrix of the graph that includes self loops.
 $\tilde{D}$ is the node degree matrix of $\tilde{A}$ and is used to
-normalize it, $W^l$ is the weight matrix of the layer, that is shared
-among all nodes for each layer, just like the convolutional filter in a CNN,
-and $\sigma()$ is a non linear activation function, for example $ReLU$.
+normalize it.
+$W^{l}\in\mathbb{R}^{d^{(l)} \times d^{(l+1)}}$ is the convolutional filter that
+is shared among all nodes and is unique for each layer, just like the
+convolutional filter of a CNN layer.
+The shape of this filter will directly impact the dimensionality of the
+embeddings obtained, in fact $H^{l+1}$ is shaped as a $N\times d^{(l+1)}$ matrix.
+Finally, $\sigma$ is a non linear activation function, for example $ReLU$.
 
-The forward rule to update the embedding of a single node at each
-layer of the network is the following:
+Looking at the update rule of a single node embedding will make more clear how
+the convolution is actually performed.
+The forward rule to update the embedding of a single node at the $l$-th layer
+of the network is the following:
 
 \begin{equation} \label{gcn2}
     h^{(l+1)}_{i}=\sigma(\sum_{j\in\eta_{i}} \frac{1}{c_{i,j}}h_j^{(l)}W^{{(l)}})
 \end{equation}
 
-Setting aside the normalization costant $c_{ij}$ which is obtained from the
-multiplication between the adjancency and degree matrices, at each layer the
-updated feature vector of the node $i$ is obtained by summing over all the
-nodes in its neighborhood the result of the multiplication between the
-neighbors feature vectors and the weight matrix of the layer.
-A consequences of applying this rule to all nodes is that at the l-th layer
-the feature vectors of nodes that are at a $l$ hop distance from the node $i$
-will be embedded in its feature vector, because the feature vectors of such
-nodes were embedded, at the previous layer, by the immediate neighbors of
-node $i$, which are now passing the information of their surrounding to it.
-So the amount of layers of the network is a parameter that controls how much
-information from furthest nodes has to be collected by each node embedding.
+Where $\eta_i$ is the set of neighbors of node $i$, which contains the node
+itself because of the added self loop, and $c_{ij}$ is a
+normalization constant obtained from the multiplication between the adjancency
+and degree matrices.
+The updated feature vector $h^{(l+1)}_{i}$ of the node $i$ is
+obtained by performing the following operations:
+
+\begin{enumerate}
+    \item The feature vectors $h_j^{(l)}$ of its neighbors are transformed by
+        the matrix multiplication with the layer filter $W^{(l)}$.
+    \item The resulting $1 \times d^{(l+1)}$ shaped features vectors
+        are multiplied with the respective normalization constants and summed
+        together.
+    \item The non-linear function is applied to the result of the summation,
+        obtaining the updated feature vector of the node $i$.
+\end{enumerate}
+
+As a consequence of applying such transformation to all nodes, at the
+$k$-th layer a node is represented by its transformed feature vector, which
+embeds the structural information within the node's $k$-hop neighborhood.
+So the amount of layers of the network is an hyperparameter that controls how much
+information from furthest nodes has to be collected in each node embedding.
+This represents a fundamental architectural difference between CNNs and GCNs:
+while the former are commonly built by stacking a lot of layers, the latter
+relies on architectures that are more wider, due to the dimensionality of the
+graphs involved, and that consist of a fairly low amount of layers, in order to
+characterize the nodes only by their immediate surroundings.
+
 
 \begin{figure}[h]
     \centering
@@ -577,28 +651,30 @@ As a result of the propagation step each node embedding will be characterized by
 its context, just like it happens in Word2Vec, but in a non-Euclidean domain.
 So for example, in a social graph where each person is characterized by its
 friends, interests, places visited and so on, two people will have similar
-embeddings if they are connected to similar nodes.
+embeddings if they are both linked to the nodes that represent such
+characteristics.
 
 The node embeddings obtained by applying a GCN or one of its variants can
 then be used to perform some learning task on the graph, two examples are
 the classification of unseen nodes or the link prediction of non-existent
-edges. The last example is one of the most interesting tasks because it empowers
-most of the recommendation systems available in the industry.
+edges. The latter is one of the most interesting tasks, since it allows to
+complete the information contained in the graph by predicting unseen facts.
 
-
-\subsection{Link prediction on Knowledge Graphs}
+\subsection{Link prediction on knowledge graphs}
 \label{subsec:linkprediction}
 
 Predicting new facts is one of the most common task in the field
-of knowledge graph completion. The goal of such task is to evaluate if unseen
-good candidates to be included in the knowledge base.
-Link prediction requires two main step:
+of knowledge graph completion. The goal of such task is to predict new, unseen
+triples that correspond to missing facts in the knowledge base, and that can be
+later added to the graph.
+Deep learning techniques for link prediction are based on the following two
+main steps:
 
 \begin{enumerate}
-    \item Train an encoder model
+    \item Train an \emph{encoder} model
     that is able to embed the node features and produce meaningful embeddings.
-    \item Apply a factorization model that is able to score the unseen
-    triples under evaluation.
+    \item Apply a factorization model that act as a \emph{decoder}, which is
+    used to score the unseen triples under evaluation.
 \end{enumerate}
 
 Deep learning techniques such as GCN can be exploited to obtain meaningful
@@ -620,11 +696,11 @@ proposed, so to obtain models that works well when applied to multi-relational
 graphs.
 \newline
 
-Relational Graph Convolutional Networks \cite{schlichtkrull2018} (R-GCNs) are an
-extension of GCNs that are focused on modeling multi-relational graphs composed
-by directed edges, and thus are particularly capable of embedding both
-nodes and relations of a knowledge graph.
-R-GCNs can be used for both link prediction and node classification tasks.
+The Relational Graph Convolutional Network \cite{schlichtkrull2018} (R-GCN) is an
+extension of GCNs which is focused on modeling multi-relational graphs composed
+by labeled and directed edges, and thus is particularly capable of embedding
+both nodes and relations of a knowledge graph.
+R-GCN can be used for both link prediction and node classification tasks.
 
 At an high level the R-GCN architecture can be seen as a special case of
 the \emph{message passing framework} \cite{gilmer2017}, which groups together
@@ -632,7 +708,7 @@ under a common scheme most of the existing neural models for graph data.
 The framework defines two major phases: a per-edge message computation and a
 per-node message reduction.
 In the first phase a function or linear transformation is applied to each edge
-to obtain an edge specific message.
+to obtain an edge-specific message.
 Then, in the reduce phase, the embedding of each node is updated by aggregating
 together all the messages of the incoming edges.
 
@@ -654,7 +730,7 @@ At each step inside the network, the feature vector of a node is updated by
 convolving its first neighbors features with a convolutional filter that is
 different based on the kind of relation that connects the nodes.
 The forward
-rule to update the embedding of a node at the \emph{l} layer is the following:
+rule to update the embedding of a node at the \emph{l}-th layer is the following:
 
 \begin{equation}
     h^{(l+1)}_{i} = \sigma \left(
@@ -663,31 +739,32 @@ rule to update the embedding of a node at the \emph{l} layer is the following:
     \right)
 \end{equation}
 
-Where $h_i$ is the embedding (or, for the first layer, the input feature
-vector) of the node \emph{i}, $W_0$ is the learnt kernel for the
-relation between the node and itself (called self loop), $\CMcal{N}_i^r$ is the
+Where $h_i^{(l)}$ is the embedding (or, for the first layer, the input feature
+vector) of the node \emph{i}, $W_0^{(l)}$ is the learnt kernel for the
+self loop relation, $\CMcal{N}_i^r$ is the
 set of indices of the neighbors of node \emph{i} under the relation
 $r\in\CMcal{R}$, with $\CMcal{R}$ being the set of all the relations present in
-the graph. $W_r$ is the learnt kernel for the relation $r$.
-As for the GCN architecture, $\sigma$ is a non linear activation function
-and $c_{i,j}$ is a normalization constant, commonly initialized
-to $|\CMcal{N}_i^r|$.
+the graph. $W_r^{(l)}\in\mathbb{R}^{d^{(l+1)}\times d^{(l)}}$ is the learnt
+filter for the relation $r$. As for the GCN architecture, $\sigma$ is a non
+linear activation function and $c_{i,j}$ is a normalization constant, commonly
+initialized to $|\CMcal{N}_i^r|$.
 
 From a message passing framework perspective, the message function (per-edge
 transformation) is equal to the linear transformation $W_rh_j$, and the reduce
 function (per-node transformation) is just the sum of
-all the messages computed for the incoming edges of each node.
+all the messages computed for the edges connected to each node.
 
 As can be seen the update rule looks similar to the one for GCNs (\ref{gcn2}),
-with the major difference that in the case of a R-GCN the parameters used to
-convolve the
-feature vectors of neighboring nodes are relation specific, this means that
-the kind of relation that connect the node to its neighbors has an important
-role in determining the node embedding.
+with the major difference that in the case of a R-GCN the filters used to
+convolve the feature vectors of neighboring nodes are relation specific, so the
+number of filters at each layer will be equal to the number of relations inside
+the graph. As a consequence, the kind of relation that connect the node
+to its neighbors has an important role in determining the transformed node
+embedding.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.5]{img/rgcn-encoder.png}
+    \includegraphics[scale=0.42]{img/rgcn-encoder.png}
     \caption{R-GCN encoder model. Image taken from \cite{schlichtkrull2018}.}
     \label{fig:rgcn-encoder}
 \end{figure}
@@ -706,7 +783,7 @@ using basis decomposition:
 This allows to store only the relation-specific coefficients and the basis,
 which will be shared by all the relations.
 
-The model obtained by training an R-GCN can then be used to build an encoder
+The model obtained by training a R-GCN can then be used to build an encoder
 that given as input a graph, gives as output the embeddings of all nodes and
 the relations parameters. Then a factorization method can be used to
 evaluate unseen facts inside the graph, exploiting the resulting embeddings.
@@ -716,25 +793,30 @@ triples under evaluation.
 \newline
 
 DistMult \cite{yang2014} is one of the most common and simple factorization
-methods used to score unseen triples. Given as input the embeddings of the
-source node and destination node, and the relation parameter vector
-transformed into a diagonal matrix $R_r\in\mathbb{R}^{d \times d}$, it computes
-an associated real valued score:
+methods used to score unseen triples. Given a triple $(s, r, o)$, where $s$
+is the source node, $o$ is the destination node, and $r$ is the relation of the
+edge that links the source to the destination, DistMult allows to compute
+an associated real valued score as follows:
 
 \begin{equation}
-    f(s,r,o) = e_s^T R_r e_o
+    score_{(s,r,o)} = f(s,r,o) = e_s^T R_r e_o
 \end{equation}
 
+Where $e_s$ and $e_o$ are the embeddings of the source and the destination node,
+obtained by means of an encoder model like R-GCN, and
+$R_r\in\mathbb{R}^{d \times d}$ is obtained by transforming the embedding
+of the relation $r$ into a diagonal matrix.
 The score obtained by applying such function can then be used to evaluate
-wether the triple $(s,r,o)$ is a good candidate to be added to the graph, an
-high score is to be interpreted as a high confidence of the model
+wether the triple $(s,r,o)$ is a good candidate to be added to the graph: an
+high score has to be interpreted as a high confidence of the model
 in the fact that the triple should belong to the knowledge graph.
+
 
 
 
 \chapter{Approach and methodology}
 
-This chapter introduces the software architecture developed to build, enhance
+This chapter introduces the architecture developed to build, enhance
 and visualize the Polito Knowledge Graph (PKG), an academic RDF graph
 built to organize in a structured and semantically coherent way the publications
 produced by the researchers of the Polytechnic University of Turin. The graph
@@ -776,25 +858,26 @@ a public web interface for querying and visualizing the data.
 \end{figure}
 
 
-\section{Builder architecture}
+\section{Builder module}
 
-The graph builder input is a database dump of
-IRIS\footnote{\url{https://iris.polito.it/}}, which is the platform
+The graph builder input is a dump of the
+IRIS\footnote{\url{https://iris.polito.it/}} database, which is the platform
 used by the Polytechnic University of Turin to store and share all the
-publications made by its researchers. The dump is a JSON file that contains
+publications produced by its researchers. The dump is a JSON file that contains
 all the information available for every scientific paper published in a period
 of five years that goes from 2013 to 2017.
 
-The builder role is to translate all the information contained in the dump in a
+The goal of the builder is to translate all the information contained in the dump in a
 set of semantically coherent RDF triples. To do so, an ontology that
 describes the domain of the IRIS scholarly data has been defined.
 
 The builder uses as reference the defined ontology to analyze each record in
-the JSON dump, and build facts as RDF triples by matching the information
+the JSON dump, and builds facts as RDF triples by matching the information
 contained in the record with the concepts defined by the ontology.
 For example, given that a publication may have more then one contributor, the
-ontology differentiates the principal author from the contributors by using two
-different statements to tie the corresponding entities to the publication.
+ontology that we defined differentiates the principal author from the
+contributors by using two different statements to tie the corresponding entities
+to the publication.
 
 One of the fields of the publication record is the abstract. We wanted to
 tie each publication to its main topics, to do so we used the abstract
@@ -813,26 +896,27 @@ publications linked with their authors, contributors and relevant topics.
 The set of all this RDF statements composes the Polito Knowledge Graph.
 
 
-\section{Enhancer architecture}
+\section{Enhancer Module}
 
-Once the RDF graph has been built, it could be used as input for the enhancer
-module, whose main role is to leverage ML techniques to predict new triples
+Once the RDF graph has been built, it could be used as input for the Enhancer
+Module, whose main goal is to leverage ML techniques to predict new triples
 that could be good candidates to be included in the graph.
 
 The enhancer architecture is splitted in three main components:
 
 \begin{enumerate}
-    \item The dataset builder.
-    \item The model trainer.
-    \item The link evaluator.
+    \item The Dataset Builder.
+    \item The Model Trainer.
+    \item The Link Evaluator.
 \end{enumerate}
 
 The first component is in charge of translating the RDF graph into a usable
 dataset for the model trainer, given that RDF statements cannot be used as
 input data for the link prediction algorithm.
-The dataset will then be splitted into three disjoint sets: one for training,
-one for validation and one for testing.
-The model trainer uses this three sets to train a link predictor. The train
+The dataset will then be splitted into three disjoint\footnote{Two sets are said
+to be disjoint if they have no element in common.}
+sets: one for training, one for validation and one for testing.
+The model trainer uses this three sets to train a link predictor. The training
 set is used to train the model at each epoch, while the validation set
 is used to evaluate which model parameters to keep, identifying the best epoch.
 The test set is used to evaluate the accuracy of the model loaded with the best
@@ -849,9 +933,9 @@ The predicted triples are then saved as RDF statements and could be added
 to the RDF graph, obtaining an enhanced knowledge graph completed with
 latent information automatically extracted.
 
-\section{Viewer architecture}
+\section{Viewer Module}
 
-The last component of the architecture is the viewer, which is composed of a
+The last module of the architecture is the Viewer, which is composed of a
 triplestore, an API layer, and a front end web interface.
 
 The triplestore is a specialized DBMS for storing and retrieving RDF
@@ -863,7 +947,7 @@ The API layer exposes a REST API that allows to retrieve the information
 contained in the graph without the need of SPARQL queries. It accept HTTP
 requests with URL-encoded parameters and proceeds to query the SPARQL endpoint
 of the triplestore by matching the parameters upon some predefined queries.
-Then it translates the response obtained from the triplestore in a JSON,
+Then it translates the response obtained from the triplestore in a JSON file,
 which is sended back to the requesting client, which is typically the front end.
 
 The front end is a responsive web application that act as the entry point for
@@ -876,7 +960,7 @@ in a structured and comprehensible way.
 \chapter{Related work}
 
 % Open Academic Graph
-In the past years there has been a growing interest in scientific
+Currently there is a growing interest in scientific
 knowledge graphs, both by academic institutions and by private organizations.
 An example is the Open Academic
 Graph\footnote{\url{https://www.openacademic.ai/oag/}} (OAC), an academic
@@ -898,7 +982,7 @@ more publications to the graph. However, the biggest change of this new
 version is the addition of authors and venues as graph entities,
 instead of being simple publications attributes.
 
-However, the OAC doesn't contain the publications topics as graph
+However, the OAC does not contain the publications topics as graph
 entities, but as author keywords, thus being prone to the same limitations of
 IRIS: the keywords are the ones chosen by the authors and are not
 referencing to semantic concepts, being simple character strings.
@@ -974,6 +1058,7 @@ inside the graph.
 
 
 \section{Building the Polito Knowledge Graph}
+\label{sec:buildingpkg}
 
 As already mentioned when introducing the pipeline, the input data used to
 build the PKG is a dump of the IRIS database which contains the
@@ -1033,8 +1118,9 @@ the \emph{Publication}, the \emph{Author}, the \emph{Journal}, the
 
 In order to build a knowledge graph, the instances of such classes must be
 linked together by means of semantic relations, called predicates.
-To do so, we employed some predicates already defined by the FOAF and the
-DCMI ontologies, together with some terms defined by the RDFS standard.
+To do so, we employed some predicates already defined by the
+FOAF\cite{brickley2007} and the DCMI\cite{weibel1998} ontologies, together with
+some terms defined by the RDF Schema standard.
 The graph structure obtained is represented by the schema in
 Figure \ref{fig:schema}, where the classes, the attributes of such classes and
 the predicates that link them together are showed.
