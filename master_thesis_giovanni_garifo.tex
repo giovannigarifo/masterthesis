@@ -91,10 +91,10 @@
 \corsodilaurea{Computer Engineering}
 \TesiDiLaurea{Master Degree Thesis}
 
-\titolo{Deep Learning on Polito Knowledge Graph}
+\titolo{Deep Learning on Academic Knowledge Graphs}
 \sottotitolo{
-    Leveraging Deep Learning techniques for the inference
-    of unseen facts inside a newly built Scientific Knowledge Graph
+    Predicting new facts in a novel semantic graph built
+    on top of the Politecnico di Torino scholarly data
 }
 
 \CandidateName{Candidate}
@@ -192,8 +192,8 @@ available their research results. Today most universities have embraced the Open
 Science movement, making their scientific publications publicly available
 through web portals.
 An example is IRIS\footnote{\url{https://iris.polito.it/}}, which
-stores all the scientific papers produced by the Polytechnic University of
-Turin, publicly sharing them through Open Access.
+stores all the scientific papers produced by the Politecnico di Torino,
+publicly sharing them through Open Access.
 IRIS allows to explore the published papers by searching for a field of study,
 matching it with the keywords inserted by the authors of the publications.
 This implementation has some limitations: being inserted by the authors, there
@@ -209,7 +209,7 @@ lexical errors.
 % goal
 Our goal is to overcome such limitations and enabling new possibilities for
 exploring and obtaining insights about the scientific community of the
-Polytechnic University of Turin. A new semantic-empowered search engine can be
+Politecnico di Torino. A new semantic-empowered search engine can be
 one of the possible solutions to obtain this results, allowing for coherent and
 precise results to be retrieved.
 At the foundations of this new semantic search engine there must be a data
@@ -221,7 +221,7 @@ advanced machine learning algorithms.
 % contribution
 In the next chapters we are going to present a newly built structured and
 semantically coherent representation of the scholarly data produced by the
-Polytechnic University of Turin, and how implicit facts can be automatically
+Politecnico di Torino, and how implicit facts can be automatically
 extracted from such knowledge repository by leveraging knowledge base
 completion techniques, implemented by means of an advanced deep learning
 algorithm.
@@ -237,6 +237,10 @@ algorithm.
 
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ------------------------------- Background --------------------------------- %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Background}
 
 \section{Semantic Web}
@@ -427,7 +431,7 @@ Another field of applications is the development of Expert Systems\footnote{\url
 AI software that emulates the behavior of a human decision-making process by
 navigating the knowledge base and taking decisions like in a rule-based system.
 
-Today's knowledge bases are commonly composed by tens of
+Today's knowledge bases are commonly composed of tens of
 thousands nodes and by hundreds of thousands of edges.
 Considering such dimensions, storing and querying giant graphs requires
 the adoption of
@@ -499,7 +503,7 @@ This idea of words characterized by the context in which they're used
 can be generalized and applied to other fields of research, such as
 the field of representation learning on graphs.
 
-Graphs are composed by nodes and edges, and are used to describe complex
+Graphs are composed of nodes and edges, and are used to describe complex
 systems, such as social networks or the interactions in a molecular biology
 system. To apply machine learning algorithms to such data structures
 vector representations of nodes and edges are needed in order
@@ -536,7 +540,7 @@ in the input images.
 Deep learning techniques have proven to perform well also in the field of
 representation learning for graph data.
 As can be seen in figure \ref{fig:pixels-as-graph}, a digital image
-is composed by pixels which can be thought of as nodes in a graph, where
+is composed of pixels which can be thought of as nodes in a graph, where
 each pixel is connected by an edge to its immediate neighbors. This suggests
 that the techniques used when dealing with images can be adapted, with
 some major changes, to the field of representation learning on graphs, but
@@ -643,9 +647,9 @@ characterize the nodes only by their immediate surroundings.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.4]{img/gcn.png}
-    \caption{First layer of a GCN updating a node feature vector by embedding
-        the features of adjacent nodes.}
+    \includegraphics[scale=0.3]{img/gcn.png}
+    \caption{Representation of a GCN updating the feature vector of a node
+        by summing the convolved features of adjacent nodes.}
     \label{fig:gcn}
 \end{figure}
 
@@ -766,7 +770,7 @@ embedding.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.42]{img/rgcn-encoder.png}
+    \includegraphics[scale=0.48]{img/rgcn-encoder.png}
     \caption{R-GCN encoder model. Image taken from \cite{schlichtkrull2018}.}
     \label{fig:rgcn-encoder}
 \end{figure}
@@ -807,47 +811,54 @@ an associated real valued score as follows:
 Where $e_s$ and $e_o$ are the embeddings of the source and the destination node,
 obtained by means of an encoder model like R-GCN, and
 $R_r\in\mathbb{R}^{d \times d}$ is obtained by transforming the embedding
-of the relation $r$ into a diagonal matrix.
-The score obtained by applying such function can then be used to evaluate
-wether the triple $(s,r,o)$ is a good candidate to be added to the graph: an
-high score has to be interpreted as a high confidence of the model
+of the relation $r$ into a diagonal matrix. Such relation embedding is not
+learnt by the R-GCN encoder, but is a randomly initialized vector that
+represent the relation.
+
+The score obtained by applying the factorization method above can then be used
+to evaluate wether the triple $(s,r,o)$ is a good candidate to be added to the
+graph: an high score has to be interpreted as a high confidence of the model
 in the fact that the triple should belong to the knowledge graph.
 
 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% -------------------------- Approach and methodology ------------------------ %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Approach and methodology}
+\label{ch:approach}
 
 This chapter introduces the architecture developed to build, enhance
 and visualize the Polito Knowledge Graph (PKG), an academic RDF graph
 built to organize in a structured and semantically coherent way the publications
-produced by the researchers of the Polytechnic University of Turin. The graph
+produced by the researchers of the Politecnico di Torino. The graph
 also includes publication-related entities, such as authors, journals,
-and field of study.
+and fields of study.
+
+The architecture is composed of three main modules, that at an high level
+can be seen as part of a producer-consumers architecture, where the former
+produces the graph data, and the latter consume the data produced.
 
 The architecture, which is showed in Figure \ref{fig:pipeline}, is structured
-as a pipeline composed of three main building blocks:
+as a pipeline composed of the following three modules:
 
 \begin{enumerate}
-    \item The \emph{graph builder}, which creates a first version of the
+    \item The \emph{Builder}, which creates a first version of the
     RDF graph.
-    \item The \emph{graph enhancer}, which implements ML techniques to predict
+    \item The \emph{Enhancer}, which implements ML techniques to predict
     unseen facts. Such facts can then be added to the graph to improve its
     completeness.
-    \item The \emph{viewer component}, a web application that allows to query
+    \item The \emph{Viewer}, a web application that allows to query
     and visualize the graph data.
 \end{enumerate}
 
-At an higher level the components of the architecture can be divided in
-producers and consumers, where the former produces the graph data, and the
-latter consumes the data produced.
-The \emph{builder} act as producer taking as input the IRIS data
+The \emph{Builder} act as producer taking as input the IRIS data
 and producing a set of RDF statements that together composes the
 Polito Knowledge Graph.
-The \emph{enhancer} act as both a producer and a consumer, given that it
+The \emph{Enhancer} act as both a producer and a consumer, given that it
 takes as input the PKG and use it to predict unseen facts that can be
-later added to it as RDF statements.
-The \emph{viewer} consumes the graph by storing it a triplestore and exposing
+later added as new RDF statements.
+The \emph{Viewer} consumes the graph by storing it a triplestore and exposing
 a public web interface for querying and visualizing the data.
 
 
@@ -862,15 +873,15 @@ a public web interface for querying and visualizing the data.
 
 \section{Builder module}
 
-The graph builder input is a dump of the
+The Builder input is a dump of the
 IRIS\footnote{\url{https://iris.polito.it/}} database, which is the platform
-used by the Polytechnic University of Turin to store and share all the
+used by the Politecnico di Torino to store and share all the
 publications produced by its researchers. The dump is a JSON file that contains
-all the information available for every scientific paper published in a period
+all the information available for the scientific paper published in a period
 of five years that goes from 2013 to 2017.
 
-The goal of the builder is to translate all the information contained in the dump in a
-set of semantically coherent RDF triples. To do so, an ontology that
+The Builder goal is to translate all the information contained in the
+dump in a set of semantically coherent RDF triples. To do so, an ontology that
 describes the domain of the IRIS scholarly data has been defined.
 
 The builder uses as reference the defined ontology to analyze each record in
@@ -882,29 +893,30 @@ contributors by using two different statements to tie the corresponding entities
 to the publication.
 
 One of the fields of the publication record is the abstract. We wanted to
-tie each publication to its main topics, to do so we used the abstract
+link each publication to its research fields, to do so we used the abstract
 as input text for TellMeFirst \cite{rocha2015}, a tool for the automatic
-extraction of semantic keywords from texts. This keywords, to which from now
+extraction of semantic keywords from texts. Such keywords, to which from now
 on we'll refer to as \emph{topics}, are retrieved from the DBpedia taxonomy
 and are uniquely identified by their corresponding URI.
 Exploiting TellMeFirst we are able to automatically tie each publication to
 its relevant topics, by adding the corresponding RDF statements to the graph.
-This has as consequence that the topics are added to the graph, and being
-uniquely identified, all the publications that share a topic are
-bounded to the same topic entity.
+Being the topics added as graph entities which are uniquely identified, all the
+publications that share a topic are linked to the same topic entity.
 
-The result of this process is a semantically coherent description of all the
-publications linked with their authors, contributors and relevant topics.
-The set of all this RDF statements composes the Polito Knowledge Graph.
+The result of this process is a set of RDF statements that constitutes the
+first version of the Polito Knowledge graph, a semantically coherent description
+of the publications produced by the Polito researchers, where each
+publication is uniquely identified and linked by means of semantic relations
+to the entities representing its authors, contributors and research topics.
 
 
 \section{Enhancer Module}
 
-Once the RDF graph has been built, it could be used as input for the Enhancer
-Module, whose main goal is to leverage ML techniques to predict new triples
-that could be good candidates to be included in the graph.
+Once the first version of the RDF graph has been built, it could be used as
+input for the Enhancer Module, whose main goal is to infer unseen facts to
+complete and enhance the information available inside the knowledge graph.
 
-The enhancer architecture is splitted in three main components:
+The Enhancer is composed of three main components:
 
 \begin{enumerate}
     \item The Dataset Builder.
@@ -912,28 +924,32 @@ The enhancer architecture is splitted in three main components:
     \item The Link Evaluator.
 \end{enumerate}
 
-The first component is in charge of translating the RDF graph into a usable
-dataset for the model trainer, given that RDF statements cannot be used as
+The Dataset Builder is in charge of translating the RDF graph into a usable
+dataset for the Model Trainer, given that the RDF statements cannot be used as
 input data for the link prediction algorithm.
 The dataset will then be splitted into three disjoint\footnote{Two sets are said
 to be disjoint if they have no element in common.}
 sets: one for training, one for validation and one for testing.
-The model trainer uses this three sets to train a link predictor. The training
+
+The Model Trainer uses this three sets to train a link predictor. The training
 set is used to train the model at each epoch, while the validation set
 is used to evaluate which model parameters to keep, identifying the best epoch.
-The test set is used to evaluate the accuracy of the model loaded with the best
-epoch parameters upon unseen triples.
+The test set is used to evaluate the accuracy of the model, loaded with the best
+epoch parameters, upon unseen triples. Once the model has been trained, it can
+be used to predict unseen facts.
 
-Once the model has been trained, it can be used to predict unseen facts.
-The link evaluator loads the best model found during the training phase and
-uses it to evaluate unseen facts.
-The evaluator creates an set of unseen RDF triples and produces a score for
+The Link Evaluator loads the best model found during the training phase and
+uses it to evaluate unseen triples.
+The Evaluator creates an set of unseen RDF triples and produces a score for
 each of them. Only the triples that obtain an high score (and so an high
 probability to be true facts) and are correct in domain and range with respect
 to the ontology are kept.
 The predicted triples are then saved as RDF statements and could be added
-to the RDF graph, obtaining an enhanced knowledge graph completed with
-latent information automatically extracted.
+to the RDF graph, obtaining the enhanced version of the Polito Knowledge Graph.
+This new version will contain not only the information available in IRIS, but
+also the latent information inferred by the learnt model, like missing topics,
+similar authors or proposed journals, which can be used to empower a
+recommendation system for the Polito researchers.
 
 \section{Viewer Module}
 
@@ -959,6 +975,11 @@ performing HTTP requests to the API layer and displaying the results received
 in a structured and comprehensible way.
 
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% -------------------------------- Related Work ------------------------------ %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Related work}
 
 % Open Academic Graph
@@ -974,7 +995,7 @@ It has been publicly released to allow
 the study of citation networks, papers content and more.
 The first version of the graph, released in 2017, has been
 built by merging together the aforementioned graphs and by linking the
-matching publications, obtaining a graph that is composed by more then three
+matching publications, obtaining a graph that is composed of more then three
 hundred million publications. In the first version the only type of entity
 in the graph was the publication: authors, journals, and all the other
 publications information were added as attributes, and not as entities.
@@ -993,12 +1014,13 @@ referencing to semantic concepts, being simple character strings.
 % wiser
 Regarding the development of tools similar to the Polito Knowledge Graph
 by other academic institutions, an example of employment of knowledge graphs
-and natural language processing techniques is Wiser\cite{cifariello2019}, an
+and natural language processing techniques to build new academic search engines
+is Wiser\cite{cifariello2019}, an
 expertise search tool developed by the University of Pisa and publicly released
 at the beginning of 2019.
 The KG of Wiser is composed of approximately 1'500 authors, 65'000 publications
-and 35'000 topics. This numbers will be compared to the one of the Polito
-Knowledge Graph in the following chapter.
+and 35'000 topics\footnote{Numerical statistics about the Polito Knowledge Graph
+are available in the following chapter.}.
 The main function of Wiser is to allow the search of expertise in a given
 research field.
 The system has proven to be particularly effective, representing a strategic
@@ -1028,24 +1050,40 @@ ontology more restricted, the classification could be more accurate, and the
 structure of the ontology itself may be tailorized for such classification task.
 
 % R-GCN
-Regarding the prediction of unseen links inside the graph, to the best of our
-knowledge we are the first to employ a Relational GCN for the completion task
-of a scholarly knowledge graph.
+Regarding the learning task on graph data, many architectures that implements
+the Message Passing Framework\cite{gilmer2017} and that are derived from the
+classical Convolutional Neural Network are available, some example being
+\cite{defferrard2016} and \cite{duvenaud2015}.
+We decided to implement the R-GCN architecture for our prediction task
+being specifically designed to work with relational graph data.
+Moreover, due to the different approach followed by the authors of R-GCN, which
+relyies on the convolutional architecture only as an encoder, in future works
+we could try different factorization methods while keeping the same encoder
+architecture based on R-GCN to learn the node embeddings.
+Some possible factorization methods that we would like to implement
+as decoders are \cite{kazemi2018} and \cite{trouillon2016}.
+
+To the best of our knowledge we are the first to employ a
+Relational-GCN for the completion task of a scholarly knowledge graph.
 
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ----------------------- Development and Implementation --------------------- %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Development and implementation}
 
 In this chapter we will describe how we developed and implemented the
 architecture behind the Polito Knowledge Graph, particularly focusing
 on the components in charge of the graph creation and enhancement, whose
-architecture has been introduced in the previous chapter.
+architecture has been introduced in chapter \ref{ch:approach}.
 
 We will firstly introduce a detailed description of the input data used to
 create the graph. We will also describe the ontologies used to shape the
 knowledge of the scholarly domain and the resulting graph schema, obtained
 by shaping the available IRIS data using such ontologies.
-Then we will discuss how we implemented the builder module, which is
+Then we will discuss how we implemented the Builder Module, which is
 responsible for the actual creation of the Polito Knowledge Graph starting
 from the metadata made available by IRIS.
 
@@ -1064,8 +1102,8 @@ inside the graph.
 
 As already mentioned when introducing the pipeline, the input data used to
 build the PKG is a dump of the IRIS database which contains the
-scientific papers published by the researchers of the Polytechnic University
-of Turin from the beginning of 2013 to the end of 2017.
+scientific papers published by the researchers of the Politecnico di
+Torino from the beginning of 2013 to the end of 2017.
 The dump is a JSON file composed of 23'268 records, where each record contains
 the metadata about a single scientific publication.
 Many of the metadata are generated by the IRIS platform itself in
@@ -1091,7 +1129,7 @@ truly represent semantic information about a publication:
 The publication identifier is a unique numeric code associated by IRIS to each
 scientific paper. Also the authors, contributors and coauthors should be
 uniquely identified by an alphanumeric identifier, however, only the researchers
-of the Polytechnic University of Turin have such identifier assigned. External
+of the Politecnico di Torino have such identifier assigned. External
 researchers that may be contributors or co-authors of the publication have only
 their name and surname listed. The author is instead always a Polito researcher.
 If the information about the journal is present, then the journal ISSN is
@@ -1237,7 +1275,7 @@ the communication with the REST API of TellMeFirst.
 
 The two steps described above allows to generate a full RDF description of a
 publication starting from its metadata, and enriched by the topics extracted
-by TellMeFirst. The result is an RDF graph composed by entities that are
+by TellMeFirst. The result is an RDF graph composed of entities that are
 uniquely identified and linked together by meaningful relations. Such graph
 fully represents the Polito scientific community, linking authors,
 publications, research fields and journals together.
@@ -1314,23 +1352,41 @@ the viewer component.
 
 \section{Enhancing the Polito Knowledge Graph}
 
+Once the first version of the Polito Knowledge Graph has been built, the
+Enhancer Module can be used to infer unseen facts. We will discuss how we
+created a usable dataset for the R-GCN encoder starting from the RDF graph,
+how we employed a R-GCN architecture to obtain meaningful embeddings and how
+we evaluated unseen triples using such embeddings.
 
-\subsection{The model trainer}
-
-\subsection{The link predictor}
+\subsection{The Dataset Builder}
 
 
+
+\subsection{The Model Trainer}
+
+\subsection{The Link Evaluator}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% -------------------------------- Evaluation -------------------------------- %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Evaluation}
 
 % evaluating the result obtained from link prediction
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% --------------------------- Conclusions and future work -------------------- %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Conclusions and future work}
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%
-% BEGIN bibliography %
-%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ------------------------------- Bigliography ------------------------------- %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliographystyle{IEEEtran}
 \bibliography{references}
 
