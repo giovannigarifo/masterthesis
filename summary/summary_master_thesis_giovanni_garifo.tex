@@ -1,0 +1,139 @@
+% use UTF-8 encoding in editors such as TeXworks
+% !TEX encoding = UTF-8 Unicode
+% !TEX TS-program = pdflatex
+
+\documentclass[%
+    corpo=13.5pt,
+    twoside,
+%    stile=classica,
+    oldstyle,
+%    autoretitolo,
+    tipotesi=magistrale,
+    greek,
+    evenboxes
+]{toptesi}
+
+\usepackage[utf8]{inputenc}% codifica d'entrata
+\usepackage[T1]{fontenc}%    codifica dei font
+\usepackage{lmodern}%        scelta dei font
+\usepackage{listings}       % code listing
+\usepackage{mathtools}      % math
+\usepackage{eucal}          % math calligraphy
+\usepackage{amsfonts}       % blackboard bold letters (like R for real values)
+\usepackage{url}            % URLs usage: \url{https://example.com}
+\usepackage{cite}           % cite bibtex entries
+\usepackage{hyperref}       % internal references to text, chapters ecc
+
+\usepackage{tabularx, booktabs}       % tables
+\newcolumntype{b}{X}
+\newcolumntype{m}{>{\hsize=.5\hsize}X}
+\newcolumntype{s}{>{\hsize=.4\hsize}X}
+
+\usepackage{color}
+\definecolor{gray}{rgb}{0.4,0.4,0.4}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.6}
+\definecolor{cyan}{rgb}{0.0,0.6,0.6}
+\definecolor{codebackground}{rgb}{0.95,0.95,0.92}
+
+
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  showstringspaces=false,
+  commentstyle=\color{gray}\upshape
+}
+
+\lstdefinelanguage{XML}
+{
+  morestring=[b]",
+  morestring=[s]{>}{<},
+  morecomment=[s]{<?}{?>},
+  stringstyle=\color{black},
+  identifierstyle=\color{darkblue},
+  keywordstyle=\color{cyan},
+  morekeywords={xmlns,version}
+}
+
+% Vedere la documentazione toptesi-it.pdf per le
+% attenzioni che bisogna usare al fine di ottenere un file
+% veramente conforme alle norme per l'archiviabilità.
+
+\usepackage{hyperref}
+\hypersetup{%
+    pdfpagemode={UseOutlines},
+    bookmarksopen,
+    pdfstartview={FitH},
+    colorlinks,
+    linkcolor={blue},
+    citecolor={blue},
+    urlcolor={blue}
+  }
+
+%%%%%%% Definizioni locali
+\newtheorem{osservazione}{Osservazione}% Standard LaTeX
+\ExtendCaptions{english}{Abstract}{Acknowledgements}
+
+
+
+\begin{document}\errorcontextlines=9
+
+% set english ad primary language
+\english
+
+%%%%%%%%%%%%%%%%%%%%
+% BEGIN front page %
+%%%%%%%%%%%%%%%%%%%%
+\begin{ThesisTitlePage}*
+
+\ateneo{Politecnico di Torino}
+\nomeateneo{DEPARTMENT OF CONTROL AND COMPUTER ENGINEERING}
+\CorsoDiLaureaIn{Master of Science in}
+\corsodilaurea{Computer Engineering}
+\TesiDiLaurea{Master Degree Thesis}
+
+\titolo{Deep Learning on Academic Knowledge Graphs}
+\sottotitolo{
+    Predicting new facts in a novel semantic graph built
+    on top of the Politecnico di Torino scholarly data
+}
+
+\CandidateName{Candidate}
+\candidato{Giovanni \textsc{Garifo}}
+
+\AdvisorName{Supervisors}
+\relatore{Prof.~Antonio Vetrò}
+\secondorelatore{Prof.~Juan Carlos De Martin}
+\sedutadilaurea{\textsc{Academic~Year} 2018-2019}%
+
+\logosede[6cm]{logopolito}
+\end{ThesisTitlePage}
+%%%%%%%%%%%%%%%%%%
+% END front page %
+%%%%%%%%%%%%%%%%%%
+
+
+% offset rilegatura
+%\setbindingcorrection{3mm}
+
+\makeatletter
+\newenvironment{miadedica}{
+    \clearpage
+    \if@twoside
+        \ifodd\c@page\else\thispagestyle{empty}\null\clearpage\fi
+    \fi
+    \thispagestyle{empty}%
+    \list{}{\labelwidth\z@
+    \leftmargin.73\textwidth
+    \parindent\z@
+    \raggedright\LARGE\itshape}\item[]
+    \normalsize
+}
+
+\sommario
+
+To be written.
+
+
+
+
+\end{document}
