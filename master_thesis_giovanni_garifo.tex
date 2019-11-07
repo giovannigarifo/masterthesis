@@ -28,6 +28,7 @@
 \newcolumntype{b}{X}
 \newcolumntype{m}{>{\hsize=.5\hsize}X}
 \newcolumntype{s}{>{\hsize=.4\hsize}X}
+\newcolumntype{Y}{>{\centering\arraybackslash}X} %centering
 
 \usepackage{color}
 \definecolor{gray}{rgb}{0.4,0.4,0.4}
@@ -37,10 +38,12 @@
 
 
 \lstset{
-  basicstyle=\ttfamily,
-  columns=fullflexible,
-  showstringspaces=false,
-  commentstyle=\color{gray}\upshape
+    basicstyle=\ttfamily,
+    columns=fullflexible,
+    showstringspaces=false,
+    commentstyle=\color{gray}\upshape,
+    aboveskip=13.5pt,
+    belowskip=13.5pt
 }
 
 \lstdefinelanguage{XML}
@@ -1130,11 +1133,15 @@ from the metadata made available by IRIS.
 In the second part of the chapter we will focus on the implementation of the
 link predictor module, which is used to predict unseen facts.
 We will describe how starting from the Polito Knowledge Graph we created
-a usable dataset for the training of a machine learning model, how we
-trained such model and which hyperparameters we used. We will also discuss
-the metrics used to evaluate the model during the training phase, and how we
-employed the trained model to obtain predictions about missing links
-inside the graph.
+a usable dataset for the training of a machine learning model, which
+architecture and hyperparameters we choose, how we trained such model and
+how it has been validated during the training phase in order to choose the
+best parameters.
+We will also discuss how we tested the model and which metrics we choose
+to evaluate the accuracy of the predictions on the test set.
+Finally, we will present how we employed the trained model to obtain
+predictions about new facts in the graph, and how the predictions obtained
+can be used to build a recommendation system for the Polito Knowledge Graph.
 
 
 \section{Building the Polito Knowledge Graph}
@@ -1172,10 +1179,13 @@ uniquely identified by an alphanumeric identifier, however, only the researchers
 of the Politecnico di Torino have such identifier assigned. External
 researchers that may be contributors or co-authors of the publication have only
 their name and surname listed. The author is instead always a Polito researcher.
-If the information about the journal is present, then the journal ISSN is
-used as identifier.
-The title, the abstract, the names, surnames and the keywords are simple
-character strings, while the date is in "dd-mm-yyyy" format.
+If the publication has been published in a journal, and its information are
+available, then the journal ISSN is used as identifier.
+If the publications is a conference paper, no information about the conference
+is present other than the title.
+The publication title, the abstract, the names, surnames and the keywords are
+simple character strings, while the date of publication is in "dd-mm-yyyy"
+format.
 
 As already discussed in previous chapters, the keywords inserted by the authors
 cannot be treated as semantic concepts. We wanted to solve this issue, in order
@@ -1193,8 +1203,14 @@ the publications abstracts as graph entities of the Polito Knowledge Graph.
 
 Starting from the metadata discussed above, we defined
 the PKG ontology as composed of five different classes:
-the \emph{Publication}, the \emph{Author}, the \emph{Journal}, the
-\emph{AuthorKeyword} and the \emph{TMFResource}.
+
+\begin{enumerate}
+    \item The \emph{Publication}.
+    \item The \emph{Author}.
+    \item The \emph{Journal}.
+    \item The \emph{AuthorKeyword}.
+    \item The \emph{TMFResource}.
+\end{enumerate}
 
 In order to build a knowledge graph, the instances of such classes must be
 linked together by means of semantic relations, called predicates.
@@ -1217,11 +1233,13 @@ As can be saw from the schema of Figure \ref{fig:schema}, the \emph{Publication}
 class is linked to the author class by means of two relations both defined by
 the DCMI ontology:
 \emph{dc:creator}\footnotemark and \emph{dc:contributor}\footnotemark[\value{footnote}].
-\footnotetext{The \emph{dc} keyword is the prefix of the DCMI namespace: http://purl.org/dc/terms/}
+\footnotetext{The \emph{dc} keyword is used as prefix for the Dublin Core
+Metadata Initiative (DCMI) namespace: http://purl.org/dc/terms/}
 
 We decided to only differentiate the first author (creator) from
 the others (contributors) due to the inability to discriminate which are the
-co-authors and which are the collaborators.
+co-authors and which are the collaborators based on the data made available
+by IRIS.
 
 The \emph{AuthorKeyword} class refers to the keywords inserted by the authors,
 they're kept for the sake of completion with respect to the metadata available
@@ -1229,13 +1247,13 @@ in the dump, but they do not represent any semantic information.
 
 Instead, the \emph{TMFResource} class is used to instantiate the entities
 directly referred to the DBpedia resources that are extracted by TMF starting
-from publication abstract. Being
+from the publication abstract. Being
 uniquely identified by their DBpedia URI, each instance will be unique, and so
 if more publications shares the same extracted topic, they will be linked
 by the \emph{dc:subject} relation to the same instance of the
-\emph{TMFResource} that has been istantiated for such topic. An example is
-showed in Figure \ref{fig:subject-knowledge-base}, where are showed all the
-publications that are linked to the TMFResource of the
+\emph{TMFResource} class that has been istantiated to represent such topic.
+An example is showed in Figure \ref{fig:subject-knowledge-base}, where are
+showed all the publications that are linked to the TMFResource of the
 topic \emph{Knowledge Base}.
 
 \begin{figure}[h]
@@ -1314,17 +1332,13 @@ the graph, given that the graph builder implementation is I/O-bound due to
 the communication with the REST API of TellMeFirst.
 
 The two steps described above allows to generate a full RDF description of a
-publication starting from its metadata, and enriched by the topics extracted
-by TellMeFirst. The result is an RDF graph composed of entities that are
-uniquely identified and linked together by meaningful relations. Such graph
-fully represents the Polito scientific community, linking authors,
-publications, research fields and journals together.
+publication starting from its metadata, which is then enriched by the topics
+extracted by TellMeFirst.
 
 For example, the listing that follows contains the RDF description of a
-publication generated by the graph builder. Not only a new publication entity
-is created, but also the author, contributor and subject are added to the graph,
-completing the knowledge base.
-
+publication generated by the graph builder. As can be saw, not only a new
+publication entity is created, but also the author and subject are
+added to the graph by instantiating the corresponding classes.
 
 \begin{lstlisting}[
     language=XML,
@@ -1350,28 +1364,18 @@ completing the knowledge base.
         <dc:abstract>Abstract of the publication</ns1:abstract>
         <dc:subject rdf:resource="dbpr:Knowledge_Base"/>
         <dc:creator rdf:resource="pkg:authors/rp00000"/>
-        <dc:contributor rdf:resource="pkg:authors/rp11111"/>
         <dc:dateSubmitted rdf:datatype="xmls:date">
             2017-01-01
         </dc:dateSubmitted>
     </rdf:Description>
-
     <rdf:Description rdf:about="dbpr:Knowledge_Base">
         <rdf:type rdf:resource="pkg:ontology/TMFResource"/>
         <rdfs:label>Knowledge Base</rdfs:label>
     </rdf:Description>
-
     <rdf:Description rdf:about="pkg:authors/rp00000">
         <rdf:type rdf:resource="pkg:ontology/Author"/>
         <foaf:name>Surname, Name</foaf:name>
         <dc:identifier>rp00000</dc:identifier>
-        <rdfs:label>Surname, Name</rdfs:label>
-    </rdf:Description>
-
-    <rdf:Description rdf:about="pkg:authors/rp11111">
-        <rdf:type rdf:resource="pkg:ontology/Author"/>
-        <foaf:name>Surname, Name</foaf:name>
-        <dc:identifier>rp11111</dc:identifier>
         <rdfs:label>Surname, Name</rdfs:label>
     </rdf:Description>
 </rdf:RDF>
@@ -1379,9 +1383,52 @@ completing the knowledge base.
 
 \newpage
 
-After all the publications have been processed, the internal representation
-obtained can be serialized and exported as an XML file that contains the
-definition of all the RDF triples that forms the Polito Knowledge Graph.
+By translating every record of the IRIS database dump into a set of
+RDF statements, we obtained an RDF graph composed of entities that are uniquely
+identified and linked together by meaningful relations.
+We decided to call such graph the Polito Knowledge Graph, being a comprehensive
+representation of the Politecnico di Torino academic community.
+The graph links together researchers, their fields of interest, the scientific
+papers produced by them and the journals in which such papers have been
+published.
+
+% table: Polito Knowledge Graph characteristics
+\begin{table}[t]
+    \footnotesize
+    \centering
+    \caption{Number of entities and edges in the Polito Knowledge Graph.}
+    \label{tab:pkgsize}
+
+    \begin{tabularx}{1.0\textwidth}{ Y Y Y Y Y }
+            \toprule
+            \multicolumn{5}{c}{\textbf{Polito Knowledge Graph}} \\
+            \midrule
+
+            \addlinespace[0.1cm]
+            \multicolumn{5}{c}{\textbf{Number of entities per-class}} \\
+            \addlinespace[0.2cm]
+            Publication & Author & Journal & TMFResource & AuthorKeyword \\
+            23268 & 34886 & 3211 & 16988 & 41807 \\
+            \midrule
+
+            \addlinespace[0.1cm]
+            \multicolumn{5}{c}{\textbf{Number of edges per-relation}} \\
+            \addlinespace[0.2cm]
+            Creator & Contributor & Publisher & Subject (TMF) & Subject (Keywords) \\
+            23268 & 80819 & 11243 & 107093 & 77492 \\
+
+            \bottomrule
+    \end{tabularx}
+\end{table}
+
+In Table \ref{tab:pkgsize} we summarized some statistics about the PKG,
+showing the number of entities instantiated for each class, and the
+number of edges for each relation type.
+
+After all the publications have been processed by the Graph Builder, the
+internal representation obtained can be serialized and exported as an XML
+file that contains the definition of all the RDF triples that forms the
+Polito Knowledge Graph.
 Such RDF representation will be then used as input for the enhancer module or
 loaded into a triplestore (like
 Blazegraph\footnote{\url{https://blazegraph.com/}}) in order to be queried by
@@ -1393,12 +1440,15 @@ the viewer component.
 \section{Enhancing the Polito Knowledge Graph}
 
 Once the first version of the Polito Knowledge Graph has been built, the
-Enhancer Module can be used to infer unseen facts. We will discuss how we
-created a usable dataset for the R-GCN encoder starting from the RDF graph,
-how we employed a R-GCN architecture to obtain meaningful embeddings and how
-we evaluated unseen triples using such embeddings.
+Enhancer Module can be used to infer new facts. In this section we will discuss
+how we created a usable dataset for the encoder starting from the RDF
+graph, how we employed a R-GCN architecture to encode meaningful embeddings and
+how we evaluated which triples are good candidates for the inclusion in the
+graph.
 
 \subsection{The Dataset Builder}
+
+
 
 
 
