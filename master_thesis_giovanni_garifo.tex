@@ -1433,6 +1433,7 @@ Such RDF representation will be then used as input for the enhancer module or
 loaded into a triplestore (like
 Blazegraph\footnote{\url{https://blazegraph.com/}}) in order to be queried by
 the viewer component.
+\newpage
 
 
 
@@ -1442,14 +1443,179 @@ the viewer component.
 Once the first version of the Polito Knowledge Graph has been built, the
 Enhancer Module can be used to infer new facts. In this section we will discuss
 how we created a usable dataset for the encoder starting from the RDF
-graph, how we employed a R-GCN architecture to encode meaningful embeddings and
-how we evaluated which triples are good candidates for the inclusion in the
-graph.
+graph, how we employed a R-GCN architecture to encode the entity characteristics
+into meaningful embeddings and how we built and evaluated new triple candidates
+for the addition to the graph.
+
 
 \subsection{The Dataset Builder}
 
+The Model Trainer cannot learn the nodes embeddings directly from the RDF
+representation of the graph. Another component, the Dataset Builder, is in
+charge of creating the data structures needed by the Model
+Trainer.
+The Dataset Builder takes as input the RDF graph, and produces as output a
+usable dataset for the learning task.
+
+As discussed in the previous section, some of the metadata available
+in the IRIS records are not uniquely identified, however, we still added them
+to the graph for sake of completeness.
+As a consequence of this, the corresponding entities do not represent
+unhambiguous semantic information, the effect being that such entities may
+only add noise to the dataset, thus leading to incorrect predictions.
+
+To avoid this issue, we decided to include in the dataset only the entities
+which are unique and unhambiguous in the whole graph:
+
+\begin{enumerate}
+    \item The publications, which are identified by their IRIS identifier.
+    \item The internal authors, which are identified by their Politecnico di
+        Torino internal identifier.
+    \item The journals, which are identified by their ISSN.
+    \item The topics extracted by TMF, which are identified by their DBpedia
+        URI.
+\end{enumerate}
+
+With respect to the full set of entities of the Polito Knowledge Graph, we
+discarded all the external contributors and co-authors, for which we only have
+as information the names and surnames, and all the authors keywords.
+The dataset is then built from a reduced version of the initial graph.
+
+In the following, we will explain how starting from such reduced version of the
+graph we built a usable dataset for the learning task.
+\newline
+
+Like the Graph Builder, also the Dataset Builder is implemented as a
+Python command-line script that process the RDF triples with \emph{rdflib},
+which offers a practical interface to work with RDF data.
+The Dataset Builder has to convert the RDF representation of the graph into
+an integer representation, where each class, entity and relation has a
+corresponding integer index assigned.
+
+The following input data are needed by the Model Trainer to train the
+encoder:
+
+\begin{enumerate}
+    \item The number of nodes, equal to the number of entities instantiated by
+        the RDF statements.
+    \item The number of different relations that links together the graph
+        entities.
+    \item The number of nodes labels, where each label is referred to a class of
+        the PKG ontology.
+    \item a node-indexed list of labels, where the $i$-th element corresponds to
+        the label assigned to $i$-th nodes.
+    \item a list of edges, where each edge is
+        a Python tuple \emph{(subject, predicate, object)} composed of three
+        elements: the node index of the subect and the object, and the
+        relation index of the predicate. How such indexes are generated is
+        exaplained in the following.
+    \item a list of edge-specific normalization constants.
+\end{enumerate}
+
+To build such data structures starting from the RDF graph, the Dataset Builder
+leverages some look-up hash tables (implemented as Python dictionaries) that are
+created starting from the RDF statements and the PKG ontology. Such tables
+are accessed by URI, and allows to retrieve the corresponding entity, relation
+or class integer index.
+
+\begin{enumerate}
+    \item The \emph{nodes table} is populated by assigning to each entity
+    a unique, increasing integer index. Such index will identify the entity when
+    building the list of edges. Only the entities that are instances of the
+    classes that we selected as part of the dataset are added to the node table.
+
+    \item The \emph{labels table} is built starting from the PKG ontology,
+    assigning to each of the selected classes a unique integer index that
+    represents the corresponding label.
+
+    \item The \emph{relations table} is also built from the PKG ontology,
+    assigning to each relation inside the graph a corresponding integer
+    identifier.
+\end{enumerate}
+
+When building such tables, the Dataset Builder also keeps track of the total
+number of nodes and relations, and build a labels list that stores in the $i$-th
+element the label of the $i$-th node.
+
+Once the look-up tables and the other data strctures are built, the Dataset
+Builder starts to process the RDF statements that composes the graph by
+looping through them.
+
+For each statement, it firstly checks wether the subject and object of the
+statement are present in the nodes table, if so, it builds the corresponding
+edge tuple by retrieving the indexes of the entities and relation through the
+look-up table.
+An example of this process is showed in Figure XXX.
+
+The list of edges obtained is then splitted into three separate and disjoint
+sets that will be used to train, evaluate and test the encoder model.
+We make sure to have in the training set at least one edge for every kind of
+relation connected to each entity, so to have a representative neighborhood for
+each node during training.
+This is mandatory to obtain meaningful embeddings, because
+as already explained in section \ref{subsec:linkprediction}, the R-GCN model
+embeds the nodes neighbors features in order to learn their vector
+representations, thus having a neighborhood structure in the training graph
+which is similar to the one in the original graph is crucial.
+The remaining number of edges to be picked for the training set are then
+randomly taken from the edge list.
+The percentage of tuples used to create the three sets is an
+hyperparameter that can be choosen in advance. However, during our tests, we
+experienced that picking less then 70\% of nodes for training does not allowed
+us to maintain a representative neighborhood for each node, resulting in an
+inaccurate link prediction model.
+As a consequence of this, we splitted the edges list in
+approximately 90\% of the tuples for train, 5\% for evaluating and 5\% for
+testing.
+
+Once the dataset is created and the list of edges splitted into the three sets,
+it is serialized and saved, so that at each run of the Model Trainer it is not
+required to create the dataset from scratch.
+Moreover, this allowed us to validate different model parameters upon the
+same set of triples.
+
+% table: Polito Knowledge Graph characteristics
+\begin{table}[t]
+    \footnotesize
+    \centering
+    \caption{A summary of the characteristics of the dataset produced by the Dataset Builder.}
+    \label{tab:datasetsize}
+
+    \begin{tabularx}{1.0\textwidth}{ Y Y Y Y }
+            \toprule
+            \multicolumn{4}{c}{\textbf{Dataset}} \\
+            \midrule
+
+            \addlinespace[0.2cm]
+            Number of nodes & Number of classes/labels & Number of relations & Total number of edges \\
+            \addlinespace[0.1cm]
+            47996 & 4 & 4 &  170.593 \\
+            \addlinespace[0.2cm]
+
+            \bottomrule
+    \end{tabularx}
+
+    \begin{tabularx}{1.0\textwidth}{ Y Y Y }
+        \addlinespace[0.2cm]
+        \multicolumn{3}{c}{\textbf{Number of train, evaluation and test samples}} \\
+        \addlinespace[0.2cm]
+
+        Train edges & Evaluation edges & Test edges \\
+        153.531 & 8528 & 8534 \\
+
+        \bottomrule
+    \end{tabularx}
 
 
+\end{table}
+
+Table \ref{tab:datasetsize} summarizes the size and characteristics of the
+dataset obtained by the Dataset Builder.
+The size of the dataset obtained, in particular the number of nodes and edges,
+can be compared to the size of the initial RDF graph, which is summarized in
+Table \ref{tab:pkgsize}.
+As can be saw, more then half the nodes, the ones referred to the
+author keywords and the external authors, have been removed.
 
 
 \subsection{The Model Trainer}
