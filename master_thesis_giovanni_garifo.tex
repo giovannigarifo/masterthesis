@@ -28,6 +28,7 @@
 \newcolumntype{b}{X}
 \newcolumntype{m}{>{\hsize=.5\hsize}X}
 \newcolumntype{s}{>{\hsize=.4\hsize}X}
+\newcolumntype{z}{>{\hsize=.3\hsize}X}
 \newcolumntype{Y}{>{\centering\arraybackslash}X} %centering
 
 \usepackage{color}
@@ -1619,6 +1620,238 @@ author keywords and the external authors, have been removed.
 
 
 \subsection{The Model Trainer}
+
+Modern machine learning algorithms are implemented as deep networks
+composed of many layers and parameters. Building such architectures from the
+ground-up would be almost unfeasible, especially when dealing with a challenging
+kind of data structure, such as multi-relational graphs.
+Many frameworks and libraries that relies on some basic abstractions have been
+introduced in the last years, allowing the implementation of complex
+architectures without the need of coding them from scratch. Moreover, one
+of the key aspects when building machine learning models is to develop highly
+efficient implementations, especially when working with lots of data, as in the
+case of knowledge graphs.
+
+% pytorch
+One of the most common used frameworks that allows to build and train
+ML models is PyTorch \cite{paszke2017}. The goal of PyTorch is to provide
+some simple yet expressively powerful components that could be used to implement
+any sort of neural network, simplifing some of the most challenging aspects,
+like the implementation of the backpropagation phase.
+The two major abstractions introduced in the framework are the \emph{tensor}
+and the \emph{autograd}.
+Tensors are the basic data structure in PyTorch, they support both CPU and GPU
+execution and all the major operations for multidimensional matrices.
+The autograd package is the key novelty of PyTorch, allowing to perform
+automatic differentiation of all the operations performed on tensors by
+leveraging an internal representation in the form of a computational graph.
+However, even if the framework provides all the building blocks for
+developing complex neural networks, it doesn't fit well when dealing with
+graph data, due to the lack of support for the message passing paradigm by the
+tensor interface.
+
+% dgl
+Deep Graph Library \cite{wang2019} (DGL) provides a more comprehensive
+solution specifically designed to work with graph data. DGL is built on top of
+existing ML frameworks (e.g. PyTorch, MXNet), and offers a simple function
+interface that facilitate the implementation of the message passing framework.
+Supporting such framework, with DGL is possible to implement every deep learning
+algorithm whose forward pass can be divided into a per-edge message computation
+and a per-node message aggregation.
+Some of the architectures that can be implemented
+are depicted in \cite{gilmer2017}.
+
+With DGL, a graph can be created by instantiating an object of the
+\emph{DGLGraph} class, which offers a dictionary-like interface for adding to
+the graph both nodes and edges, together with their features or other
+relevant data, for instance normalization constants.
+The message passing paradigm is implemented by means of the \emph{send} and
+\emph{recv} functions, which allows to define the two basic operations for the
+per-edge messages construction and the per-node aggregation.
+
+As already mentioned before, we decided to use a R-GCN architecture to build
+our embeddings encoder.
+In the following we will look at how we trained such encoder model, how we
+implemented it with DGL, which learning problem we wanted our model to solve
+and how we evaluated such model, so to select the best parameters for the
+learning task.
+\newline
+
+% hardware used
+All the trainings and testings have been done on a workstation whose
+hardware and software specifications are summarized in
+Table \ref{tab:workstation}.
+As we will discuss later, the training and evaluation performances are
+bottlenecked by the system and video memory at our disposal.
+
+% table: Workstation specifications
+\begin{table}[h]
+    \footnotesize
+    \centering
+    \caption{Hardware and software specifications of the workstation used for
+        the model training.}
+    \label{tab:workstation}
+
+    \begin{tabularx}{1.0\textwidth}{ z X }
+            \toprule
+            \multicolumn{2}{c}{\textbf{Workstation hardware and software
+                specifications}} \\
+            \midrule
+
+            \addlinespace[0.2cm]
+            \textbf{CPU} & x86-based with 4 cores and 8 threads clocked at 3.9GHz. \\
+            \addlinespace[0.1cm]
+            \textbf{System memory} & 32GB of DDR3 1600MHz RAM. \\
+            \addlinespace[0.1cm]
+            \textbf{Boot drive} & 512GB SATA-III solid state drive. \\
+            \addlinespace[0.1cm]
+            \textbf{Swap memory} & A dedicated 64GB partition on the boot drive. \\
+            \addlinespace[0.1cm]
+            \textbf{GPU} & 8GB of VRAM and 2304 cores.\\
+            \addlinespace[0.1cm]
+            \textbf{OS} & Ubuntu Server 18.04 LTS with Linux kernel 4.15 and CUDA toolkit 10.1.\\
+            \addlinespace[0.2cm]
+
+            \bottomrule
+    \end{tabularx}
+
+\end{table}
+
+% some more informations about the dataset, feature vectors
+As saw in previous section, the input dataset for the Model Trainer is composed
+by a list of edges, where 90\% of them are used for the training, and the
+remaing are splitted in half and used for the evaluation and testing of the
+model.
+The training edges are used to build a \emph{training graph}, which is the one
+that will be used to learn the node embeddings.
+Regarding the node features, we choose to follow a featureless approach, so
+to only leverage the graph structure to build the embeddings. Following
+this idea, we used as input features a one-hot encoded vector for each
+node, thus obtaining an $N \times N$ feature matrix, where $N$ is the number
+of nodes in the training graph.
+
+% network structure
+Regarding the architecture, we employed a R-GCN composed of two hidden layers,
+with the first layer convolutional filters being $500 \times N$, and the second
+layer filters being $500 \times 500$.
+With such architecture the embeddings obtained as output of the forward pass
+are shaped as $1 \times 500$ row vectors.
+
+% negative sampling for batched training
+Because of the size of the graph, the training is performed in batches.
+To do so, at each training epoch the Model Trainer randomly samples a subset
+of the training edges.
+As a consequence of this, more then one epoch may be required to train over all
+the nodes in the training graph.
+
+After the edges have been sampled, a predefined number of corrupted edges are
+generated starting from the the sampled ones. This is done because the learning
+problem that we want to solve is a classification problem: we want our
+model to be able to give an high DistMult score to the true edges, and a
+low score to the corrupted edges.
+This will allow us to obtain a model that is able to recognize true facts, and
+thus can be used to predict the probability with which an unseen triple
+may be considered as part of the knowledge base.
+The negative samples are associated to the label $0$, while the positive samples
+(the true facts) are associated to the label $1$.
+We have chosen a 1-to-10 ratio for the negative samples, having 10 corrupted
+edges generated starting from each true fact, as it is done for most models
+that leverages negative sampling.
+
+% relations embeddings
+Regarding the relations embeddings used to calculate the score, they
+are randomly initialized, this because as explained when introducing DistMult in
+section \ref{subsec:linkprediction}, they are not subject of the
+learning process.
+
+
+%forward pass
+At each epoch the training is performed in the following steps:
+
+\begin{enumerate}
+    \item The forward pass of the R-GCN is executed, taking as input the
+        \emph{DGLGraph} generated starting from the positive samples
+        (the sampled training edges), which contains both
+        the nodes features and the per-edge normalization constants.
+        The embeddings of the nodes in the \emph{DGLGraph} are obtained as
+        output of this step.
+    \item The obtained embeddings are used to calculate the DistMult scores
+        of both the positive and the negative samples. The scores are then
+        feed through a
+        sigmoid\footnote{$\sigma(score_i) = \frac{1}{1+\exp^{-score_i}}$}
+        function which caps the scores between zero and one. Such capped scores
+        represents the probabilities with which the model considers the
+        corresponding edges as true facts.
+    \item The training loss is calculated and the filters parameters are updated
+        through backpropagation with the \emph{Adam} optimizer.
+\end{enumerate}
+
+% loss
+The loss function used is the \emph{binary cross entropy loss}, which is
+commonly used for classification tasks with just two classes, as in our case.
+
+\begin{equation}
+    L = - \frac{1}{E} \sum_{i=1}^{E} \left(
+        y_i \cdot log(\sigma(score_i)) +
+        (1-y_i) \cdot log(1-\sigma(score_i))
+    \right)
+\end{equation}
+
+Where $y_i$ represents the label of the $i$-th sample (positive or negative) and
+$\sigma(score_i)$ represents the probability for $i$-th sample to be a true
+fact.
+$E$ is the number of training edges for the current batch and $\sigma$ is the
+sigmoid function.
+The capped scores obtained by computing the DistMult score and capping them with
+the sigmoid function can be interpreted as the confidence of the model in the
+fact that the corresponding edges represents true facts.
+
+Such loss function sets as training goal the correct classification of negative
+and positive samples, so to obtain a score as low as possible for the negative
+ones, while instead identify the true triples sampled from the PKG as true
+facts, thus giving them an high score.
+
+As a consequence of this, the obtained model should be able to correctly
+predict if an unseen triple can be considered as a good candidate for the
+inclusion in the Polito Knowledge Graph.
+\newline
+
+% training set dimensionality
+We are able to perform the training on GPU with a sampling size of 20'000 edges,
+that adding the negative samples produces a per-epoch training set composed of
+a total of 220'000 edges. While having to train over more epochs due to memory
+constraints, in comparison to the execution on CPU the training time
+has been reduced by several order of magnitunes: from approximately 30 seconds
+per epoch for the forward plus backward pass, to less than three hundred
+milliseconds.
+
+% sampling bottleneck
+The biggest bottleneck while training remains the sampling phase, which is
+implemented as single threaded code using NumPy\cite{oliphant2006}, and
+requires approximately 5 seconds to be performed with the hardware at our
+disposal, which has fairly limited single-threaded performances. We
+leave the implementation of more efficient sampling methods for future releases.
+\newline
+
+% training best epoch evaluation
+In order to find the best epoch where to stop training, we evaluate the
+current model on a separate evaluation set. The evaluation is not performed at
+every epoch due to execution time constraints, and the frequency with which it
+must be executed is an hyperparameter decided in advance.
+How the evaluation of the model is performed will be depicted in the next
+chapter.
+When during evaluation the current epoch is identified as the best so far, the
+corresponding model, together with the network parameters, are exported and
+saved on disk.
+
+Once the model has been trained, the best epoch model is loaded from memory
+and its accuracy is evaluated on the test set.
+
+After the training, evaluatin and test phases are completed, the obtained
+encoder model is able to give as output meaningful embeddings of the PKG nodes,
+which can be used to evaluate new facts using DistMult as decoder.
+
+
 
 \subsection{The Link Evaluator}
 
