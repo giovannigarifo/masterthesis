@@ -1633,7 +1633,7 @@ efficient implementations, especially when working with lots of data, as in the
 case of knowledge graphs.
 
 % pytorch
-One of the most common used frameworks that allows to build and train
+One of the most commonly used frameworks that allows to build and train
 ML models is PyTorch \cite{paszke2017}. The goal of PyTorch is to provide
 some simple yet expressively powerful components that could be used to implement
 any sort of neural network, simplifing some of the most challenging aspects,
@@ -1646,25 +1646,25 @@ The autograd package is the key novelty of PyTorch, allowing to perform
 automatic differentiation of all the operations performed on tensors by
 leveraging an internal representation in the form of a computational graph.
 However, even if the framework provides all the building blocks for
-developing complex neural networks, it doesn't fit well when dealing with
-graph data, due to the lack of support for the message passing paradigm by the
+developing complex neural networks, it is not suitable when dealing with graph
+data, due to the lack of support for the message passing paradigm by the
 tensor interface.
 
 % dgl
 Deep Graph Library \cite{wang2019} (DGL) provides a more comprehensive
 solution specifically designed to work with graph data. DGL is built on top of
-existing ML frameworks (e.g. PyTorch, MXNet), and offers a simple function
+existing ML frameworks (e.g. PyTorch, MXNet), and offers a simple
 interface that facilitate the implementation of the message passing framework.
 Supporting such framework, with DGL is possible to implement every deep learning
 algorithm whose forward pass can be divided into a per-edge message computation
 and a per-node message aggregation.
 Some of the architectures that can be implemented
-are depicted in \cite{gilmer2017}.
+are depicted in \cite{gilmer2017}, with R-GCN being one of them.
 
 With DGL, a graph can be created by instantiating an object of the
 \emph{DGLGraph} class, which offers a dictionary-like interface for adding to
-the graph both nodes and edges, together with their features or other
-relevant data, for instance normalization constants.
+the graph both nodes and edges, together with their features or any other
+relevant data for the training, for instance the normalization constant.
 The message passing paradigm is implemented by means of the \emph{send} and
 \emph{recv} functions, which allows to define the two basic operations for the
 per-edge messages construction and the per-node aggregation.
@@ -1680,16 +1680,17 @@ learning task.
 % hardware used
 All the trainings and testings have been done on a workstation whose
 hardware and software specifications are summarized in
-Table \ref{tab:workstation}.
-As we will discuss later, the training and evaluation performances are
+Table \ref{tab:workstation}. The same worskation have been used to execute the
+Link Evaluator component.
+As we will discuss later, the training and evaluation execution speed is
 bottlenecked by the system and video memory at our disposal.
 
 % table: Workstation specifications
 \begin{table}[h]
     \footnotesize
     \centering
-    \caption{Hardware and software specifications of the workstation used for
-        the model training.}
+    \caption{Hardware and software specifications of the workstation used to
+        run the Model Trainer.}
     \label{tab:workstation}
 
     \begin{tabularx}{1.0\textwidth}{ z X }
@@ -1751,19 +1752,17 @@ model to be able to give an high DistMult score to the true edges, and a
 low score to the corrupted edges.
 This will allow us to obtain a model that is able to recognize true facts, and
 thus can be used to predict the probability with which an unseen triple
-may be considered as part of the knowledge base.
+may belong to the Polito Knowledge Graph.
 The negative samples are associated to the label $0$, while the positive samples
 (the true facts) are associated to the label $1$.
 We have chosen a 1-to-10 ratio for the negative samples, having 10 corrupted
 edges generated starting from each true fact, as it is done for most models
-that leverages negative sampling.
+found in literature that leverages negative sampling.
 
 % relations embeddings
-Regarding the relations embeddings used to calculate the score, they
-are randomly initialized, this because as explained when introducing DistMult in
-section \ref{subsec:linkprediction}, they are not subject of the
-learning process.
-
+The embeddings of the relations are randomly initialized, because as explained
+when introducing DistMult in section \ref{subsec:linkprediction}, they are not
+subject of the learning process.
 
 %forward pass
 At each epoch the training is performed in the following steps:
@@ -1773,43 +1772,49 @@ At each epoch the training is performed in the following steps:
         \emph{DGLGraph} generated starting from the positive samples
         (the sampled training edges), which contains both
         the nodes features and the per-edge normalization constants.
-        The embeddings of the nodes in the \emph{DGLGraph} are obtained as
-        output of this step.
-    \item The obtained embeddings are used to calculate the DistMult scores
-        of both the positive and the negative samples. The scores are then
-        feed through a
-        sigmoid\footnote{$\sigma(score_i) = \frac{1}{1+\exp^{-score_i}}$}
-        function which caps the scores between zero and one. Such capped scores
-        represents the probabilities with which the model considers the
+        The neural network gives as output the embeddings of the graph nodes.
+    \item Such embeddings are used to calculate the DistMult scores
+        of both the positive and the negative samples.
+        The sigmoid\footnote{
+            $\sigma(x) = \frac{1}{1+\exp^{-x}}$
+        }
+        function is used to cap the scores between zero and one. Such capped
+        scores represents the probabilities with which the model considers the
         corresponding edges as true facts.
-    \item The training loss is calculated and the filters parameters are updated
-        through backpropagation with the \emph{Adam} optimizer.
+    \item The batch loss is calculated and the filters parameters are updated
+        through backpropagation using the \emph{Adam} optimizer.
 \end{enumerate}
 
 % loss
-The loss function used is the \emph{binary cross entropy loss}, which is
-commonly used for classification tasks with just two classes, as in our case.
+The loss function that we used is the \emph{binary cross entropy loss}, which is
+commonly used for classification tasks with just two classes, as in our case:
 
 \begin{equation}
-    L = - \frac{1}{E} \sum_{i=1}^{E} \left(
-        y_i \cdot log(\sigma(score_i)) +
-        (1-y_i) \cdot log(1-\sigma(score_i))
+    \mathcal{L} \left( x, y, f(x) \right) =
+        - \frac{1}{E} \sum_{i=1}^{E} \left(
+        y_i \cdot log(f(x_i)) +
+        (1-y_i) \cdot log(1-f(x_i))
     \right)
 \end{equation}
 
-Where $y_i$ represents the label of the $i$-th sample (positive or negative) and
-$\sigma(score_i)$ represents the probability for $i$-th sample to be a true
-fact.
-$E$ is the number of training edges for the current batch and $\sigma$ is the
-sigmoid function.
-The capped scores obtained by computing the DistMult score and capping them with
-the sigmoid function can be interpreted as the confidence of the model in the
-fact that the corresponding edges represents true facts.
+$E$ is the number of edges for the current batch, taking into account both
+positives and negatives samples, and $y_i$ represents their associated label.
 
-Such loss function sets as training goal the correct classification of negative
-and positive samples, so to obtain a score as low as possible for the negative
-ones, while instead identify the true triples sampled from the PKG as true
-facts, thus giving them an high score.
+In our case, the function $f(x_i)$ computes the predicted probability for the
+$i$-th sample to be a true fact by applying the sigmoid function to its score,
+which is calculated with the DistMult factorization method:
+
+\begin{equation}
+    f(x_i) = f(s_i,r_i,o_i) = \sigma \left( e_s^T R_r e_o \right)
+\end{equation}
+
+Such capped scores can be interpreted as the confidence of the model in the
+fact that the corresponding edge represents a true fact.
+
+The loss function used sets as training goal the correct classification of
+negative and positive samples, so to obtain a score as low as possible for the
+negative ones, while instead identify the true triples sampled from the PKG as
+true facts, thus giving them an high score.
 
 As a consequence of this, the obtained model should be able to correctly
 predict if an unseen triple can be considered as a good candidate for the
@@ -1817,10 +1822,10 @@ inclusion in the Polito Knowledge Graph.
 \newline
 
 % training set dimensionality
-We are able to perform the training on GPU with a sampling size of 20'000 edges,
+We were able to perform the training on GPU with a sampling size of 20'000 edges,
 that adding the negative samples produces a per-epoch training set composed of
-a total of 220'000 edges. While having to train over more epochs due to memory
-constraints, in comparison to the execution on CPU the training time
+a total of 220'000 edges. While having to train over more epochs due to video
+memory constraints, in comparison to the execution on CPU the training time
 has been reduced by several order of magnitunes: from approximately 30 seconds
 per epoch for the forward plus backward pass, to less than three hundred
 milliseconds.
@@ -1831,25 +1836,24 @@ implemented as single threaded code using NumPy\cite{oliphant2006}, and
 requires approximately 5 seconds to be performed with the hardware at our
 disposal, which has fairly limited single-threaded performances. We
 leave the implementation of more efficient sampling methods for future releases.
-\newline
 
 % training best epoch evaluation
-In order to find the best epoch where to stop training, we evaluate the
-current model on a separate evaluation set. The evaluation is not performed at
+In order to identify the best parameters, we evaluate the model on a separate
+evaluation set during training.
+The evaluation is not performed at
 every epoch due to execution time constraints, and the frequency with which it
 must be executed is an hyperparameter decided in advance.
 How the evaluation of the model is performed will be depicted in the next
 chapter.
-When during evaluation the current epoch is identified as the best so far, the
-corresponding model, together with the network parameters, are exported and
-saved on disk.
+If during the evaluation the model trained at the current epoch is identified
+as the best so far, its parameters are serialized and saved on local storage.
+Once the training is finished, the previously exported best epoch model is
+loaded from memory and its accuracy is evaluated on the test set.
 
-Once the model has been trained, the best epoch model is loaded from memory
-and its accuracy is evaluated on the test set.
-
-After the training, evaluatin and test phases are completed, the obtained
+After the training, evaluation and test phases are completed, the obtained
 encoder model is able to give as output meaningful embeddings of the PKG nodes,
-which can be used to evaluate new facts using DistMult as decoder.
+which can be used to evaluate new facts using a factorization method
+like DistMult as decoder.
 
 
 
