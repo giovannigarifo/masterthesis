@@ -691,9 +691,9 @@ characterize the nodes only by their immediate surroundings.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.3]{img/gcn.png}
-    \caption{Representation of a GCN updating the feature vector of a node
-        by summing the convolved features of adjacent nodes.}
+    \includegraphics[scale=0.4]{img/gcn.png}
+    \caption{Representation of a GCN updating the feature vector of the node \emph{0}
+        by summing the convolved features of its adjacent nodes.}
     \label{fig:gcn}
 \end{figure}
 
@@ -1124,15 +1124,16 @@ on the components in charge of the graph creation and enhancement, whose
 architecture has been introduced in chapter \ref{ch:approach}.
 
 We will firstly introduce a detailed description of the input data used to
-create the graph. We will also describe the ontologies used to shape the
-knowledge of the scholarly domain and the resulting graph schema, obtained
-by shaping the available IRIS data using such ontologies.
-Then we will discuss how we implemented the Builder Module, which is
+create the graph. We will also describe the ontology used to shape the
+knowledge of the scholarly domain and the graph schema obtained by shaping
+the available IRIS data with such ontology.
+Then, we will discuss how we implemented the Builder Module, which is
 responsible for the actual creation of the Polito Knowledge Graph starting
 from the metadata made available by IRIS.
 
 In the second part of the chapter we will focus on the implementation of the
-link predictor module, which is used to predict unseen facts.
+link predictor module, which is used to predict new facts inside the knowledge
+base.
 We will describe how starting from the Polito Knowledge Graph we created
 a usable dataset for the training of a machine learning model, which
 architecture and hyperparameters we choose, how we trained such model and
@@ -1141,7 +1142,7 @@ best parameters.
 We will also discuss how we tested the model and which metrics we choose
 to evaluate the accuracy of the predictions on the test set.
 Finally, we will present how we employed the trained model to obtain
-predictions about new facts in the graph, and how the predictions obtained
+predictions about new facts, and how the predictions obtained
 can be used to build a recommendation system for the Polito Knowledge Graph.
 
 
@@ -1159,8 +1160,8 @@ order to manage its internal processes of acceptance and update of the
 publication status. We have discarded such metadata, since they do not
 represent significant information for the characterization of the publication.
 
-We selected the following metadata to build the graph, being the ones that
-truly represent semantic information about a publication:
+We selected the following metadata as the ones that truly characterize a
+scientific paper:
 
 \begin{enumerate}
     \item The publication identifier.
@@ -1180,13 +1181,15 @@ uniquely identified by an alphanumeric identifier, however, only the researchers
 of the Politecnico di Torino have such identifier assigned. External
 researchers that may be contributors or co-authors of the publication have only
 their name and surname listed. The author is instead always a Polito researcher.
+
 If the publication has been published in a journal, and its information are
 available, then the journal ISSN is used as identifier.
 If the publications is a conference paper, no information about the conference
-is present other than the title.
+is present other than the title, thus we cannot uniquely identify the
+conference, at least in this first version.
 The publication title, the abstract, the names, surnames and the keywords are
-simple character strings, while the date of publication is in "dd-mm-yyyy"
-format.
+simple character strings, while the date of publication is formatted as
+\emph{dd-mm-yyyy}.
 
 As already discussed in previous chapters, the keywords inserted by the authors
 cannot be treated as semantic concepts. We wanted to solve this issue, in order
@@ -1195,10 +1198,11 @@ same semantically unambiguous graph entity that uniquely represents such topic.
 To do so, we employed TellMeFirst (TMF), a tool for the automatic extraction of
 semantic keywords that relies on the DBpedia ontology and knowledge graph as
 its source of knowledge.
-In the following sections we will describe how we developed the graph builder
-and how the use of TMF allowed us to add the semantic concepts extracted from
-the publications abstracts as graph entities of the Polito Knowledge Graph.
 
+In the following sections we will describe how we developed the Graph Builder
+and how, leveraging TMF, we have been able to extract the relevant topics of a
+publication from its abstract, thus to add such semantic concepts as graph
+entities in the Polito Knowledge Graph.
 
 \subsection{PKG ontology and schema}
 
@@ -1217,7 +1221,7 @@ In order to build a knowledge graph, the instances of such classes must be
 linked together by means of semantic relations, called predicates.
 To do so, we employed some predicates already defined by the
 FOAF\cite{brickley2007} and the DCMI\cite{weibel1998} ontologies, together with
-some terms defined by the RDF Schema standard.
+some terms defined by the RDFS\cite{lassila1998} standard.
 The graph structure obtained is represented by the schema in
 Figure \ref{fig:schema}, where the classes, the attributes of such classes and
 the predicates that link them together are showed.
@@ -1237,9 +1241,9 @@ the DCMI ontology:
 \footnotetext{The \emph{dc} keyword is used as prefix for the Dublin Core
 Metadata Initiative (DCMI) namespace: http://purl.org/dc/terms/}
 
-We decided to only differentiate the first author (creator) from
-the others (contributors) due to the inability to discriminate which are the
-co-authors and which are the collaborators based on the data made available
+We decided to only differentiate the first author (\emph{creator}) from
+the others (\emph{contributors}) due to the inability to discriminate which are
+the co-authors and which are the collaborators based on the data made available
 by IRIS.
 
 The \emph{AuthorKeyword} class refers to the keywords inserted by the authors,
@@ -1254,46 +1258,50 @@ if more publications shares the same extracted topic, they will be linked
 by the \emph{dc:subject} relation to the same instance of the
 \emph{TMFResource} class that has been istantiated to represent such topic.
 An example is showed in Figure \ref{fig:subject-knowledge-base}, where are
-showed all the publications that are linked to the TMFResource of the
-topic \emph{Knowledge Base}.
+showed all the publications that are linked to the entity that corresponds to
+the topic \emph{Knowledge Base}.
 
 \begin{figure}[h]
+    \setlength{\belowcaptionskip}{-25pt}
     \centering
-    \includegraphics[scale=0.40]{img/subject_knowledge_base.png}
-    \caption{Visualization of the results obtained from
-        the Polito Knowledge Graph when running a SPARQL query that returns
+    \includegraphics[scale=0.35]{img/subject_knowledge_base.png}
+    \caption{
+        Visualization of the results obtained from
+        the PKG when running a SPARQL query that returns
         all the publications that have \emph{Knowledge Base}
-        as subject. The following is an example of a triple that links one of
-        the publication retrieved to the above topic:
-        \emph{(pkgpub:2670709, dc:subject, dbp:KnowledgeBase)}}
+        as subject. An example of returned triples is:
+        \emph{(pkgpub:2670709, dc:subject, dbp:KnowledgeBase)}.
+        The RDF statement corresponding to this example will be showed in
+        the following section.
+    }
     \label{fig:subject-knowledge-base}
 \end{figure}
 
 
 
-\subsection{The graph builder}
+\subsection{The Graph Builder}
 
-We implemented the graph builder as a Python command-line script that uses
+We implemented the Graph Builder as a Python command-line script that uses
 the \emph{rdflib}\footnote{\url{https://github.com/RDFLib/rdflib}} library
 to create and manage an in-memory RDF representation of the graph that could be
 then serialized and saved as an XML file.
-The script takes as arguments the path of the JSON dump of IRIS, together
+The script takes as arguments the path to the JSON dump of IRIS, together
 with some options that allows to trigger specific functionalities of the
 script, such as:
 
 \begin{enumerate}
-    \item The update of an already existing RDF graph, this allows to add new
-        RDF triples without the need of rebuilding the graph from scratch.
+    \item The update of an already existing RDF graph with new statements,
+        used for example to add the predicted triples.
     \item The number of topics that must be extracted from each abstract by
         TellMeFirst, the default value is seven.
     \item The addition of the topics images, which are scraped from DBpedia and
         added as attributes of the \emph{TMFResource} instances.
 \end{enumerate}
 
-The script firstly declares the namespaces and the ontology used to define the
-RDF representation of the entities and the relation inside the graph as written
-in the previous section, then parses the arguments and options received and
-execute the corresponding activities.
+The Graph Builder firstly declares the namespaces and the ontology used to
+define the RDF representation of the entities and the relation inside the graph
+as written in the previous section, then parses the arguments and options
+received and execute the corresponding activities.
 
 If the creation of a new graph is requested, the script reads the JSON dump
 in a Python list and instantiates a \emph{ThreadPoolExecutor}, a Python
@@ -1315,14 +1323,14 @@ Each record is processed by:
 
 In the first step when a field that matches a class is found a corresponding
 RDF triple that instantiates a new object is created, so a new entity is added
-to the graph. If the entity is already present, an RDF triple that links the
+to the graph. If the entity is already present, an RDF triple that connects the
 publication to the already existing entity is added.
 
 The topic extraction is requested to TMF by sending an HTTP POST request
 containing the publication abstract and the number of topics to be extracted
 to its REST API\footnote{\url{http://tellmefirst.polito.it/TellMeFirst_API_Guide.pdf}}.
 The response contains the list of the DBpedia resources that TMF
-found as topic of interest of the publication. This topics are added to the
+extracted as main topics for the publication. Such topics are added to the
 graph by instantiating the corresponding \emph{TMFResource} entities, and are
 linked to the publication by means of the \emph{dc:subject} relation.
 
@@ -1335,11 +1343,11 @@ the communication with the REST API of TellMeFirst.
 The two steps described above allows to generate a full RDF description of a
 publication starting from its metadata, which is then enriched by the topics
 extracted by TellMeFirst.
-
-For example, the listing that follows contains the RDF description of a
-publication generated by the graph builder. As can be saw, not only a new
-publication entity is created, but also the author and subject are
-added to the graph by instantiating the corresponding classes.
+For instance, the listing that follows contains an example RDF description
+generated by the Graph Builder. As can be saw, not only a new
+publication entity is created, but also the author and extracted topic are
+added to the graph, or if already present, they are just connected to the new
+publication.
 
 \begin{lstlisting}[
     language=XML,
@@ -1350,15 +1358,14 @@ added to the graph by instantiating the corresponding classes.
 ]
 <?xml version="1.0" encoding="UTF-8"?>
 <rdf:RDF
+    xmlns:pkg="http://pkg.polito.it/"
     xmlns:dc="http://purl.org/dc/terms/"
     xmlns:foaf="http://xmlns.com/foaf/0.1/"
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-    xmlns:pkg="http://pkg.polito.it/"
     xmlns:dbpr="http://dbpedia.org/resource/"
     xmlns:xmls="http://www.w3.org/2001/XMLSchema#">
-
-    <rdf:Description rdf:about="pkg:publications/2679709">
+    <rdf:Description rdf:about="pkg:publications/2670709">
         <rdf:type rdf:resource="pkg:ontology/Publication"/>
         <dc:identifier>2679709</ns1:identifier>
         <rdfs:label>Title</rdfs:label>
@@ -1371,6 +1378,7 @@ added to the graph by instantiating the corresponding classes.
     </rdf:Description>
     <rdf:Description rdf:about="dbpr:Knowledge_Base">
         <rdf:type rdf:resource="pkg:ontology/TMFResource"/>
+        <dc:identifier>Knowledge_Base</dc:identifier>
         <rdfs:label>Knowledge Base</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="pkg:authors/rp00000">
@@ -1431,7 +1439,7 @@ internal representation obtained can be serialized and exported as an XML
 file that contains the definition of all the RDF triples that forms the
 Polito Knowledge Graph.
 Such RDF representation will be then used as input for the enhancer module or
-loaded into a triplestore (like
+loaded into a triplestore (we used
 Blazegraph\footnote{\url{https://blazegraph.com/}}) in order to be queried by
 the viewer component.
 \newpage
@@ -1442,11 +1450,11 @@ the viewer component.
 \section{Enhancing the Polito Knowledge Graph}
 
 Once the first version of the Polito Knowledge Graph has been built, the
-Enhancer Module can be used to infer new facts. In this section we will discuss
-how we created a usable dataset for the encoder starting from the RDF
-graph, how we employed a R-GCN architecture to encode the entity characteristics
-into meaningful embeddings and how we built and evaluated new triple candidates
-for the addition to the graph.
+Enhancer Module can be used for the inference of new facts. In this section we
+will discuss how we created a usable dataset for the encoder starting from the
+RDF graph, how we employed a R-GCN architecture to encode the entity
+characteristics into meaningful embeddings and how we built and evaluated the
+new candidate triple for the addition to the graph.
 
 
 \subsection{The Dataset Builder}
@@ -1480,7 +1488,7 @@ which are unique and unhambiguous in the whole graph:
 With respect to the full set of entities of the Polito Knowledge Graph, we
 discarded all the external contributors and co-authors, for which we only have
 as information the names and surnames, and all the authors keywords.
-The dataset is then built from a reduced version of the initial graph.
+The dataset is thus built from a reduced version of the initial graph.
 
 In the following, we will explain how starting from such reduced version of the
 graph we built a usable dataset for the learning task.
@@ -1503,9 +1511,9 @@ encoder:
         entities.
     \item The number of nodes labels, where each label is referred to a class of
         the PKG ontology.
-    \item a node-indexed list of labels, where the $i$-th element corresponds to
-        the label assigned to $i$-th nodes.
-    \item a list of edges, where each edge is
+    %\item a node-indexed list of labels, where the $i$-th element corresponds to
+    %   the label assigned to $i$-th nodes.
+    \item A list of edges, where each edge is
         a Python tuple \emph{(subject, predicate, object)} composed of three
         elements: the node index of the subect and the object, and the
         relation index of the predicate. How such indexes are generated is
@@ -1525,11 +1533,11 @@ or class integer index.
     building the list of edges. Only the entities that are instances of the
     classes that we selected as part of the dataset are added to the node table.
 
-    \item The \emph{labels table} is built starting from the PKG ontology,
-    assigning to each of the selected classes a unique integer index that
-    represents the corresponding label.
+    %\item The \emph{labels table} is built starting from the PKG ontology,
+    %assigning to each of the selected classes a unique integer index that
+    %represents the corresponding label.
 
-    \item The \emph{relations table} is also built from the PKG ontology,
+    \item The \emph{relations table} is built strting from the PKG ontology,
     assigning to each relation inside the graph a corresponding integer
     identifier.
 \end{enumerate}
@@ -1623,14 +1631,15 @@ author keywords and the external authors, have been removed.
 
 Modern machine learning algorithms are implemented as deep networks
 composed of many layers and parameters. Building such architectures from the
-ground-up would be almost unfeasible, especially when dealing with a challenging
-kind of data structure, such as multi-relational graphs.
+ground-up would be almost unfeasible, especially when dealing with challenging
+kinds of data structures, such as multi-relational graphs.
 Many frameworks and libraries that relies on some basic abstractions have been
 introduced in the last years, allowing the implementation of complex
 architectures without the need of coding them from scratch. Moreover, one
-of the key aspects when building machine learning models is to develop highly
+of the key aspects when building machine learning models is to build highly
 efficient implementations, especially when working with lots of data, as in the
-case of knowledge graphs.
+case of knowledge graphs, thus leveraging highly optimized and tested software
+is crucial.
 
 % pytorch
 One of the most commonly used frameworks that allows to build and train
@@ -1664,7 +1673,7 @@ are depicted in \cite{gilmer2017}, with R-GCN being one of them.
 With DGL, a graph can be created by instantiating an object of the
 \emph{DGLGraph} class, which offers a dictionary-like interface for adding to
 the graph both nodes and edges, together with their features or any other
-relevant data for the training, for instance the normalization constant.
+relevant data for the training, for instance the normalization constants.
 The message passing paradigm is implemented by means of the \emph{send} and
 \emph{recv} functions, which allows to define the two basic operations for the
 per-edge messages construction and the per-node aggregation.
@@ -1749,7 +1758,7 @@ After the edges have been sampled, a predefined number of corrupted edges are
 generated starting from the the sampled ones. This is done because the learning
 problem that we want to solve is a classification problem: we want our
 model to be able to give an high DistMult score to the true edges, and a
-low score to the corrupted edges.
+low score to the corrupted ones.
 This will allow us to obtain a model that is able to recognize true facts, and
 thus can be used to predict the probability with which an unseen triple
 may belong to the Polito Knowledge Graph.
@@ -1808,8 +1817,12 @@ which is calculated with the DistMult factorization method:
     f(x_i) = f(s_i,r_i,o_i) = \sigma \left( e_s^T R_r e_o \right)
 \end{equation}
 
-Such capped scores can be interpreted as the confidence of the model in the
-fact that the corresponding edge represents a true fact.
+Where $e_s$ and $e_o$ are the embeddings for the source node (subject) and
+destination node (object), $R_r$ is obtained by transforming the embedding
+of the relation (predicate) $e_r$ into a diagonal matrix and $\sigma$ is the
+sigmoid function.
+The resulting capped score can be interpreted as the confidence of the model in
+the fact that the corresponding edge represents a true fact.
 
 The loss function used sets as training goal the correct classification of
 negative and positive samples, so to obtain a score as low as possible for the
@@ -1822,12 +1835,18 @@ inclusion in the Polito Knowledge Graph.
 \newline
 
 % training set dimensionality
-We were able to perform the training on GPU with a sampling size of 20'000 edges,
-that adding the negative samples produces a per-epoch training set composed of
-a total of 220'000 edges. While having to train over more epochs due to video
-memory constraints, in comparison to the execution on CPU the training time
-has been reduced by several order of magnitunes: from approximately 30 seconds
-per epoch for the forward plus backward pass, to less than three hundred
+The training can be performed both on CPU, which in respect to the GPU has
+access to four times the memory, but has less execution units, or on the GPU,
+which is memory-limited but can leverage its highly parallelized architecture.
+The usage of CPU or GPU, and the number of CPU threads to be used are
+hyperparameters that can be setted up before starting the training.
+
+We were able to perform the training on GPU with a sampling size of 20'000
+edges, that adding the negative samples produces a per-epoch training set
+composed of a total of 220'000 edges. While having to train over more epochs due
+to video memory constraints, in comparison to the execution on CPU the training
+time has been reduced by several order of magnitunes: from approximately 30
+seconds per epoch for the forward plus backward pass, to less than three hundred
 milliseconds.
 
 % sampling bottleneck
@@ -1859,6 +1878,72 @@ like DistMult as decoder.
 
 \subsection{The Link Evaluator}
 
+Once the model has been trained, and the testing phase demonstrated
+that it has embedded the characteristics needed to build
+semantically meaningful nodes embeddings, the Link Evaluator can be
+used to leverage the trained model for the prediction of new facts.
+
+As already saw, a \emph{fact} in the knowledge based is composed of a source
+and a destination nodes, the subject and the object, and an edge, called
+predicate, that connects the two nodes, establishing a relation between the two.
+
+We are interested in the prediction of facts that are not already present inside
+the knowledge base, and that are coherent with the defined ontology, both in
+domain and range.
+
+The Link Evaluator loads in memory the model produced by the Model Trainer and
+performs the following tasks:
+
+\begin{enumerate}
+    \item It builds the graph of existing facts by merging together the train,
+        test and evaluation edges.
+    \item Then it gets the embeddings of the nodes of such graph by feeding it
+        to the trained encoder.
+    \item It creates the set of every possible fact, and scores the triples in
+        such set, only taking the ones with the highest score.
+    \item Finally, the obtained predicted triples are saved in a JSON file
+        and imported by the Graph Builder, that will add them to the Polito
+        Knowledge Graph as new RDF statements.
+\end{enumerate}
+
+The node embeddings are obtained by feeding the graph of existing facts to the
+R-GCN encoder in evaluation mode, so to disable the gradients tracking in the
+PyTorch computational graph, which greatly improves the performances.
+
+To create the set of new facts, the Link Evaluator firstly
+generates the set of all the graph nodes, and then creates the set of
+possible facts by generating, for every node, all the possible links to
+every other node in the graph. This is done by taking for each source node
+(subject) all the possible combinations of relations (predicates) and
+destination nodes (objects).
+
+However, a majority of this automatically generated triples will be semantically
+incorrect. For example, among the permutations there will be triples that
+connect together two publications using as predicate the relation
+\emph{dc:subject}, which is clearly meaningless, because it is saying that the
+major topic of a publication is another publication.
+Such triples that are not correct with respect to the PKG ontology
+are immediately discarded.
+
+Once the semantically incorrect facts are removed, the remaining edges could be
+scored by applying the DistMult factorization.
+Then, the scored triples are grouped by subject and relation and sorted by their
+score in descending order.
+The number of scored triple to save for each couple subject-relation is an
+hyperparameter decided in advance, we used 30 as default value.
+
+The resultg new facts are then exported as a JSON file which could be used by
+the graph builder to build the corresponding RDF triples, that could be then
+added the PKG, thus completing the information of the knowledge base.
+
+Moreover, the predicted triples could be used to obtain insights and
+recommendations that can be showed by the Viewer module.
+For instance, among all the predictions there will be triples that refers to
+the predicted authors of a publication. Such information can be used to obtain
+the authors that shares the same research interest of the actual authors of
+the paper, but with they never had published before.
+This because the predicted authors of a scientific paper can be thought as
+authors that shares the same research interests of the true publication authors.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
