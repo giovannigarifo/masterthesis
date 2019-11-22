@@ -24,12 +24,26 @@
 \usepackage{cite}           % cite bibtex entries
 \usepackage{hyperref}       % internal references to text, chapters ecc
 
-\usepackage{tabularx, booktabs}       % tables
+
+\usepackage{makecell}
+
+\renewcommand\theadalign{bc}
+\renewcommand\theadfont{\bfseries}
+\renewcommand\theadgape{\Gape[4pt]}
+\renewcommand\cellgape{\Gape[4pt]}
+
+
+\usepackage{tabularx, booktabs, multirow, subcaption} % tables
+\usepackage[table]{xcolor}
 \newcolumntype{b}{X}
 \newcolumntype{m}{>{\hsize=.5\hsize}X}
 \newcolumntype{s}{>{\hsize=.4\hsize}X}
 \newcolumntype{z}{>{\hsize=.3\hsize}X}
+\newcolumntype{k}{>{\hsize=.2\hsize}X}
+\newcolumntype{u}{>{\hsize=.1\hsize}X}
 \newcolumntype{Y}{>{\centering\arraybackslash}X} %centering
+
+\newcommand*\rot{\rotatebox{90}} % multirow rotation
 
 \usepackage{color}
 \definecolor{gray}{rgb}{0.4,0.4,0.4}
@@ -1270,7 +1284,7 @@ the topic \emph{Knowledge Base}.
         the PKG when running a SPARQL query that returns
         all the publications that have \emph{Knowledge Base}
         as subject. An example of returned triples is:
-        \emph{(pkgpub:2670709, dc:subject, dbp:KnowledgeBase)}.
+        \emph{(pkgpub:2670709, dc:subject, dbp:Knowledge\_Base)}.
         The RDF statement corresponding to this example will be showed in
         the following section.
     }
@@ -1832,14 +1846,30 @@ true facts, thus giving them an high score.
 As a consequence of this, the obtained model should be able to correctly
 predict if an unseen triple can be considered as a good candidate for the
 inclusion in the Polito Knowledge Graph.
-\newline
+
+% regularization: L2 and dropout
+To avoid overfitting, the following $L2$ regularization is added to the
+training loss:
+
+\begin{equation}
+    L2_{regularization} = \lambda \cdot \left(\frac{1}{N}\sum_{i=0}^{N} e_{i}^2 + \frac{1}{R}\sum_{r=0}^{R} w_{r}^2 \right)
+\end{equation}
+
+Where $\lambda$ is an hyperparameter used to scale the regularization, $N$ is
+the number of nodes, $R$ is the number of relations, $e_i$ is the embedding of
+the $i$-th node and $w_r$ is a randomly initialized vector that represents
+the embedding of the relation $r$.
+
+In addition to the regularization, dropout with a probability of $20\%$ is used
+to randomly update only some of the network weights at each training epoch.
+
 
 % training set dimensionality
 The training can be performed both on CPU, which in respect to the GPU has
 access to four times the memory, but has less execution units, or on the GPU,
 which is memory-limited but can leverage its highly parallelized architecture.
-The usage of CPU or GPU, and the number of CPU threads to be used are
-hyperparameters that can be setted up before starting the training.
+The usage of CPU or GPU and the number of CPU threads to be used are
+hyperparameters that can be changed before starting the training.
 
 We were able to perform the training on GPU with a sampling size of 20'000
 edges, that adding the negative samples produces a per-epoch training set
@@ -1859,10 +1889,10 @@ leave the implementation of more efficient sampling methods for future releases.
 % training best epoch evaluation
 In order to identify the best parameters, we evaluate the model on a separate
 evaluation set during training.
-The evaluation is not performed at
-every epoch due to execution time constraints, and the frequency with which it
-must be executed is an hyperparameter decided in advance.
-How the evaluation of the model is performed will be depicted in the next
+The evaluation is not performed at every epoch due to computation time
+constraints, and the frequency with which it is executed is an hyperparameter
+decided in advance.
+How the evaluation of the model is performed will be presented in the next
 chapter.
 If during the evaluation the model trained at the current epoch is identified
 as the best so far, its parameters are serialized and saved on local storage.
@@ -1951,7 +1981,288 @@ authors that shares the same research interests of the true publication authors.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Evaluation}
 
-% evaluating the result obtained from link prediction
+% intro
+In this chapter we will describe the methods used to evalute the trained
+model.
+The evaluation is performed both during training and testing. For the training
+task, we evaluate the model over the validation set, which is used to check
+wether the latest updated parameters led to a more accurate model.
+After the training is finished, the evaluation is performed over a test set
+whose data has never been seen by the model during training, so to test
+wether it is able to correctly score unseen true facts.
+
+% entity ranking
+We evaluated the model using the \emph{entity ranking} approach, which is
+commonly used to evaluate knowledge base embedding models.
+Such approach evalutes the ability of a model to identify the triples that
+belongs to the knowledge base with respect to the set of all possible facts.
+
+To do so, it is firstly required to generate two sets of corrupted facts for
+each triple inside the knowledge base.
+This is actually performed by corrupting the source and destination
+node of every edge in the evaluation set:
+starting from the $i$-th evaluation edge $(s_i,p_i,o_i)$ we obtain
+two sets of corrupted edges $(a,p_i,o_i)$ and $(s_i,p_i,b)$, with
+$a,b \in [0, N]$, where $N$ is the number of nodes of the whole graph.
+
+Then, for every triple in the evaluation set, the triple itself and its
+corresponding corrupted ones are scored
+using the same factorization method used for the training, in our case DistMult.
+The triples are then sorted by descending score, and the position of
+the evaluation triples inside such sorted list represent its \emph{rank}.
+
+Ideally, the best possible model should be able to always rank all the triples
+in the evaluation set on first position, thus giving them the highest rank.
+Such model would be always able to identify the correct facts, and therefore we
+could be confident in the truthfulness of its predictions.
+However, obtaining such a model is unfeasible in practice.
+\newline
+
+% le metriche utilizzate
+To obtain a measure of the accuracy with which the trained model is able to
+identify the correct triples, we used the following metrics:
+
+\begin{enumerate}
+    \item The Reciprocal Rank (RR), which can be computed for a single
+        evaluted edge $(s_i,p_i,o_i)$ as $1/rank_{(s_i,p_i,o_i)}$, where the
+        rank is obtained as explained above.
+    \item The Mean Reciprocal Rank (MRR), which is the average of the
+        RR of all the evaluation edges. The value obtained is representative
+        of the accuracy of the entire model.
+    \item The Hits-at-N (HITS@N), which is the number of triples for whom the computed
+        rank is between $0$ and $N$.
+\end{enumerate}
+
+So for example, a triple ranked in the tenth position of the sorted list of
+scores will have a RR of $0.1$. If the triples in the evaluation set are $100$,
+with half of them ranked in first position and the other half in the tenth, the
+obtained MRR will be
+$\frac{1}{100} \sum_{i=1}^{100} \frac{1}{rank_{(s_i,r_i,o_i)}} = 0.55$,
+while the HITS@1 will be equal to 50, and the HITS@10 wil be
+equal to 100.
+\newline
+
+% riferimento alle caratteristiche hardware della macchina usata
+We performed the evaluation on the same workstation used for the training,
+whose specifications can be found in Table \ref{tab:workstation}.
+However, in contrast to the training, which is peformed on GPU to leverage its
+parallelized architecture, the evaluation hs been made on CPU due to memory
+constraints.
+
+In fact, as a consequence of the dimensionality of the graph, and therefore
+that of the set of corrupted edges, the matrices used to perform the
+evaluation cannot be stored in the GPU memory.
+Moreover, also the system memory at our disposal is not sufficient to perform
+such task in parallel for all the edges, thus requiring the evaluation to be
+perfomed in batches.
+With the memory at our disposal we have been able to perform the evaluation in
+batches of 80 triples.
+Given that we were not able to run the computation on the highly parallel
+architecture of the GPU, and that we were limited by the small amount of memory
+and cores of our CPU, the evaluation proved to be the slowest task of the
+whole pipeline, taking approximately twenty minutes per run.
+This is why we have been not able to perform the evaluation of the model at
+every training epoch, however, we found that evaluating every 500 epochs still
+allowed us to obtain useful metrics for the choice of the best hyperparameters.
+
+
+% cross-validation table
+\begin{table}[h]
+    \caption{
+        Cross-validation of learning rate and regularization parameters
+        using as benchmark the Mean Reciprocal Rank (MRR) value.
+        The first table shows the MRR of the best model found during the
+        training phase.
+        The second table shows the MRR obtained by the best model when tested
+        over the test set.
+    }
+    \label{tab:xval}
+    \aboverulesep=0ex
+    \belowrulesep=0ex
+    \renewcommand{\arraystretch}{1.5}
+    \small
+
+    %first
+    \begin{subtable}[h]{\textwidth}
+        \centering
+        \caption{
+            MRR of the best model found during training.
+        }
+        %----------------------------------------------------------------------%
+        \begin{tabularx}{\textwidth}{ z s | Y Y Y Y | }
+            \multicolumn{2}{c}{} & \multicolumn{4}{c}{\textbf{Learning Rate}} \\
+            \addlinespace[0.2cm]
+
+            \multicolumn{1}{c}{} & \multicolumn{1}{c}{\textbf{MRR}} & $\textbf{0.05}$ & $\textbf{0.01}$ & $\textbf{0.005}$ & \multicolumn{1}{c}{$\textbf{0.001}$} \\
+            \addlinespace[0.2cm]
+            \cmidrule{3-6}
+
+            \multirow{5}{*}{\rot{\textbf{Regularization}}}
+            & $\textbf{1.0}$
+            & $0.0$
+            & $0.0623$
+            & $0.0504$
+            & $0.0823$
+            \\
+            & $\textbf{0.5}$
+            & $0.0$
+            & $0.0677$
+            & $0.0718$
+            & \cellcolor[HTML]{f2f2eb} $0.0891$
+            \\
+            & $\textbf{0.1}$
+            & $0.0004$
+            & $0.0703$
+            & $0.852$
+            & $0.0764$
+            \\
+
+            & $\textbf{0.05}$
+            & $0.0$
+            & $0.0707$
+            & $0.0763$
+            & $0.0673$
+            \\
+
+            & $\textbf{0.01}$
+            & $0.0$
+            & $0.062$
+            & $0.0725$
+            & $0.0$
+            \\
+
+            \cmidrule{3-6}
+        \end{tabularx}
+        %----------------------------------------------------------------------%
+    \end{subtable}
+
+    %fill
+    \vspace*{1 cm}
+
+    % second
+    \begin{subtable}[h]{\textwidth}
+        \centering
+        \caption{
+            MRR obtained when evaluating the best model over the test set.
+        }
+
+        %----------------------------------------------------------------------%
+        \begin{tabularx}{\linewidth}{ z s | Y Y Y Y | }
+            \multicolumn{2}{c}{} & \multicolumn{4}{c}{\textbf{Learning Rate}} \\
+            \addlinespace[0.2cm]
+
+            \multicolumn{1}{c}{} & \multicolumn{1}{c}{\textbf{MRR}} & $\textbf{0.05}$ & $\textbf{0.01}$ & $\textbf{0.005}$ & \multicolumn{1}{c}{$\textbf{0.001}$} \\
+            \addlinespace[0.2cm]
+            \cmidrule{3-6}
+
+            \multirow{5}{*}{\rot{\textbf{Regularization}}}
+            & $\textbf{1.0}$
+            & $0.00$
+            & $0.0611$
+            & $0.0497$
+            & $0.081$
+            \\
+            & $\textbf{0.5}$
+            & $0.00$
+            & $0.0662$
+            & $0.0723$
+            & \cellcolor[HTML]{f2f2eb} $0.0852$
+            \\
+
+            & $\textbf{0.1}$
+            & $0.0002$
+            & $0.0693$
+            & $0.0827$
+            & $0.0726$
+            \\
+
+            & $\textbf{0.05}$
+            & $0.00$
+            & $0.0687$
+            & $0.0726$
+            & $0.0654$
+            \\
+
+            & $\textbf{0.01}$
+            & $0.00$
+            & $0.0589$
+            & $0.07$
+            & $0.00$
+            \\
+
+            \cmidrule{3-6}
+        \end{tabularx}
+        %----------------------------------------------------------------------%
+     \end{subtable}
+\end{table}
+
+
+% cross validation degli hyperparameters, tabella e commento
+In Table \ref{tab:xval} we show the result of the evaluation of the model over
+some possible combinations of hyperparameters, in particular, we computed the
+MRR for possible combinations of the learning rate and of the regularization.
+As can be saw from the table, we found the best values to be $0.001$ for the
+learning rate and $0.5$ for the regularization parameter.
+
+The fairly high value of the regularization parameter is particularly
+interesting: we motivate this result as a consequence of the fact that our
+graph is composed of a very low number of different relations, which is
+paricularly true if compared to other graphs, such as the one used
+for benchmarking.
+Given how the R-GCN encoder works, less relations means less convolutional
+filters, so less characteristics that are used to generate the embeddings.
+In this regard, the regularization parameter helps the model to differentiate
+the embeddings obtained, even if there are few relations, and allows to
+not overfit on common features.
+
+Regarding the MRR value obtained for the best model, it can be interpreted as
+the fact that, in average, the evaluated triples are ranked in the
+\emph{eleventh} position.
+The authors of R-GCN obtained an MRR value of $0.125$ over the FB15k-237
+dataset, which is commonly used as benchmark for the evaluation of link
+prediction model. This value means that the true facts are ranked, in average,
+in the \emph{eighth} position. Our result is thus not so distant from the one
+obtained over the benchmarking dataset.
+Moreover, if we consider the number of nodes in the PKG dataset, the result
+obtained is particularly good, given that the model is able to rank
+(in average) the true triple in the eleventh position when ranked with $47.995$
+corrupted triples, while in FB15k-237 for each true fact only
+$14.951$ corrupted ones are generated.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.8]{img/num_triples_per_rank.png}
+    \caption{
+        Number of triples obtained for each ranking position when evaluating
+        the best model found over the test set.
+    }
+    \label{fig:num-triples-per-rank}
+\end{figure}
+
+The Figure \ref{fig:num-triples-per-rank} shows how the testing triples are
+distributed over the possible ranking values.
+As can be saw, the model is able to correctly assign an high rank to the
+majority of the true facts.
+\newline
+
+% evaluating different TMF topics
+When looking at the statistics of the Polito Knowledge Graph, we can saw how
+a big part of the entities, and in particular of the edges, are related to the
+publications topics. In particular, as showed in Table \ref{tab:pkgsize},
+almost a third of the PKG edges connect a publication to a subject extracted by
+TellMeFirst.
+
+Given that the amount of topics extracted by TMF for each publication is a
+Graph Builder parameter, we decided to generate three new graphs with
+different numbers of topics extracted for each publication, so to evaluate
+how having a different number of \emph{TMFResource} entities inside the
+knowledge graph could have an impact on the trained model.
+
+As can be seen from the results showed in Table XXX.
+
+% closure
+
+
 
 
 
