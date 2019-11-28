@@ -40,6 +40,7 @@
 \newcolumntype{s}{>{\hsize=.4\hsize}X}
 \newcolumntype{z}{>{\hsize=.3\hsize}X}
 \newcolumntype{k}{>{\hsize=.2\hsize}X}
+\newcolumntype{i}{>{\hsize=.2\hsize}>{\centering\arraybackslash}X}
 \newcolumntype{u}{>{\hsize=.1\hsize}X}
 \newcolumntype{Y}{>{\centering\arraybackslash}X} %centering
 
@@ -1881,9 +1882,8 @@ We were able to perform the training on GPU with a sampling size of 20'000
 edges, that adding the negative samples produces a per-epoch training set
 composed of a total of 220'000 edges. While having to train over more epochs due
 to video memory constraints, in comparison to the execution on CPU the training
-time has been reduced by several order of magnitunes: from approximately 30
-seconds per epoch for the forward plus backward pass, to less than three hundred
-milliseconds.
+time has been reduced by two order of magnitude: from approximately 30
+seconds per epoch for the forward plus backward pass, to less than 0.3.
 
 % sampling bottleneck
 The biggest bottleneck while training remains the sampling phase, which is
@@ -2074,12 +2074,12 @@ architecture of the GPU, and that we were limited by the small amount of memory
 and cores of our CPU, the evaluation proved to be the slowest task of the
 whole pipeline, taking approximately twenty minutes per run.
 This is why we have been not able to perform the evaluation of the model at
-every training epoch, however, we found that evaluating every 500 epochs still
+every training epoch, however, we found that evaluating every 100 epochs still
 allowed us to obtain useful metrics for the choice of the best hyperparameters.
 
 
 % cross-validation table
-\begin{table}[h]
+\begin{table}[t]
     \caption{
         Cross-validation of learning rate and regularization parameters
         using as benchmark the Mean Reciprocal Rank (MRR) value.
@@ -2111,14 +2111,14 @@ allowed us to obtain useful metrics for the choice of the best hyperparameters.
 
             \multirow{6}{*}{\rot{\textbf{Regularization}}}
             & $\textbf{1.0}$
-            & $0.0$
+            &
             & $0.0623$
             & $0.0504$
             & $0.0823$
             & $0.0793$
             \\
             & $\textbf{0.5}$
-            & $0.0$
+            &
             & $0.0677$
             & $0.0718$
             & \cellcolor[HTML]{f2f2eb} $0.0891$
@@ -2129,23 +2129,23 @@ allowed us to obtain useful metrics for the choice of the best hyperparameters.
             & $0.0703$
             & $0.852$
             & $0.0764$
-            & $0$
+            & $0.0706$
             \\
 
             & $\textbf{0.05}$
-            & $0.0$
+            &
             & $0.0707$
             & $0.0763$
             & $0.0673$
-            & $0$
+            &
             \\
 
             & $\textbf{0.01}$
-            & $0.0$
+            &
             & $0.062$
             & $0.0725$
-            & $0.0$
-            & $0$
+            &
+            &
             \\
 
             \cmidrule{3-7}
@@ -2174,14 +2174,14 @@ allowed us to obtain useful metrics for the choice of the best hyperparameters.
 
             \multirow{6}{*}{\rot{\textbf{Regularization}}}
             & $\textbf{1.0}$
-            & $0.00$
+            &
             & $0.0611$
             & $0.0497$
             & $0.081$
             & $0.079$
             \\
             & $\textbf{0.5}$
-            & $0.00$
+            &
             & $0.0662$
             & $0.0723$
             & \cellcolor[HTML]{f2f2eb} $0.0852$
@@ -2193,23 +2193,23 @@ allowed us to obtain useful metrics for the choice of the best hyperparameters.
             & $0.0693$
             & $0.0827$
             & $0.0726$
-            & $0$
+            & $0.0666$
             \\
 
             & $\textbf{0.05}$
-            & $0.00$
+            &
             & $0.0687$
             & $0.0726$
             & $0.0654$
-            & $0$
+            &
             \\
 
             & $\textbf{0.01}$
-            & $0.00$
+            &
             & $0.0589$
             & $0.07$
-            & $0.00$
-            & $0$
+            &
+            &
             \\
 
             \cmidrule{3-7}
@@ -2236,6 +2236,16 @@ In this regard, the regularization parameter helps the model to differentiate
 the embeddings obtained, even if there are few relations, and allows to
 not overfit on common features.
 
+\begin{figure}[t]
+    \centering
+    \includegraphics[scale=0.8]{img/num_triples_per_rank.png}
+    \caption{
+        Number of triples obtained for each ranking position when evaluating
+        the best model found over the test set.
+    }
+    \label{fig:num-triples-per-rank}
+\end{figure}
+
 Regarding the MRR value obtained for the best model, it can be interpreted as
 the fact that, in average, the evaluated triples are ranked in the
 \emph{eleventh} position.
@@ -2250,16 +2260,6 @@ obtained is particularly good, given that the model is able to rank
 corrupted triples, while in FB15k-237 for each true fact only
 $14.951$ corrupted ones are generated.
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[scale=0.8]{img/num_triples_per_rank.png}
-    \caption{
-        Number of triples obtained for each ranking position when evaluating
-        the best model found over the test set.
-    }
-    \label{fig:num-triples-per-rank}
-\end{figure}
-
 The Figure \ref{fig:num-triples-per-rank} shows how the testing triples are
 distributed over the possible ranking values.
 As can be saw, the model is able to correctly assign an high rank to the
@@ -2267,17 +2267,46 @@ majority of the true facts.
 \newline
 
 % evaluating different TMF topics
-When looking at the statistics of the Polito Knowledge Graph, we can saw how
-a big part of the entities, and in particular of the edges, are related to the
-publications topics. In particular, as showed in Table \ref{tab:pkgsize},
-almost a third of the PKG edges connect a publication to a subject extracted by
-TellMeFirst.
+When looking at the statistics of the Polito Knowledge Graph, it is possible to
+saw how a big part of the entities, and in particular of the edges, are related
+to the publications topics, represented by the \emph{TMFResource} instances.
+In particular, as showed in Table \ref{tab:pkgsize}, almost a third of the
+PKG edges connect a publication to a subject extracted by TellMeFirst.
 
-Given that the amount of topics extracted by TMF for each publication is a
-Graph Builder parameter, we decided to generate three new graphs with
-different numbers of topics extracted for each publication, so to evaluate
-how having a different number of \emph{TMFResource} entities inside the
-knowledge graph could have an impact on the trained model.
+We wanted to evaluate how having a different number of \emph{TMFResource}
+entities in the knowledge graph could have an impact on the trained model.
+To do so, we built three new RDF graphs with a different numbers of topics
+extracted by TellMeFrist for each publication, in particular, we extracted
+three, seven and fourteen topics from each abstract.
+Then, we trained the new models by giving as input the datasets created
+starting from such three new graphs.
+We used for the learning rate and the regularization hyperparameters the best
+value found in the cross-validation.
+
+
+% table: Polito Knowledge Graph characteristics
+\begin{table}[t]
+    \footnotesize
+    \centering
+    \setlength\extrarowheight{5pt}
+    \caption{
+        Impact of the number of topics present in the RDF graph on the
+        accuracy of the trained model.
+    }
+    \label{tab:tmfeval}
+
+    \begin{tabularx}{1.0\textwidth}{ X | i  i  i }
+            \toprule
+
+            Number of topics extracted per-abstract & \textbf{3} & \textbf{7} & \textbf{14} \\
+            Number of \emph{TMFResource} entities in the graph & 9.591 & 16.988 & 26.541 \\
+            Number of \emph{dc:subject} edges & 45.423 & 107.093 & 212.226 \\
+            MRR over test data & & & \\
+            HITS@5/10/15 & & & \\
+
+            \bottomrule
+    \end{tabularx}
+\end{table}
 
 As can be seen from the results showed in Table XXX.
 
@@ -2288,11 +2317,72 @@ As can be seen from the results showed in Table XXX.
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % --------------------------- Conclusions and future work -------------------- %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Conclusions and future work}
+\chapter{Conclusions and future works}
+
+In this work we presented how starting from the metadata of the Politecnico di
+Torino publications we were able to build an Academic Knowledge Graph that
+links together researchers, publications, research topics and scientific
+journals through the use of semantic relations.
+
+We detailed the software architecture developed for the creation, enhancement
+and visualization of such graph, particurlarly focusing our attention on the
+enhancing phase.
+In this regard, we used an approach based on Graph Convolutional
+Networks to obtain an encoder model capable of embedding the nodes
+characteristics into vector representations.
+Such representations allowed us to predict new facts, so to complete the
+information available in the knowledge base.
+The predicted facts are also used to empower a recommendation system whose
+suggestions can be used by the researchers to explore new fields of
+study, or to find other researchers who share the same research interests.
+
+In our work we used the metadata made available by the Politecnico di
+Torino, however, the data of any other academic institutions could be used.
+Moreover, the metadata of different academic institutions can be grouped
+together to obtain an even bigger, and thus complete knowledge base.
+\newline
+
+Regarding the technological aspects, we would like in future releases to
+implement new factorization methods, so to test wether or not the use of
+different scoring functions can lead to even better results.
+Moreover, one of the limitations of the current implementation of the Enhancer
+Module is that it is not able to predict new facts that the
+model has never seen during training. We would like to investigate in this
+regard for new solutions based on the extension of the current encoder
+architecture.
+
+Another aspect that could be improved is the structure of the graph itself.
+In the current implementation there are no dependencies or relations between
+the research topics entities, however, in future releases we would like to add
+a new layer of completeness by linking together the topics based on how they are
+related to each other.
+For example, \emph{Deep Learning} is a sub topic of \emph{Machine Learning},
+which in turn is a sub topic of \emph{Artificial Intelligence}, but at the time
+of writing this information is not present in the Polito Knowledge Graph.
+Such improvement could be achieved by leveraging the structured information
+made available by the DBpedia project.
+\newline
+
+Our work showed how is it possible to build new tools for the
+sharing and dissemination of the knowledge produced by an academic institution,
+leveraging technologies of the Semantic Web and state of the art machine
+learning algorithms.
+Our recommendation system is a first step in the direction of
+offering new tools to the researchers for exploring both new research fields
+and the scientific community that study such fields.
+Hopefully, this could lead to the contamination between researchers belonging
+to different research fields but that are interested in the same topics,
+thus increasing the multidisciplinarity within the academic community.
+
+Among the other beneficial aspects, the Polito Knowledge Graph, and in
+particular the search engine built upon it, can be used to support the
+technological transfer between the Politecnico di Torino and external parties,
+such as private organization, acting as an expertise search engine.
+
+
 
 
 
