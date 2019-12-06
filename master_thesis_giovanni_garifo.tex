@@ -24,6 +24,8 @@
 \usepackage{cite}           % cite bibtex entries
 \usepackage{hyperref}       % internal references to text, chapters ecc
 
+\def\UrlBreaks{\do\/\do-}   % break urls also using "-"
+
 
 \usepackage{makecell}
 
@@ -58,8 +60,8 @@
     columns=fullflexible,
     showstringspaces=false,
     commentstyle=\color{gray}\upshape,
-    aboveskip=13.5pt,
-    belowskip=13.5pt
+    aboveskip=12.5pt,
+    belowskip=12.5pt
 }
 
 \lstdefinelanguage{XML}
@@ -163,46 +165,65 @@
 
 The publication and sharing of new research results is one of the
 main goal of an academic institution. In recent years, many efforts have been
-made to collect and organize the scientific knowledge through new
+made to collect and organize the scientific knowledge through new,
 comprehensive data repositories.
+To achieve such goal new tools that are able not only to store data, but also to
+describe them are needed.
+
 Knowledge graphs are a particular class of graphs that are used to
 semantically describe the human knowledge in a specific domain by linking
-semantic entities through labeled and directed edges.
+entities through labeled and directed edges.
+
 In this work we are going to present a novel semantic graph built on top of the
-scholarly data produced by the researchers of the Politecnico di Torino.
-
-Such graph, built by leveraging Semantic Web technologies, connects
+scholarly data produced by the Politecnico di Torino (Polito), and how we
+employed state-of-the-art machine learning techniques for the prediction
+of new facts in the knowledge base.
+Such graph, built by leveraging Semantic Web technologies, links together
 publications, researchers, fields of study and scientific journals in order
-to build a knowledge base that describes the Politecnico di Torino academic
+to build a knowledge base that describes the Politecnico di Torino scientific
 community.
-Once the knowledge base is built, advanced statistical relational learning
-techniques specifically developed to learn from graph data can be used to
-predict new facts.
-The prediction of non-existent links between entities is one of the
-most challenging tasks in this field, mainly because, in order to obtain
-meaningful predictions, the vector representations of the entities must
-embed their semantic characteristics.
+We decided to call such new academic graph the \emph{Polito Knowledge Graph}.
 
-To accomplish this goal, we decided to employ Deep Learning techniques derived
+The prediction of non-existent links between graph nodes is one of the
+most challenging tasks in the field of statistical relational learning for graph
+data, mainly because, in order to obtain meaningful predictions, the vector
+representations of the entities must embed their semantic characteristics.
+To accomplish such goal, we decided to employ a Deep Learning architecture derived
 from the image recognition field and specifically adapted to the task of
-representation learning for graph data. Such architectures
-allows to obtain representations that are directly learnt from the graph
-structure itself, without the use of any prior information.
-We then used such predicted facts to complete the knowledge base and
-build a recommendation system to empower researchers with useful
-insights. For instance, unexplored fields of study in which they might be
-interested in, or recommendations about other researchers with whom they have
-never worked before, but that may share the same research interests.
+representation learning for graph data.
+Such architecture allowed us to obtain representations that have been
+directly learnt from the graph structure itself, without requiring any prior
+knowledge or feature engineering.
+Leveraging such representations, we were able to obtain meaningful predictions
+that we used to empower a recommendation system for the suggestion of useful
+insights to the Polito researchers.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ------------------------------- acknowledgements --------------------------- %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ringraziamenti
 
-Acknowledgements here, half page
+I would like to express my deep gratitude to Giuseppe Futia, for his useful
+advices, his support in the revision of this work and his enthusiastic
+encouragement.
 
+I would also like to thank all my colleagues and the directors of the
+Nexa Center for Internet and Society, who supported me during my master
+degree studies.
+Special thanks should be given to Marco Conoscenti, Selina Fenoglietto and
+Antonio Vetrò, for the support given during this years.
 
-\tablespagetrue\figurespagetrue % normalmente questa riga non serve ed e' commentata
+I also want to thank my family and friends, with a particular mention to
+Angelo Cataldo, friend of a lifetime.
+
+This work is dedicated to Monia Fontana, without whose support I would not
+have been able to face the challenges that the life posed me in the latest
+years, and to my Grandfather, Giovanni Rotolo, passed away shortly after
+the start of my master degree, whom I hope to make proud by completing my
+university studies.
+
+% normalmente questa riga non serve ed e' commentata
+\tablespagetrue\figurespagetrue
 \indici
 
 \mainmatter
@@ -215,8 +236,7 @@ Acknowledgements here, half page
 \section{Motivation}
 
 Graphs are used to empower some of the most complex IT services available
-today, an example among all is the Google search engine
-\footnote{\url{https://blog.google/products/search/introducing-knowledge-graph-things-not/}}.
+today, an example among all is the Google search engine\footnote{\url{https://blog.google/products/search/introducing-knowledge-graph-things-not/}}.
 Graphs can be used to represent almost any kind of information, and they are
 particularly capable of representing the structure of complex systems and
 describe the relationships between their elements.
@@ -227,8 +247,8 @@ querying and understanding the semantic relations within them.
 RDF\footnote{The Resource Description Framework will be introduced in
 section \ref{subsec:semanticweb}} graphs are a
 particular class of graphs that can be used to build knowledge
-bases. Ontologies are used to shape such knowledge bases, in order to have a
-semantically coherent representation of the domain knowledge.
+bases. Ontologies are used to shape such knowledge repositories, in order to
+have a semantically coherent representation of the domain knowledge.
 Given a domain and an ontology, RDF graphs allows to build a structured
 representation of the knowledge in such domain.
 
@@ -242,7 +262,7 @@ dealing with representation learning tasks, being able to learn latent
 representations without any prior knowledge other than the graph structure.
 
 
-\section{Goal and contribution}
+\section{Goal and Contribution}
 
 % issue
 Knowledge sharing is one of the main goals of research organizations. In
@@ -250,7 +270,8 @@ particular, universities are among the most interested in making publicly
 available their research results. Today most universities have embraced the Open
 Science movement, making their scientific publications publicly available
 through web portals.
-An example is IRIS\footnote{\url{https://iris.polito.it/}}, which
+
+An example of such tools is IRIS\footnote{\url{https://iris.polito.it/}}, which
 stores all the scientific papers produced by the Politecnico di Torino,
 publicly sharing them through Open Access.
 IRIS allows to explore the published papers by searching for a field of study,
@@ -282,18 +303,8 @@ In the next chapters we are going to present a newly built structured and
 semantically coherent representation of the scholarly data produced by the
 Politecnico di Torino, and how implicit facts can be automatically
 extracted from such knowledge repository by leveraging knowledge base
-completion techniques, implemented by means of an advanced deep learning
+completion techniques, implemented by means of an advanced link prediction
 algorithm.
-
-
-\section{Thesis structure}
-
-\subsection{Chapter 2}
-
-\subsection{Chapter 3}
-
-\subsection{Chapter 4}
-
 
 
 
@@ -332,13 +343,12 @@ to define a framework to describe and query semantic information contained
 in the documents available on the Web, so as to allow machines to understand
 the semantic information contained in web pages. In the vision of Tim
 Berners-Lee, the father of WWW, this would bring to the transition from a
-World Wide Web to a Giant Global Graph
-\footnote{\url{https://web.archive.org/web/20160713021037/http://dig.csail.mit.edu/breadcrumbs/node/215}},
+World Wide Web to a Giant Global Graph\footnote{\url{https://web.archive.org/web/20160713021037/http://dig.csail.mit.edu/breadcrumbs/node/215}},
 where a web page contains metadata that provides to a machine the needed
 information to understand the concepts and meanings expressed in it.
 
 
-\subsection{The Semantic Web building blocks}
+\subsection{The Semantic Web Building Blocks}
 \label{subsec:semanticweb}
 
 The three key components of the Semantic Web standard are:
@@ -419,7 +429,7 @@ match the given resource type.
     }
 \end{lstlisting}
 
-\subsection{Knowledge Bases as knowledge repositories}
+\subsection{Knowledge Bases as Knowledge Repositories}
 
 % table: comparison of some of the biggest existing KG
 \begin{table}
@@ -466,14 +476,15 @@ a Scientific Knowledge Graph that collects more then three hundred million
 academic papers. A comparison between some of the biggest knowledge graphs
 developed to this date is available in Table \ref{tab:kg-comparison}.
 
-From an implementation perspective, knowledge bases can be created to
-describe a specific domain by defining an ontology and a vocabulary for
-such domain using OWL and RDF Schema, and then by describing the concepts
-of such domain using the RDF Model and Syntax. The RDF document obtained
-can then be stored in a triplestore and queryed using SPARQL. The main effort
-in building knowledge bases is to have a correct understanding and prior
-knowledge of the domain of interest, to avoid the risk of mischaracterizing
-and misrepresenting concepts.
+From an implementation perspective, knowledge bases can be created by defining
+an ontology and a vocabulary for a specific domain of knowledge using OWL and
+RDF Schema, and then by describing the concepts of such domain using the
+RDF Model and Syntax.
+The RDF document obtained can then be stored in a triplestore and queryed
+using SPARQL.
+The main effort in building knowledge bases is to have a correct understanding
+and prior knowledge of the domain of interest, to avoid the risk of
+mischaracterize or misrepresent concepts.
 
 \begin{figure}[h]
     \centering
@@ -483,11 +494,11 @@ and misrepresenting concepts.
     \label{fig:geranium-knowledge-base-example}
 \end{figure}
 
-If all the requirements and cautions are met, a well formed knowledge base may
+If all the requirements and precautions are met, a well formed knowledge base may
 prove to be a critical resource for an organization. It permits to
 build new services upon it, and also to improve the existing knowledge inside
 the organization by performing reasoning upon the available knowledge, in order
-to derive implicit facts strting from the existing entities and relationships.
+to derive implicit facts starting from the existing entities and relationships.
 Another field of applications is the development of Expert Systems\footnote{\url{https://en.wikipedia.org/wiki/Expert_system}},
 AI software that emulates the behavior of a human decision-making process by
 navigating the knowledge base and taking decisions like in a rule-based system.
@@ -510,8 +521,9 @@ by the human understanding.
 
 
 \section{Learning on Graphs}
+\label{sec:learninggraphs}
 
-\subsection{Representation learning}
+\subsection{Representation Learning}
 
 Machine learning (ML) algorithms are used to learn models from the
 available data, with the final goal to obtain a set of parameters
@@ -524,32 +536,32 @@ machine-understandable vector representation. An important task
 in the ML field is the learning of such representations, task known
 as representation learning.
 
-Natural Language Processing (NLP) is one of the research branches that in
+Natural Language Processing is one of the research branches that in
 the past years has made a great use of machine learning algorithms both for
-language recognition and for embedding words \emph{meaning} into words
-\emph{vectors}.
+language recognition and for embedding words meaning into words
+vectors.
 One of the most successful algorithms when dealing with representation learning
 of words is Word2Vec \cite{mikolov2013}, where the model obtained is trained to
 learn a vector representation for each word in a vocabulary.
 In Word2Vec, the concept of meaning of a word is related to the context in
 which such word is frequently used, so two words are recognized as similar if
-they're used in similar contexts, thus in the vector space of the learnt
-representations words that have similar meaning have higher
+they are used in similar contexts. In the vector space of the learnt
+representations words that have similar meaning have an higher
 cosine similarity\footnote{
     Cosine similarity is a heuristic method to measure the
     similarity between two vectors by computing the cosine of the angle between
     them:
     $similarity(A,B) = cos(\theta) = \frac{A \cdot B}{\Vert A \Vert \Vert B \Vert}$
 }
-with respect to dissimilar ones.
+with respect to the dissimilar ones.
 For instance, the cosine similarity between the word vectors of "Man" and "King"
 is roughly the same as the one between the words "Woman" and "Queen", since such
 words are used in similar contexts. This has open up new scenarios for
-language recognition and processing, since it allowed to perform vector
-operations on such words which brought interesting results, as can be seen
-in Figure \ref{fig:word2vec}.
+language processing, since it allowed to perform vector
+operations on words vectors, which brought interesting results.
+An example can be seen in Figure \ref{fig:word2vec}.
 
-\begin{figure}[h]
+\begin{figure}[t]
     \centering
     \includegraphics[scale=0.4]{img/word2vec.png}
     \caption{
@@ -571,7 +583,7 @@ vector representations of nodes and edges are needed in order
 to be able to learn from the available data and predict new facts.
 Such vector representations are often referred to as \emph{embeddings} because
 they should embed the characteristics of the graph nodes, so that similar nodes
-have similar embeddings. In example, in a scholarly knowledge base publications
+have similar embeddings. For instance, in a scholarly knowledge base publications
 with same authors and similar subjects should have similar embeddings.
 
 Early approaches required these representations to be learned from feature
@@ -582,7 +594,7 @@ representation learning tasks, since who has knowledge of the domain and who
 has to engineer the features were unlikely the same individual.
 
 
-\subsection{Deep Learning on graphs}
+\subsection{Deep Learning on Graphs}
 
 In the latest years a big shift towards deep architectures has been made
 in machine learning, mainly thanks to the development of highly
@@ -626,7 +638,7 @@ irregular structures.
 The first issue can be solved by randomly sampling the graph at each
 training epoch, the immediate drawback being that more than one epoch
 is required to train over all graph nodes. The second issue can instead be
-solved by adapting known algorithms to work on irregular domains.
+solved by adapting already existing algorithms to work on irregular domains.
 One of the possible approaches, which has proven to work well, is
 the one based on convolutions.
 
@@ -639,12 +651,13 @@ The main difference between CNNs and GCNs is in how the convolution is
 performed, instead the backpropagation phase is the same as the one
 used to update the parameters of CNNs, with a task-specific loss function.
 In a CNN the input matrix of each network layer, which is the pixel matrix
-of the input image for the first layer, is convolved with a convolutional
-filter, whose parameters are then updated during the backpropagation phase.
+of the input image for the first layer, is convolved with some layer-specific
+convolutional filters, whose parameters are then updated during the
+backpropagation phase.
 
-GCNs works similarly by convolving at the l-th layer
+GCNs works similarly by convolving at the \emph{l}-th layer
 of the network the feature vector of each node with the feature
-vectors of its l-nearest neighbors by means of a convolutional filter.
+vectors of its \emph{l}-nearest neighbors by means of a convolutional filter.
 This operation is done by applying the following transformation:
 
 \begin{equation} \label{gcn1}
@@ -662,11 +675,10 @@ $\tilde{A}$ is an adjacency matrix of the graph that includes self loops.
 $\tilde{D}$ is the node degree matrix of $\tilde{A}$ and is used to
 normalize it.
 $W^{l}\in\mathbb{R}^{d^{(l)} \times d^{(l+1)}}$ is the convolutional filter that
-is shared among all nodes and is unique for each layer, just like the
-convolutional filter of a CNN layer.
+is shared among all nodes and is unique for each layer.
 The shape of this filter will directly impact the dimensionality of the
 embeddings obtained, in fact $H^{l+1}$ is shaped as a $N\times d^{(l+1)}$ matrix.
-Finally, $\sigma$ is a non linear activation function, for example $ReLU$.
+Finally, $\sigma$ is a non linear activation function, for instance $ReLU$.
 
 Looking at the update rule of a single node embedding will make more clear how
 the convolution is actually performed.
@@ -694,11 +706,12 @@ obtained by performing the following operations:
         obtaining the updated feature vector of the node $i$.
 \end{enumerate}
 
-As a consequence of applying such transformation to all nodes, at the
+Applying such transformations to all nodes, at the
 $k$-th layer a node is represented by its transformed feature vector, which
 embeds the structural information within the node's $k$-hop neighborhood.
-So the amount of layers of the network is an hyperparameter that controls how much
-information from furthest nodes has to be collected in each node embedding.
+As a consequence of this, the amount of layers of the network is an
+hyperparameter that controls how much information from furthest nodes has to be
+collected in each node embedding.
 This represents a fundamental architectural difference between CNNs and GCNs:
 while the former are commonly built by stacking a lot of layers, the latter
 relies on architectures that are more wider, due to the dimensionality of the
@@ -715,19 +728,19 @@ characterize the nodes only by their immediate surroundings.
 \end{figure}
 
 As a result of the propagation step each node embedding will be characterized by
-its context, just like it happens in Word2Vec, but in a non-Euclidean domain.
+its context, just like it happens in Word2Vec, but in a non-euclidean domain.
 So for example, in a social graph where each person is characterized by its
-friends, interests, places visited and so on, two people will have similar
-embeddings if they are both linked to the nodes that represent such
-characteristics.
+friends, hobbies, places visited and so on, two people will have similar
+embeddings if they are both linked to the same nodes, and so they share the
+same interests and social connections.
 
 The node embeddings obtained by applying a GCN or one of its variants can
-then be used to perform some learning task on the graph, two examples are
+then be used to perform some learning tasks on the graph, two examples are
 the classification of unseen nodes or the link prediction of non-existent
 edges. The latter is one of the most interesting tasks, since it allows to
 complete the information contained in the graph by predicting unseen facts.
 
-\subsection{Link prediction on knowledge graphs}
+\subsection{Link Prediction on Knowledge Graphs}
 \label{subsec:linkprediction}
 
 Predicting new facts is one of the most common task in the field
@@ -755,7 +768,7 @@ producer-consumer framework one node could be the producer while the other
 the consumer, having both a common neighborhood of nodes
 which are produced by the former and consumed by the latter.
 If a GCN is used, the embeddings obtained would be very similar, even if
-the two nodes clearly don't have the same role and don't belong to the
+the two nodes clearly do not have the same role and do not belong to the
 same class.
 
 To overcome this limitation, changes to the basic GCN architecture have been
@@ -779,7 +792,7 @@ to obtain an edge-specific message.
 Then, in the reduce phase, the embedding of each node is updated by aggregating
 together all the messages of the incoming edges.
 
-This two phases can be grouped together through by the following equation:
+This two phases can be grouped together through the following equation:
 
 \begin{equation}
     h_i^{(l+1)} = \sigma \left(
@@ -791,7 +804,7 @@ Where $\CMcal{M}_i$ is the set of incoming messages for node $i$ and
 $g_m$ is a message specific transformation.
 \newline
 
-The idea behind R-GCN is to have different set of parameters
+The idea behind the R-GCN is to have different set of parameters
 for different relations.
 At each step inside the network, the feature vector of a node is updated by
 convolving its first neighbors features with a convolutional filter that is
@@ -823,7 +836,7 @@ all the messages computed for the edges connected to each node.
 
 As can be seen the update rule looks similar to the one for GCNs (\ref{gcn2}),
 with the major difference that in the case of a R-GCN the filters used to
-convolve the feature vectors of neighboring nodes are relation specific, so the
+convolve the feature vectors of neighboring nodes are relation-specific, so the
 number of filters at each layer will be equal to the number of relations inside
 the graph. As a consequence, the kind of relation that connect the node
 to its neighbors has an important role in determining the transformed node
@@ -832,7 +845,7 @@ embedding.
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.48]{img/rgcn-encoder.png}
-    \caption{R-GCN encoder model. Image taken from \cite{schlichtkrull2018}.}
+    \caption{R-GCN encoder visualization. Image taken from \cite{schlichtkrull2018}.}
     \label{fig:rgcn-encoder}
 \end{figure}
 
@@ -860,7 +873,7 @@ triples under evaluation.
 \newline
 
 DistMult \cite{yang2014} is one of the most common and simple factorization
-methods used to score unseen triples. Given a triple $(s, r, o)$, where $s$
+methods used to score unseen triples. Given a triple $(s, p, o)$, where $s$
 is the source node, $o$ is the destination node, and $r$ is the relation of the
 edge that links the source to the destination, DistMult allows to compute
 an associated real valued score as follows:
@@ -879,14 +892,14 @@ represent the relation.
 The score obtained by applying the factorization method above can then be used
 to evaluate wether the triple $(s,r,o)$ is a good candidate to be added to the
 graph: an high score has to be interpreted as a high confidence of the model
-in the fact that the triple should belong to the knowledge graph.
+in the fact that the triple should belong to the knowledge base.
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % -------------------------- Approach and methodology ------------------------ %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Approach and methodology}
+\chapter{Approach and Methodology}
 \label{ch:approach}
 
 This chapter introduces the architecture developed to build, enhance
@@ -897,18 +910,18 @@ also includes publication-related entities, such as authors, journals,
 and fields of study.
 
 The architecture is composed of three main modules, that at an high level
-can be seen as part of a producer-consumers architecture, where the former
-produces the graph data, and the latter consume the data produced.
+can be seen as part of a producers-consumers architecture, where the former
+produces the graph data, and the latter consumes it.
 
-The architecture, which is showed in Figure \ref{fig:pipeline}, is structured
+The architecture, which is shown in Figure \ref{fig:pipeline}, is structured
 as a pipeline composed of the following three modules:
 
 \begin{enumerate}
     \item The \emph{Builder}, which creates a first version of the
     RDF graph.
     \item The \emph{Enhancer}, which implements ML techniques to predict
-    unseen facts. Such facts can then be added to the graph to improve its
-    completeness.
+    unseen facts. Such facts can then be added to the graph in order to
+    complete the knowledge base.
     \item The \emph{Viewer}, a web application that allows to query
     and visualize the graph data.
 \end{enumerate}
@@ -937,9 +950,9 @@ a public web interface for querying and visualizing the data.
 The Builder input is a dump of the
 IRIS\footnote{\url{https://iris.polito.it/}} database, which is the platform
 used by the Politecnico di Torino to store and share all the
-publications produced by its researchers. The dump is a JSON file that contains
-all the information available for the scientific paper published in a period
-of five years that goes from 2013 to 2017.
+scientific papers written by its researchers. The dump is a
+JSON file that contains all the information available for the scientific
+paper published in a period of five years that goes from 2013 to 2017.
 
 The Builder goal is to translate all the information contained in the
 dump in a set of semantically coherent RDF triples. To do so, an ontology that
@@ -954,12 +967,12 @@ contributors by using two different statements to tie the corresponding entities
 to the publication.
 
 One of the fields of the publication record is the abstract. We wanted to
-link each publication to its research fields, to do so we used the abstract
-as input text for TellMeFirst \cite{rocha2015}, a tool for the automatic
+link each publication to its research fields, to do so we used the publication abstract
+as input text for TellMeFirst (TMF) \cite{rocha2015}, a tool for the automatic
 extraction of semantic keywords from texts. Such keywords, to which from now
 on we'll refer to as \emph{topics}, are retrieved from the DBpedia taxonomy
 and are uniquely identified by their corresponding URI.
-Exploiting TellMeFirst we are able to automatically tie each publication to
+By exploiting TMF we are able to automatically tie each publication to
 its relevant topics, by adding the corresponding RDF statements to the graph.
 Being the topics added as graph entities which are uniquely identified, all the
 publications that share a topic are linked to the same topic entity.
@@ -976,6 +989,7 @@ to the entities representing its authors, contributors and research topics.
 Once the first version of the RDF graph has been built, it could be used as
 input for the Enhancer Module, whose main goal is to infer unseen facts to
 complete and enhance the information available inside the knowledge graph.
+\newline
 
 The Enhancer is composed of three main components:
 
@@ -986,14 +1000,15 @@ The Enhancer is composed of three main components:
 \end{enumerate}
 
 The Dataset Builder is in charge of translating the RDF graph into a usable
-dataset for the Model Trainer, given that the RDF statements cannot be used as
+dataset for the Model Trainer, this because the RDF statements cannot be used as
 input data for the link prediction algorithm.
 The dataset will then be splitted into three disjoint\footnote{Two sets are said
 to be disjoint if they have no element in common.}
-sets: one for training, one for validation and one for testing.
+sets.
 
-The Model Trainer uses this three sets to train a link predictor. The training
-set is used to train the model at each epoch, while the validation set
+The Model Trainer uses this three sets to train, validate and test the link
+prediction model.
+The training set is used to train the model at each epoch, while the validation set
 is used to evaluate which model parameters to keep, identifying the best epoch.
 The test set is used to evaluate the accuracy of the model, loaded with the best
 epoch parameters, upon unseen triples. Once the model has been trained, it can
@@ -1001,13 +1016,13 @@ be used to predict unseen facts.
 
 The Link Evaluator loads the best model found during the training phase and
 uses it to evaluate unseen triples.
-The Evaluator creates an set of unseen RDF triples and produces a score for
-each of them. Only the triples that obtain an high score (and so an high
+To do so, the Evaluator creates a set of unseen RDF triples and produces a score
+for each of them. Only the triples that obtain an high score (and so have an high
 probability to be true facts) and are correct in domain and range with respect
 to the ontology are kept.
 The predicted triples are then saved as RDF statements and could be added
 to the RDF graph, obtaining the enhanced version of the Polito Knowledge Graph.
-This new version will contain not only the information available in IRIS, but
+This new version will contain not only the information available on IRIS, but
 also the latent information inferred by the learnt model, like missing topics,
 similar authors or proposed journals, which can be used to empower a
 recommendation system for the Polito researchers.
@@ -1023,17 +1038,25 @@ It stores an online copy of the Polito Knowledge Graph and expose a
 SPARQL endpoint that allows to query the graph itself.
 
 The API layer exposes a REST API that allows to retrieve the information
-contained in the graph without the need of SPARQL queries. It accept HTTP
+contained in the graph without the need of using SPARQL queries. It accepts HTTP
 requests with URL-encoded parameters and proceeds to query the SPARQL endpoint
 of the triplestore by matching the parameters upon some predefined queries.
-Then it translates the response obtained from the triplestore in a JSON file,
+Then, it translates the response obtained from the triplestore in a JSON file,
 which is sended back to the requesting client, which is typically the front end.
 
 The front end is a responsive web application that act as the entry point for
 the user, mimicking the functionalities of a modern search engine. It allows
-to query and visualize the data contained in the graph by
-performing HTTP requests to the API layer and displaying the results received
-in a structured and comprehensible way.
+to query and visualize the data contained in the graph through the use
+of a simple and friendly User Interface.
+
+For example the user, who should typically be a researcher of the Politecnico di
+Torino, can search for a topic of interest and obtain as result the list of all
+the publications, authors and journals that are linked to such topic.
+The predictions are used to add suggestions to the results, for example,
+if searching for an author, in the results obtained are shown not only its
+actual research interestes, but also other topics in which he may interested in,
+or researchers with similar profiles but with which he never published a
+research together, thus obtaining useful insights about its scientific community.
 
 
 
@@ -1041,29 +1064,30 @@ in a structured and comprehensible way.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % -------------------------------- Related Work ------------------------------ %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Related work}
+\chapter{Related Work}
 
 % Open Academic Graph
-Currently there is a growing interest in scientific
-knowledge graphs, both by academic institutions and by private organizations.
+Today there is a growing interest in scientific
+knowledge graphs, both from academic institutions and private organizations.
 An example is the Open Academic
 Graph\footnote{\url{https://www.openacademic.ai/oag/}} (OAC), an academic
-knowledge graph built by unifying two of the largest
+knowledge graph that has been built by merging together two of the largest
 scientific KG available, the Microsoft Academic
 Graph\footnote{\url{https://academic.microsoft.com/}}
 and AMiner\footnote{\url{https://www.aminer.cn/}}.
-It has been publicly released to allow
+The OAC has been publicly released to allow
 the study of citation networks, papers content and more.
 The first version of the graph, released in 2017, has been
 built by merging together the aforementioned graphs and by linking the
 matching publications, obtaining a graph that is composed of more then three
-hundred million publications. In the first version the only type of entity
-in the graph was the publication: authors, journals, and all the other
-publications information were added as attributes, and not as entities.
+hundred million publications. In the first version of the graph the only kind of
+entity present was the publication: authors, journals, and all
+the other publications metadata were added as attributes, and not as entities.
 
-In January 2019 the second version of the OAC has been released, adding even
-more publications to the graph. However, the biggest change of this new
-version is the addition of authors and venues as graph entities,
+In January 2019 the second version of the Open Academic Graph has been
+released, adding even more publications to the graph.
+However, the biggest change of this new
+version was the addition of authors and venues as graph entities,
 instead of being simple publications attributes.
 
 However, the OAC does not contain the publications topics as graph
@@ -1079,17 +1103,16 @@ and natural language processing techniques to build new academic search engines
 is Wiser\cite{cifariello2019}, an
 expertise search tool developed by the University of Pisa and publicly released
 at the beginning of 2019.
-The KG of Wiser is composed of approximately 1'500 authors, 65'000 publications
-and 35'000 topics\footnote{Numerical statistics about the Polito Knowledge Graph
-are available in the following chapter.}.
-The main function of Wiser is to allow the search of expertise in a given
-research field.
+The knowledge graph of Wiser is composed of approximately 1'500 authors, 65'000 publications
+and 35'000 topics\footnote{Details about the Polito Knowledge Graph dimensionality and scale
+will be presented in the following chapter.}.
 The system has proven to be particularly effective, representing a strategic
-tool and being actively used by the university technological transfer office.
+tool and being actively used by the university Technological Transfer Office to
+easily find expertise profiles in a given research field.
 \newline
 
 % CSO Classifier and Computer Science Ontology
-As saw in the previous chapter, one of the main components of the PKG
+As saw in the previous Chapter, one of the main components of the PKG
 pipeline is TellMeFirst, tool used to automatically extract the topics of
 interest from the publications abstracts. By automatically extracting the
 topics, TMF allows to add them as entities in the Polito Knowledge Graph,
@@ -1105,7 +1128,7 @@ The fact that the CSO Classifier relies on a predefined ontology has some
 disadvantages with respect to TellMeFirst, the biggest being the fact that the
 Computer Science Ontology is restricted to the computer science field only,
 while TMF, using DBpedia as its source of knowledge, is able to extract
-topics (and so classify a research paper) regarding every field of research.
+topics (and so to classify a research paper) regarding every field of research.
 However, the approach of CSO Classifier has also its advantages: being the
 ontology more restricted, the classification could be more accurate, and the
 structure of the ontology itself may be tailorized for such classification task.
@@ -1123,9 +1146,8 @@ we could try different factorization methods while keeping the same encoder
 architecture based on R-GCN to learn the node embeddings.
 Some possible factorization methods that we would like to implement
 as decoders are \cite{kazemi2018} and \cite{trouillon2016}.
-
-To the best of our knowledge we are the first to employ a
-Relational-GCN for the completion task of a scholarly knowledge graph.
+However, to the best of our knowledge, we are the first to leverage a
+Relational-GCN for the completion task of an academic knowledge graph.
 
 
 
@@ -1133,12 +1155,12 @@ Relational-GCN for the completion task of a scholarly knowledge graph.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ----------------------- Development and Implementation --------------------- %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Development and implementation}
+\chapter{Development and Implementation}
 
-In this chapter we will describe how we developed and implemented the
-architecture behind the Polito Knowledge Graph, particularly focusing
+In the first part of this chapter we will describe the development and the
+implementation of the Polito Knowledge Graph, particularly focusing
 on the components in charge of the graph creation and enhancement, whose
-architecture has been introduced in chapter \ref{ch:approach}.
+architecture has been introduced in Chapter \ref{ch:approach}.
 
 We will firstly introduce a detailed description of the input data used to
 create the graph. We will also describe the ontology used to shape the
@@ -1151,13 +1173,14 @@ from the IRIS publications metadata.
 In the second part of the chapter we will focus on the implementation of the
 link predictor module, which is used to predict new facts inside the knowledge
 base.
-We will describe how starting from the Polito Knowledge Graph we created
-a usable dataset for the training of an encoder model, which
+We will describe how we created a usable dataset for the training of an
+encoder model starting from the Polito Knowledge Graph, which
 architecture and hyperparameters we choose, how we trained such model and
 how it has been validated during the training phase in order to choose the
 best parameters.
-We will also discuss how we tested the model and which metrics we choose
+We will also discuss how we tested the model and which metrics we chosen
 to evaluate the accuracy of the predictions on the test set.
+
 Finally, we will present how we employed the trained model to obtain
 predictions about new facts, and how the predictions obtained
 can be used to build a recommendation system for the Polito Knowledge Graph.
@@ -1166,16 +1189,17 @@ can be used to build a recommendation system for the Polito Knowledge Graph.
 \section{Building the Polito Knowledge Graph}
 \label{sec:buildingpkg}
 
-As already mentioned when introducing the pipeline, the input data used to
-build the PKG is a dump of the IRIS database which contains the information about
-all the scientific papers published by the researchers of the Politecnico di
-Torino from the beginning of 2013 to the end of 2017.
-The dump is a JSON file composed of 23'268 records, where each record contains
-the metadata about a single scientific publication.
-Many of the metadata present are generated by the IRIS platform itself in
-order to manage its internal processes of acceptance and update of the
-publication status. We have discarded such information, since they are not
-significant for the characterization of the publication.
+As already mentioned when introducing the pipeline in Chapter \ref{ch:approach},
+the input data used to
+build the PKG is a dump of the IRIS database, which contains the information about
+the scientific papers published by the researchers of the Politecnico di
+Torino in a five-year period.
+The dump is a JSON file composed of 23,268 records, and each record contains
+the metadata of a single scientific publication.
+Many of the available metadata are generated by the IRIS platform, in
+order to manage its internal processes of publications management.
+We have discarded such information, since they are not
+significant for the publication characterization.
 
 We selected the following metadata as the ones that truly characterize a
 scientific paper:
@@ -1195,33 +1219,34 @@ scientific paper:
 The publication identifier is a unique numeric code associated by IRIS to each
 scientific paper. Also the authors, contributors and coauthors should be
 uniquely identified by an alphanumeric identifier, however, only the researchers
-of the Politecnico di Torino have such identifier assigned. External
-researchers that may be contributors or coauthors of the publication have only
-their name and surname listed. The author is instead always a Polito researcher.
+of the Politecnico di Torino have such identifier. External
+researchers that may be contributors or coauthors of the publication are present
+with only their name and surname.
+The author is instead always a Polito researcher.
 
-If the publication has been published in a journal, and its information are
-available, then the journal ISSN is used as identifier.
-If the publications is a conference paper, no information about the conference
+If the scientific paper has been published in a journal, the journal ISSN
+is used as identifier, if present.
+If the publication is a conference paper, no information about the conference
 is present other than the title, thus we cannot uniquely identify the
 conference, at least in this first version of the Graph Builder.
-The publication title, the abstract, the names, surnames and the keywords are
-simple character strings, while the date of publication is formatted as
-\emph{dd-mm-yyyy}.
+The publication title, the abstract, the names, surnames and the keywords and
+the date of publication are simple character strings.
 
-As already discussed in previous chapters, the keywords entered by the authors
+As already discussed in previous Chapters, the keywords entered by the authors
 cannot be treated as semantic concepts. We wanted to solve this issue, in order
 to have all the publications that refer to a specific topic linked to a
 same semantically unambiguous graph entity that uniquely represents such topic.
-To do so, we employed TellMeFirst (TMF), a tool for the automatic extraction of
+To do so, as already mentioned in the previous Chapter, we employed
+TellMeFirst (TMF), a tool for the automatic extraction of
 semantic keywords that relies on the DBpedia ontology and knowledge graph as
 its source of knowledge.
 
 In the following sections we will describe how we developed the Graph Builder
 and how, leveraging TMF, we have been able to extract the relevant topics of a
-publication from its abstract, so to add such semantic concepts as graph
+publication from its abstract, adding such topics as graph
 entities in the Polito Knowledge Graph.
 
-\subsection{PKG ontology and schema}
+\subsection{PKG Ontology and Schema}
 
 Starting from the metadata discussed above, we defined
 the PKG ontology as composed of five different classes:
@@ -1247,11 +1272,11 @@ classes and the predicates that links them together.
     \centering
     \includegraphics[scale=0.85]{img/schema.png}
     \caption{Schema of the Polito Knowledge Graph. The ontologies used to
-    define the structure are showed in the prefixes table.}
+    define the structure are shown in the prefixes table.}
     \label{fig:schema}
 \end{figure}
 
-As can be saw from the schema showed in Figure \ref{fig:schema}, the
+As can be saw from the schema shown in Figure \ref{fig:schema}, the
 \emph{Publication} class is linked to the \emph{Author} class by means of two
 relations both defined by the DCMI ontology:
 \emph{dc:creator}\footnotemark and \emph{dc:contributor}\footnotemark[\value{footnote}].
@@ -1259,23 +1284,24 @@ relations both defined by the DCMI ontology:
 Metadata Initiative (DCMI) namespace: http://purl.org/dc/terms/}
 
 We decided to only differentiate the first author (\emph{creator}) from
-the others (\emph{contributors}) due to the inability to discriminate which are
-the co-authors and which are the collaborators based on the metadata made
-available by IRIS.
+the others (\emph{contributors}) due to the inability to discriminate, based
+on the metadata made available by IRIS, which are
+the co-authors and which are the collaborators.
 
-The \emph{AuthorKeyword} class represents the keywords entered by the authors.
+The \emph{AuthorKeyword} class represents the keywords added by the authors
+to tag the publication.
 Even if such keywords do not represent any semantic information, we decided to
 add them to the knowledge base for the sake of completeness with respect to
 the metadata available.
 
-Instead, the \emph{TMFResource} class is used to instantiate the entities
+Instead, the \emph{TMFResource} class is used to categorize the entities
 corresponding to the DBpedia resources extracted by TMF starting from the
 publications abstracts.
 Being uniquely identified by their DBpedia URI, the publications that shares
 a topic will be linked, through the \emph{dc:subject} relation, to the same
 instance of the \emph{TMFResource} class that represents such topic.
-An example is showed in Figure \ref{fig:subject-knowledge-base}, where are
-showed all the publications that are linked to the entity instantiated for
+An example is shown in Figure \ref{fig:subject-knowledge-base}, where are
+depicted all the publications that are linked to the entity instantiated for
 the \emph{Knowledge Base} topic.
 
 \begin{figure}[h]
@@ -1287,7 +1313,7 @@ the \emph{Knowledge Base} topic.
         the PKG when running a SPARQL query that returns
         all the publications that have \emph{Knowledge Base}
         as topic.
-        The RDF representation of this example will be listed in
+        An excerpt of the RDF representation of this example will be listed in
         the following section.
     }
     \label{fig:subject-knowledge-base}
@@ -1309,9 +1335,12 @@ script, such as:
     \item The update of an already existing RDF graph with new statements,
         used for example to add the predicted triples.
     \item The number of topics that must be extracted from each abstract by
-        TellMeFirst, the default value is seven.
-    \item The addition of the topics images, which are scraped from DBpedia and
-        added as attributes of the \emph{TMFResource} instances.
+        TMF, the default value is seven.
+    \item The addition of the URLs of
+        the topics pictures, which are scraped from Wikimedia
+        Commons\footnote{\url{https://commons.wikimedia.org/}} through
+        its publicly available SPARQL endpoint and added
+        to the corresponding \emph{TMFResource} instances.
 \end{enumerate}
 
 The Graph Builder firstly declares the namespaces and the ontology used to
@@ -1327,38 +1356,36 @@ Each thread asynchronously executes a function that process a single record of
 the dump.
 The concurrent access to the records list is not a problem, being the Python
 lists implemented as thread safe containers.
-
 Each record is processed by:
 
 \begin{enumerate}
     \item Matching the record metadata with the ontology classes and
         instantiating the corresponding entities.
-    \item Requesting to TellMeFirst, via its API, the extraction of the topics
+    \item Requesting to TMF, via its API, the extraction of the topics
         from the publication abstract.
 \end{enumerate}
 
-In the first step when a field that matches a class is found a corresponding
+In the first step, when a field that matches a class is found, a corresponding
 RDF triple that instantiates a new object is created, so a new entity is added
 to the graph. If the entity is already present, an RDF triple that connects the
 publication to the already existing entity is added.
 
-The topic extraction is requested to TMF by sending an HTTP POST request
-containing the publication abstract and the number of topics to be extracted
-to its REST API\footnote{\url{http://tellmefirst.polito.it/TellMeFirst_API_Guide.pdf}}.
+The topic extraction is performed by TMF by sending an HTTP POST request
+containing the publication abstract and the requested number of topics to be extracted.
 The response contains the list of the DBpedia resources that TMF
 extracted as main topics for the publication. Such topics are added to the
-graph by instantiating the corresponding \emph{TMFResource} entities, and are
+graph as \emph{TMFResource} entities, and are
 linked to the publication by means of the \emph{dc:subject} relation.
 
 Even if the Python interpreter implementation poses some limitations in the
 actual advantage of executing multithreaded code in CPU bound scenarios, in our
-case the use of multiple threads greatly improved the time required to build
+case the use of multiple threads  improved the time required to build
 the graph, being the implementation I/O bound by the communication with the
-REST API of TellMeFirst.
+REST API of TMF.
 
-The two steps described above allows to generate a full RDF description of a
+The two steps described above allows to generate the RDF description of a
 publication starting from its metadata, which is then enriched by the topics
-extracted by TellMeFirst.
+extracted by TMF.
 For instance, the listing that follows contains an example RDF description
 generated by the Graph Builder. As can be saw, not only a new
 publication entity is created, but also the author and the extracted topic are
@@ -1371,7 +1398,6 @@ added to the graph and linked to the publication.
     numbers=left,
     backgroundcolor=\color{codebackground}
 ]
-<?xml version="1.0" encoding="UTF-8"?>
 <rdf:RDF
     xmlns:pkg="http://pkg.polito.it/"
     xmlns:dc="http://purl.org/dc/terms/"
@@ -1405,16 +1431,13 @@ added to the graph and linked to the publication.
 </rdf:RDF>
 \end{lstlisting}
 
-\newpage
-
 By translating every record of the IRIS database dump into a set of
-RDF statements, we obtained an RDF graph composed of entities that are uniquely
-identified and linked together by meaningful relations.
-We decided to call such graph the \emph{Polito Knowledge Graph}, being a
+RDF statements we created an RDF graph composed of entities that are uniquely
+identified and linked together by meaningful relations, thus obtaining a
 comprehensive representation of the Politecnico di Torino academic community.
-The graph links together researchers, their fields of interest, the scientific
-papers produced by them and the journals in which such papers have been
-published.
+The Polito Knowledge Graph links together researchers, their fields of
+interest, the scientific papers produced by them and the journals in which
+such papers have been published.
 
 % table: Polito Knowledge Graph characteristics
 \begin{table}[t]
@@ -1432,28 +1455,28 @@ published.
             \multicolumn{5}{c}{\textbf{Number of entities per-class}} \\
             \addlinespace[0.2cm]
             Publication & Author & Journal & TMFResource & AuthorKeyword \\
-            23268 & 34886 & 3211 & 16988 & 41807 \\
+            23,268 & 34,886 & 3,211 & 16,988 & 41,807 \\
             \midrule
 
             \addlinespace[0.1cm]
             \multicolumn{5}{c}{\textbf{Number of edges per-relation}} \\
             \addlinespace[0.2cm]
             Creator & Contributor & Publisher & Subject (TMF) & Subject (Keywords) \\
-            23268 & 80819 & 11243 & 107093 & 77492 \\
+            23,268 & 80,819 & 11,243 & 107,093 & 77,492 \\
 
             \bottomrule
     \end{tabularx}
 \end{table}
 
-In Table \ref{tab:pkgsize} we summarized some statistics about the PKG,
-showing the number of entities instantiated for each class, and the
+In Table \ref{tab:pkgsize} we summarized some statistics about the size of the
+PKG, showing the number of entities instantiated for each class, and the
 number of edges for each relation type.
 
 After all the publications have been processed by the Graph Builder, the
-internal representation obtained can be serialized and exported as an XML
+internal representation of \emph{rdflib} can be serialized and exported as an XML
 file that contains the definition of all the RDF triples that forms the
 Polito Knowledge Graph.
-Such RDF representation will be then used as input for the Enhancer Module or
+Such RDF representation can be then used as input for the Enhancer Module or
 loaded into a triplestore (for example
 Blazegraph\footnote{\url{https://blazegraph.com/}}) in order to be queried by
 the viewer component.
@@ -1465,23 +1488,23 @@ the viewer component.
 \section{Enhancing the Polito Knowledge Graph}
 
 Once the first version of the Polito Knowledge Graph has been built, the
-Enhancer Module can be used for the inference of new facts. In this section we
-will discuss how we created a usable dataset for the encoder starting from the
-RDF graph, how we employed a R-GCN architecture to encode the entity
-characteristics into meaningful embeddings and how we obtained and evaluated the
-new predicted triples.
+Enhancer Module can be used toe inference new facts. In this Chapter is
+presented how, starting from the RDF graph, we created a usable dataset
+for the link predictor, how we employed a R-GCN architecture to encode the
+entity characteristics into meaningful embeddings and how we obtained and
+evaluated the predicted triples.
 
 
 \subsection{The Dataset Builder}
 
-The Model Trainer cannot learn the nodes embeddings by directly taking as input
+The Model Trainer can not learn the nodes embeddings by directly taking as input
 the RDF representation of the graph.
 To solve this issue, another component, the Dataset Builder, is in charge of
 creating a useful dataset for the learning task.
 
-As discussed in the previous section, some of the metadata available
+As discussed in the previous Chapter, some of the metadata available
 in the IRIS publications records are not uniquely identified, however, we
-have still added them to the graph for sake of completeness.
+have still added them to the graph for the sake of completeness.
 As a consequence of this, the corresponding entities do not represent
 unhambiguous semantic information, the effect being that such entities may
 only add noise to the dataset, thus leading to incorrect predictions.
@@ -1490,9 +1513,9 @@ To avoid this issue, we decided to include in the dataset only the entities
 which are unique and unhambiguous in the whole graph:
 
 \begin{enumerate}
-    \item The publications, identified by their IRIS identifier.
+    \item The publications, identified by their IRIS ID.
     \item The authors, identified by their Politecnico di
-        Torino internal identifier.
+        Torino internal ID.
     \item The journals, identified by their ISSN.
     \item The topics extracted by TMF, identified by their DBpedia
         URI.
@@ -1508,7 +1531,7 @@ graph we built a usable dataset for the learning task.
 \newline
 
 Like the Graph Builder, also the Dataset Builder is implemented as a
-Python command-line script that process the RDF triples with \emph{rdflib},
+Python command-line script that process the RDF graph triples with \emph{rdflib},
 which offers a practical interface to work with RDF data.
 The Dataset Builder has to convert the RDF representation of the graph into
 an integer representation, where each class, entity and relation has a
@@ -1527,14 +1550,14 @@ encoder:
     \item A list of edges, where each edge is a Python tuple composed of three
         elements: the node index of the subject and the object, and the
         index of the predicate. How such indexes are generated is
-        exaplained in the following.
-    \item a list of node-specific normalization constants.
+        explained in the following.
+    \item A list of node-specific normalization constants.
 \end{enumerate}
 
 To build such data structures starting from the RDF graph, the Dataset Builder
 leverages some look-up hash tables (implemented as Python dictionaries) that are
 created starting from the RDF statements and the PKG ontology. Such tables
-are accessed by URI, and allows to retrieve the corresponding entity or
+are accessed by URI, and allow to retrieve the corresponding entity or
 relation integer index.
 
 \begin{enumerate}
@@ -1550,7 +1573,7 @@ relation integer index.
 
 When building such tables, the Dataset Builder also keeps track of the total
 number of nodes and relations, and builds a labels list that stores in the
-$i$-th element the class of the $i$-th node.
+$i$-th element the class (label) of the $i$-th node.
 
 Once the look-up tables and the other data structures are built, the Dataset
 Builder starts to process the RDF statements that composes the graph by
@@ -1570,27 +1593,26 @@ For each statement, The Dataset Builder firstly checks wether the subject and
 object of the statement are present in the nodes table, if so, it builds the
 corresponding edge tuple by retrieving the indexes of the entities and relation
 through the look-up table.
-An example of this process is showed in Figure \ref{fig:rdftodata}.
+An example of this process is shown in Figure \ref{fig:rdftodata}.
 
 The obtained list of edges is then splitted into three separate and disjoint
-sets that will be used to train, evaluate and test the encoder model.
-We make sure to have in the training set at least one edge for every kind of
-relation and for each node, so to have representative nodes neighborhoods
-during training.
+sets that will be used to train, evaluate and test the encoder model, making
+sure to have in the training set, for each node, at least one edge for
+every kind of relation present in its directly connected edges.
 This is mandatory to obtain meaningful embeddings, because
 as already explained in section \ref{subsec:linkprediction}, the R-GCN model
 learns the vector representations of the nodes by embeddings the nodes neighbors
-features. So is crucial to have a neighborhood structure in the
-training graph which is similar to the one in the full graph.
-Once at least one edge per relation and node have been picked, the remaining
-training edges are randomly taken.
+features. As a consequence of it, is crucial to have a neighborhood structure
+in the training graph which is similar to the one in the full graph.
+Once such initial sampling has been done, the remaining training edges are
+randomly taken.
 
 The percentage of tuples used to create the three sets is an
 hyperparameter that can be choosen in advance. However, during our tests, we
 experienced that picking less then 70\% of nodes for training does not allowed
 us to maintain a representative neighborhood for each node, resulting in an
 inaccurate link prediction model.
-As a consequence of this, we splitted the edges list in
+To solve this issue, we decided to split the edges list in
 approximately 90\% of the tuples for train, 5\% for the validation and 5\% for
 testing.
 
@@ -1615,7 +1637,7 @@ evaluate the different hyperparameters values upon the same set of triples.
             \addlinespace[0.2cm]
             Number of nodes & Number of classes/labels & Number of relations & Total number of edges \\
             \addlinespace[0.1cm]
-            47996 & 4 & 4 &  170.593 \\
+            47,996 & 4 & 4 &  170,593 \\
             \addlinespace[0.2cm]
 
             \bottomrule
@@ -1627,7 +1649,7 @@ evaluate the different hyperparameters values upon the same set of triples.
         \addlinespace[0.2cm]
 
         Train edges & Evaluation edges & Test edges \\
-        153.531 & 8528 & 8534 \\
+        153,531 & 8,528 & 8,534 \\
 
         \bottomrule
     \end{tabularx}
@@ -1635,9 +1657,9 @@ evaluate the different hyperparameters values upon the same set of triples.
 
 \end{table}
 
-Table \ref{tab:datasetsize} summarizes the size and characteristics of the
+Table \ref{tab:datasetsize} summarizes the characteristics of the
 dataset obtained by the Dataset Builder.
-The size of the dataset obtained, in particular the number of nodes and edges,
+The size of the dataset, in particular the number of nodes and edges,
 can be compared to the size of the initial RDF graph, whose statistics are
 available in Table \ref{tab:pkgsize}.
 As can be saw, more then half the nodes, the ones referred to the
@@ -1650,16 +1672,15 @@ Modern machine learning algorithms are implemented as deep networks
 composed by many layers and parameters. Building such architectures from the
 ground-up would be almost unfeasible, especially when dealing with challenging
 kinds of data structures, such as multi-relational graphs.
-Many frameworks and libraries that relies on some basic abstractions have been
-introduced in the latest years, allowing the implementation of complex
+Many frameworks and libraries that allow the implementation of complex
 architectures without the need of coding them from scratch. Moreover, one
-of the key aspects when building machine learning models is to build highly
-efficient implementations, especially when working with lots of data, as in the
-case of knowledge graphs, thus leveraging highly optimized and tested software
-is crucial.
+of the key aspects when coding machine learning models is to build highly
+efficient implementations, especially when working with giant data structures,
+as in the case of knowledge graphs, thus leveraging highly optimized and tested
+software is crucial.
 
 % pytorch
-One of the most commonly used frameworks that allows to build and train
+One of the most common used frameworks that allows to build and train
 ML models is PyTorch \cite{paszke2017}. The goal of PyTorch is to provide
 some simple yet expressively powerful components that could be used to implement
 any sort of neural network, simplifing some of the most challenging aspects,
@@ -1671,9 +1692,10 @@ execution and all the major operations for multidimensional matrices.
 The autograd package is the key novelty of PyTorch, allowing to perform
 automatic differentiation of all the operations performed on tensors by
 leveraging an internal representation in the form of a computational graph.
-However, even if the framework provides all the building blocks for
+However, even if PyTorch provides all the building blocks for
 developing complex neural networks, it is not suitable when dealing with graph
-data, due to the lack of support for the message passing paradigm by the
+data due to the lack of support for the message passing paradigm (which has been
+introduced in Chapter \ref{sec:learninggraphs}) by the
 tensor interface.
 
 % dgl
@@ -1698,18 +1720,20 @@ per-edge messages construction and the per-node aggregation.
 As already mentioned before, we decided to use a R-GCN architecture to build
 an encoder model which is capable to produce the nodes embeddings starting
 from the graph structure.
-In the following we will look at how we trained such encoder model, how we
-implemented it with DGL, which learning problem we wanted our model to solve
-and how we evaluated such model, so to select the best parameters for the
+Later in this Chapter is discussed how the encoder model has been trained, how
+it has been implemented with DGL, which learning problem the model had
+to solve and how it has been evaluated, so to chose the best parameters for the
 learning task.
 \newline
 
 % hardware used
 To train and test the model we used a workstation whose hardware and software
 specifications are summarized in Table \ref{tab:workstation}.
-The same worskation have been used to execute the Link Evaluator component.
+The same worskation have been used to execute both the Model Trainer and
+the Link Evaluator components.
 As we will discuss later, the training and evaluation speed have been
-bottlenecked by the system and video memory at our disposal.
+bottlenecked by the single core performance of the CPU and by the GPU
+memory at our disposal.
 
 % table: Workstation specifications
 \begin{table}[h]
@@ -1738,7 +1762,7 @@ bottlenecked by the system and video memory at our disposal.
             \addlinespace[0.1cm]
             \textbf{OS} & Ubuntu Server 18.04 LTS with Linux Kernel 4.15.\\
             \addlinespace[0.1cm]
-            \textbf{SW packages} & CUDA toolkit 10.1, PyTorch 1.2 and DGL 0.3.\\
+            \textbf{SW packages} & CUDA toolkit 10.1, Python 3.7.4, PyTorch 1.2 and DGL 0.3.\\
 
             \addlinespace[0.2cm]
 
@@ -1748,14 +1772,14 @@ bottlenecked by the system and video memory at our disposal.
 \end{table}
 
 % some more informations about the dataset, feature vectors
-As saw in previous section, the input dataset for the Model Trainer is composed
-by a list of edges, where 90\% of them are used for the training, and the
-remaining are splitted in half and used for the validation and testing of the
-model.
+As saw in the previous section, the input dataset for the Model Trainer is
+composed by a list of edges, where 90\% of them are used for the training, and
+the remaining are splitted in half and used for the validation and testing
+of the model.
 The training edges are used to build a \emph{training graph}, which is the one
 that will be used to learn the node embeddings.
-Regarding the node features, we choose to follow a featureless approach, so
-to only leverage the graph structure to build the embeddings. Following
+Regarding the node features, we choose to follow a featureless approach,
+leveraging only the graph structure to learn the embeddings. Following
 this idea, we used as input features a one-hot encoded vector for each
 node, thus obtaining an $N \times N$ feature matrix, where $N$ is the number
 of nodes in the training graph.
@@ -1766,37 +1790,53 @@ with the first layer convolutional filters being $500 \times N$, and the second
 layer filters being $500 \times 500$.
 With such architecture the embeddings obtained as output of the forward pass
 are shaped as $1 \times 500$ row vectors.
-For the per-node normalization constants we used the inverse of the nodes
-indegree.
+For the input layer, the one-hot encoded feature vectors simply act as a mask
+for the selection of the corresponding column in the per-relation convolutional
+filters.
+Regarding the per-node normalization constants, they are initialized to the
+inverse of the nodes indegree.
 
 % negative sampling for batched training
-Because of the size of the graph, the training is performed in batches.
+Because of the size of the graph, and of the memory at our disposal, the
+training is performed in batches.
 To do so, at each training epoch the Model Trainer randomly samples a subset
 of the training edges.
-As a consequence of this, more then one epoch may be required to train over all
+As a consequence of this, more then one epoch is required to train over all
 the nodes in the training graph.
 
 After the edges have been sampled, a predefined number of corrupted edges are
 generated starting from the the sampled ones. This is done because the learning
-problem that we want to solve is a classification problem: we want our
-model to be able to give an high DistMult score to the true edges, and a
+problem that has to be solved is a classification problem: the model has to
+be able to give an high score to the true edges, and a
 low score to the corrupted ones.
 This will allow us to obtain a model that is able to recognize true facts, and
 thus can be used to predict the probability with which an unseen triple
 may belong to the Polito Knowledge Graph.
-The negative samples are associated to the label $0$, while the positive samples
-(the true facts) are associated to the label $1$.
-We have chosen a 1-to-10 ratio for the negative samples, having 10 corrupted
+
+The negative samples are obtained by corrupting the subject and the object
+of the sampled training triples with a random integer.
+Such random integer must never assume a value equal to the index of a node.
+This is mandatory to avoid that within the negative samples there
+are triples that could be correct with respect to the ontology, and thus could
+be predicted by the Link Evaluator as new facts.
+Moreover, if the above condition is not met, some of the corrupted negative
+samples could be refering to facts that are actually true, thus interfering
+with the learning process.
+
+The positive samples (the true facts) are associated to the label $1$, while
+the negative samples are associated to the label $0$.
+We have chosen a 1-to-10 ratio for the negative samples, having ten corrupted
 edges generated starting from each true fact, as it is done for most models
 found in literature that leverages negative sampling.
 
 % relations embeddings
-The embeddings of the relations are randomly initialized, because as explained
-when introducing DistMult in section \ref{subsec:linkprediction}, they are not
-subject of the learning process.
+The embeddings of the relations are randomly initialized and not learnt by the
+model, as already mentioned when introducing the DistMult factorization
+method in section \ref{subsec:linkprediction}.
+\newline
 
 %forward pass
-At each epoch the training is performed in the following steps:
+At each epoch the model is trained by performing the following steps:
 
 \begin{enumerate}
     \item The forward pass of the R-GCN is executed, taking as input the
@@ -1813,12 +1853,13 @@ At each epoch the training is performed in the following steps:
         scores represents the probabilities with which the model considers the
         corresponding edges as true facts.
     \item The batch loss is calculated and the filters parameters are updated
-        through backpropagation using the \emph{Adam} optimizer.
+        through backpropagation using the Adam \cite{kingma2014} optimizer.
 \end{enumerate}
 
 % loss
-The loss function used is the \emph{binary cross entropy loss}, which is
-commonly used for classification tasks with just two classes, as in our case:
+The loss function used is the \emph{binary cross entropy loss} with mean
+reduction, which is commonly used for classification tasks with just two
+classes, as in our case:
 
 \begin{equation}
     \mathcal{L} \left( x, y, f(x) \right) =
@@ -1841,9 +1882,9 @@ which is calculated with the DistMult factorization method:
 
 Where $e_s$ and $e_o$ are the embeddings for the source node (subject) and
 destination node (object), $R_r$ is obtained by transforming the embedding
-of the relation (predicate) $e_r$ into a diagonal matrix and $\sigma$ is the
+of the relation $e_r$ into a diagonal matrix and $\sigma$ is the
 sigmoid function.
-The resulting capped score can be interpreted as the confidence of the model in
+The resulting value can be interpreted as the confidence of the model in
 the fact that the corresponding edge represents a true fact.
 
 The loss function used sets as training goal the correct classification of
@@ -1860,13 +1901,13 @@ To avoid overfitting, the following $L2$ regularization is added to the
 training loss:
 
 \begin{equation}
-    L2_{regularization} = \lambda \cdot \left(\frac{1}{N}\sum_{i=0}^{N} e_{i}^2 + \frac{1}{R}\sum_{r=0}^{R} w_{r}^2 \right)
+    regularization = \lambda \cdot \left(\frac{1}{N}\sum_{i=0}^{N} e_{i}^2 + \frac{1}{R}\sum_{r=0}^{R} w_{r}^2 \right)
 \end{equation}
 
-Where $\lambda$ is an hyperparameter used to scale the regularization, $N$ is
-the number of nodes, $R$ is the number of relations, $e_i$ is the embedding of
-the $i$-th node and $w_r$ is a randomly initialized vector that represents
-the embedding of the relation $r$.
+Where $\lambda$ is an hyperparameter used to scale the regularization value, $N$
+is the number of nodes, $R$ is the number of relations, $e_i$ is the embedding
+of the $i$-th node and $w_r$ is the already mentioned randomly initialized
+vector that represents the embedding of the relation $r$.
 
 In addition to the regularization, dropout with a probability of $20\%$ is used
 to randomly update only some of the network weights at each training epoch.
@@ -1876,14 +1917,17 @@ The training can be performed both on CPU, which in respect to the GPU has
 access to four times the memory, but has less execution units, or on the GPU,
 which is memory-limited but can leverage its highly parallelized architecture.
 The usage of CPU or GPU and the number of CPU threads to be used are
-hyperparameters that can be changed before starting the training.
+hyperparameters that can be chosen in advance, before starting the training.
 
-We were able to perform the training on GPU with a sampling size of 20'000
+We were able to perform the training on GPU with a sampling size of 20,000
 edges, that adding the negative samples produces a per-epoch training set
-composed of a total of 220'000 edges. While having to train over more epochs due
-to video memory constraints, in comparison to the execution on CPU the training
-time has been reduced by two order of magnitude: from approximately 30
-seconds per epoch for the forward plus backward pass, to less than 0.3.
+composed of a total of 220,000 edges.
+Perform the training over more edges was not feasible with the only 8GB of VRAM
+at our disposal.
+While having to train over more epochs due to the video memory constraints, in
+comparison to the execution on the CPU the training time has been reduced by two
+order of magnitude: from approximately 30 seconds per epoch for the forward
+plus backward pass, to less than 0.3.
 
 % sampling bottleneck
 The biggest bottleneck while training remains the sampling phase, which is
@@ -1897,11 +1941,11 @@ In order to identify the best parameters, we evaluate the model on a separate
 validation set during training.
 The validation is not performed at every epoch due to computation time
 constraints, and the frequency with which it is executed is an hyperparameter
-decided in advance.
-How the evaluation of the model is performed will be presented in the next
-chapter.
+of the model.
+The evaluation method and the metrics used to test the accuracy of the
+trained model will be presented in the next chapter.
 If during the validation the model trained at the current epoch is identified
-as the best so far, its parameters are serialized and saved on local storage.
+as the best so far, its parameters are serialized and locally stored.
 Once the training is finished, the previously exported best epoch model is
 loaded from memory and its accuracy is evaluated on the test set.
 
@@ -1911,49 +1955,49 @@ PKG nodes, which can be used to evaluate new facts using a factorization method
 like DistMult as decoder.
 
 
-
 \subsection{The Link Evaluator}
 
-Once the model has been trained, and the testing phase demonstrated
+Once the model has been trained, and the testing phase showed
 that it has embedded the characteristics needed to build
 semantically meaningful nodes embeddings, the Link Evaluator can be
 used to leverage the trained model for the prediction of new facts.
 
-As already saw, a \emph{fact} in the knowledge based is composed of a source
-and a destination nodes, the subject and the object, and a relation, called
+As already saw, a \emph{fact} in the knowledge base is composed of a source
+and a destination node, the subject and the object, and a relation, called
 predicate, that connects the two nodes establishing a connection between them.
 
 We are interested in the prediction of facts that are not already present in
 the knowledge base, and that are coherent with the defined ontology, both in
-domain and range.
+domain (for the subject) and range (for the object).
 
 The Link Evaluator loads in memory the model produced by the Model Trainer and
 performs the following tasks:
 
 \begin{enumerate}
     \item It builds the graph of existing facts by merging together the train,
-        test and evaluation edges.
-    \item Then it gets the embeddings of the nodes of such graph by feeding it
+        test, and evaluation edges.
+    \item Then, it gets the embeddings of the nodes of such graph by feeding it
         to the trained encoder.
-    \item It creates the set of every possible fact, and scores the triples in
+    \item It creates the set of every possible fact and it scores the triples in
         such set, only taking the ones with the highest score.
     \item Finally, the obtained predicted triples are saved in a JSON file
         and imported by the Graph Builder, that will add them to the Polito
         Knowledge Graph as new RDF statements.
 \end{enumerate}
 
-The node embeddings are obtained by feeding the graph of existing facts to the
-R-GCN encoder in evaluation mode, so to disable the gradients tracking in the
-PyTorch computational graph, which greatly improves the performances.
+The node embeddings are obtained by feeding the graph of existing
+facts to the R-GCN encoder in evaluation mode, so to disable the gradients
+tracking in the PyTorch computational graph, which greatly improves the
+performances.
 
 To create the set of new facts, the Link Evaluator firstly
 generates the set of all the graph nodes, and then creates the set of
 possible facts by generating, for every node, all the possible links to
 every other node in the graph. This is done by taking for each source node
-(subject) all the possible combinations of relations (predicates) and
+(subject) all the possible permutations of relations (predicates) and
 destination nodes (objects).
 
-However, a majority of this automatically generated triples will be semantically
+However, the majority of such automatically generated triples will be semantically
 incorrect. For example, among the permutations there will be triples that
 connect together two publications using as predicate the relation
 \emph{dc:subject}, which is clearly meaningless, because it is saying that the
@@ -1969,22 +2013,24 @@ The number of scored triple to save for each couple subject-relation is an
 hyperparameter decided in advance, we used 30 as default value.
 
 The resulting new facts are then exported as a JSON file that can be used by
-the graph builder to build the corresponding RDF triples.
-Such triples could then be added the Polito Knowledge Graph, completing its
-knowledge with new facts.
+the graph builder to create the corresponding RDF triples.
+Such triples can then be added the Polito Knowledge Graph, completing its
+knowledge base with new facts.
 
-Moreover, the predicted triples could be used to obtain insights and
-recommendations that can be showed by the Viewer module.
+Moreover, the predicted triples can be used to obtain insights and
+recommendations that can be shown by the Viewer module (which has been
+introduced in Chapter \ref{ch:approach}) in the search results.
 
-For instance, among all the predictions there will be triples that links a
-researcher to a publication of which he is not an author: such predicted
-authors of a scientific paper can be thought as researchers that
-shares the same research interests of the actual publication authors.
+For instance, among all the predictions there will be triples that links
+researchers to publications that have been not authored by them: such
+predicted authors can be interpreted as researchers that
+shares the same research interests of the publication authors.
 
-Leveraging such predictions, the recommendation system could suggest to
-a researcher unexplored research topics, the profile of other researchers which
-share the same research interest but with which he has never worked before, or
-scientific journals that publish papers in his same research field.
+Leveraging such predictions, the recommendation system can suggest
+unexplored research topics to the researchers, scientific journals that
+have published papers related to their field of research, or
+the profiles of other researchers who share the same research interest but
+with whome they have never worked before.
 
 
 
@@ -1994,9 +2040,9 @@ scientific journals that publish papers in his same research field.
 \chapter{Evaluation}
 
 % intro
-In this chapter we will describe the methods used to evalute the trained
+In this chapter we will describe the methods adopted to evalute the trained
 model.
-The evaluation is performed both during training and testing. For the training
+The evaluation phase is performed both during training and testing. For the training
 task, we evaluate the model over the validation set, which is used to check
 wether the latest updated parameters led to a more accurate model.
 After the training is finished, the evaluation is performed over a test set
@@ -2005,20 +2051,22 @@ wether it is able to correctly score unseen true facts.
 
 % entity ranking
 We evaluated the model using the \emph{entity ranking} approach, which is
-commonly used for the evaluation of knowledge base embedding models.
+commonly used for the evaluation of knowledge base completion models.
 Such approach evaluates the ability of a model to identify the triples that
 belongs to the knowledge base with respect to the set of all possible facts.
 
-To do so, it is firstly required to generate two sets of corrupted facts for
+To do so, it is firstly required to generate two sets of perturbed facts for
 each triple inside the knowledge base.
-This is actually performed by corrupting the source and destination
-node of every edge in the evaluation set:
-starting from the $i$-th evaluation edge $(s_i,p_i,o_i)$ we obtain
-two sets of corrupted edges $(a,p_i,o_i)$ and $(s_i,p_i,b)$, with
-$a,b \in [0, N]$, where $N$ is the number of nodes of the whole graph.
+This is actually performed by perturbing the source and destination
+node of every edge in the evaluation set with all the possible entities
+that compose the graph.
+
+Doing so, starting from the $i$-th evaluation edge $(s_i,p_i,o_i)$ we obtain
+two sets of perturbed edges $(a,p_i,o_i)$ and $(s_i,p_i,b)$, with
+$a,b \in [0, N]$, where $N$ is the number of nodes in the graph.
 
 Then, for every triple in the evaluation set, the triple itself and its
-corresponding corrupted ones are scored
+corresponding perturbed ones are scored
 using the same factorization method used for the training, in our case DistMult.
 The triples are then sorted in descending score, and the position of
 the evaluation triples inside such sorted list represent their \emph{rank}.
@@ -2028,12 +2076,11 @@ in the evaluation set on first position, thus giving them the highest rank,
 which is equal to 1.
 Such model would be always able to identify the correct facts, and therefore we
 could be confident in the truthfulness of its predictions.
-However, obtaining such model is unfeasible in practice.
+However, obtaining such model is unfeasible.
 \newline
 
-% le metriche utilizzate
 To obtain a measure of the accuracy with which the trained model is able to
-identify the correct triples, we used the following metrics:
+identify the correct triples, we adopted the following metrics:
 
 \begin{enumerate}
     \item The Reciprocal Rank (RR), which can be computed for a single
@@ -2042,8 +2089,8 @@ identify the correct triples, we used the following metrics:
     \item The Mean Reciprocal Rank (MRR), which is the average of the
         RR of all the evaluation edges. The value obtained is representative
         of the accuracy of the entire model.
-    \item The Hits-at-N (HITS@N), which is the number of triples for whom the computed
-        rank is between $0$ and $N$.
+    \item The Hits-at-N (HITS@N), which is the number of triples for whom the
+        computed rank is between $0$ and $N$.
 \end{enumerate}
 
 So for example, a triple ranked in the tenth position of the sorted list of
@@ -2060,32 +2107,30 @@ whose specifications can be found in Table \ref{tab:workstation}.
 However, in contrast to the training, which is peformed on GPU to leverage its
 parallelized architecture, the evaluation had to be made on CPU due to memory
 constraints.
-
-In fact, as a consequence of the dimensionality of the graph, and therefore
-that of the set of corrupted edges, the matrices used to perform the
+This because, as a consequence of the dimensionality of the graph, and therefore
+that of the set of perturbed edges, the matrices used to perform the
 evaluation cannot be stored in the GPU memory.
 Moreover, also the system memory at our disposal is not sufficient to perform
 such task in parallel for all the edges, thus requiring the evaluation to be
 perfomed in batches.
-With the memory at our disposal we have been able to perform the evaluation in
-batches of 80 triples.
-Given that we were not able to run the computation on the highly parallel
-architecture of the GPU, and that we were limited by the small amount of memory
-and cores of our CPU, the evaluation proved to be the slowest task of the
-whole pipeline, taking approximately twenty minutes per run.
+With the system memory at our disposal, we have been able to perform the
+evaluation in batches of 80 triples.
+
+Because of the above limitations, the evaluation proved to be the slowest task
+of the whole pipeline, taking approximately twenty minutes per run.
 This is why we have been not able to perform the evaluation of the model at
 every training epoch, however, we found that evaluating every 100 epochs still
 allowed us to obtain useful metrics for the choice of the best hyperparameters.
 
 
-% cross-validation table
+% paramenter evaluation table
 \begin{table}[t]
     \caption{
-        Cross-validation of learning rate and regularization parameters
-        using as benchmark the Mean Reciprocal Rank (MRR) value.
+        Evaluation of different combinations of learning rate and
+        regularization parameters using as benchmark the MRR value.
         The first table shows the MRR of the best model found during the
         training phase.
-        The second table shows the MRR obtained by the best model when tested
+        The second table shows the MRR obtained by the best model
         over the test set.
     }
     \label{tab:xval}
@@ -2121,7 +2166,7 @@ allowed us to obtain useful metrics for the choice of the best hyperparameters.
             &
             & $0.0677$
             & $0.0718$
-            & \cellcolor[HTML]{f2f2eb} $0.0891$
+            & \cellcolor[HTML]{A9A9A9} $0.0891$
             & $0.0865$
             \\
             & $\textbf{0.1}$
@@ -2184,7 +2229,7 @@ allowed us to obtain useful metrics for the choice of the best hyperparameters.
             &
             & $0.0662$
             & $0.0723$
-            & \cellcolor[HTML]{f2f2eb} $0.0852$
+            & \cellcolor[HTML]{A9A9A9} $0.0852$
             & $0.0818$
             \\
 
@@ -2218,74 +2263,81 @@ allowed us to obtain useful metrics for the choice of the best hyperparameters.
      \end{subtable}
 \end{table}
 
-In Table \ref{tab:xval} we show the result of the evaluation of the model over
-some possible combinations of hyperparameters, in particular, we computed the
+In Table \ref{tab:xval} we show the results of the evaluation of the model over
+some possible values of the hyperparameters, in particular, we computed the
 MRR for possible combinations of the learning rate and of the regularization
 parameter.
 As can be saw from the table, we found the best values to be $0.001$ for the
 former and $0.5$ for the latter.
 
-The fairly high value of the regularization parameter (0.5) is particularly
-interesting: we motivate this result as a consequence of the fact that our
+The high value of the regularization parameter, if compared to the one
+used by the R-GCN authors (which is 0.01), is particularly interesting: we
+motivate this result as a consequence of the fact that our
 graph is composed of a very low number of different relations, which is
 paricularly true if compared to other graphs, such as the one used
 for benchmarking.
 Given how the R-GCN encoder works, less relations means less convolutional
-filters, so less characteristics that are used to generate the embeddings.
+filters, so less variety in the features that are used to generate
+the embeddings.
 In this regard, the regularization parameter helps the model to differentiate
 the embeddings obtained, even if there are few relations, and allows to
 not overfit on common features.
 
-\begin{figure}[t]
-    \centering
-    \includegraphics[scale=0.8]{img/num_triples_per_rank.png}
-    \caption{
-        Number of triples obtained for each ranking position when evaluating
-        the best model found over the test set.
-    }
-    \label{fig:num-triples-per-rank}
-\end{figure}
-
 Regarding the MRR value obtained for the best model, it can be interpreted as
 the fact that, in average, the evaluated triples are ranked in the
 \emph{eleventh} position.
-The authors of R-GCN obtained an MRR value of $0.125$ over the FB15k-237
-dataset, which is commonly used as benchmark for the evaluation of link
-prediction model. This value means that the true facts are ranked, in average,
-in the \emph{eighth} position. Our result is thus not so distant from the one
-obtained over the benchmarking dataset.
+The authors of R-GCN obtained an MRR value of $0.158$ over the FB15k-237
+dataset (composed of 14,541 entities and 237 different relations), which is
+commonly used as benchmark for the evaluation of link prediction model.
+The MRR obtained by the authors correspond to a ranking that, in average,
+place the evaluation triples in the sixth or seventh position. Our result
+is thus not so distant from the
+one obtained over the benchmarking dataset.
+
 Moreover, if we consider the number of nodes in the PKG dataset, the result
-obtained is particularly good, given that the model is able to rank
-(in average) the true triple in the eleventh position when ranked with $47.995$
+obtained is particularly noteworthy, given that the model is able to rank
+(in average) the true triple in the eleventh position when ranked with $47,995$
 corrupted triples, while in FB15k-237 for each true fact only
-$14.951$ corrupted ones are generated.
+$14,951$ corrupted ones are generated.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.8]{img/num_triples_per_rank.png}
+    \caption{
+        Number of triples for each ranking position obtained by
+        evaluating the best model found over the test set. The ranking
+        positions range from 1 to 47,995.
+    }
+    \label{fig:num-triples-per-rank}
+\end{figure}
 
 The Figure \ref{fig:num-triples-per-rank} shows how the testing triples are
 distributed over the possible ranking values.
 As can be saw, the model is able to correctly assign an high rank to the
 majority of the true facts.
-\newline
+\newpage
 
 % evaluating different TMF topics
 When looking at the statistics of the Polito Knowledge Graph, it is possible to
-saw how a big part of the entities, and in particular of the edges, are related
-to the publications topics, represented by the \emph{TMFResource} instances.
-In particular, as showed in Table \ref{tab:pkgsize}, almost a third of the
-PKG edges connect a publication to a subject extracted by TellMeFirst.
+see how a large part of the entities are related
+to the research topics, represented by the \emph{TMFResource} instances,
+and connected to the publications by means of the \emph{dc:subject} relation.
+In particular, as shown in Table \ref{tab:pkgsize}, almost a third of the
+PKG edges link a publication to a subject extracted by TellMeFirst.
 
 We wanted to evaluate how having a different number of \emph{TMFResource}
 entities in the knowledge graph could have an impact on the trained model.
 To do so, we built three new RDF graphs with a different numbers of topics
-extracted by TellMeFrist for each publication, in particular, we extracted
-three, seven and fourteen topics from each abstract.
-Then, we trained the new models by giving as input the datasets created
-starting from such three new graphs.
+extracted by TellMeFrist for each publication.
+In particular, we extracted three, seven and fourteen topics from each abstract.
+Then, we trained the corresponding models by giving as input the datasets
+created starting from such new graphs.
 We used for the learning rate and the regularization hyperparameters the best
-value found in the cross-validation.
+values found during the previous evaluation.
 
 
 % table: Polito Knowledge Graph characteristics
-\begin{table}[t]
+\begin{table}[h]
     \footnotesize
     \centering
     \setlength\extrarowheight{5pt}
@@ -2301,31 +2353,85 @@ value found in the cross-validation.
             Number of topics extracted per-abstract & \textbf{3} & \textbf{7} & \textbf{14} \\
             Number of \emph{TMFResource} entities in the graph & 9.591 & 16.988 & 26.541 \\
             Number of \emph{dc:subject} edges & 45.423 & 107.093 & 212.226 \\
-            MRR over test data & & & \\
-            HITS@5/10/15 & & & \\
+            MRR over test data & 0.103 & 0.0852 & 0.0671 \\
+            HITS@15 & 31.5\% & 26.7\% & 20.3\% \\
 
             \bottomrule
     \end{tabularx}
 \end{table}
 
-As can be seen from the results showed in Table XXX.
+% comment about table above
+As can be seen from the results shown in Table \ref{tab:tmfeval}, the
+different number of topics present in the three graphs greatly impact in the
+accuracy of the resulting link prediction models.
 
-% empirical evaluation of the predictions
+% 3 topics
+When we lowered the number of topics extracted to just three for each
+publication, we saw an improvement in the evaluation metrics, however, this
+did not lead to a better link prediction model.
+In fact, the better ranking is a consequence of the less complex graph
+structure: being the graph composed of almost half of the topic entities, is
+more simple for the model to rank in a higher position the evaluated triples.
+Moreover, there are more publications that shares the same topics, thus leading
+to a model that is very capable of predicting the triples corresponding to
+such topics as true facts during the evaluation over the test set.
 
-% closure
+% 14 topics
+Instead, increasing the number of topics inside the graph led to a degradation
+of the evaluation metrics. This can be easily be interpreted as a consequence
+of the more complex graph structure obtained.
+Moreover, the increase in the number of \emph{dc:subject} edges may have led
+to a predominance of the topics when encoding the neighborhood representations
+through the R-GCN, thus bringing a bias in the nodes embeddings obtained.
+This could then impact on the results of the decoder, thus bringing to
+more inaccurate predictions.
+\newline
 
+% empirical evaluation of the predicted triples
+% esempi:
+% 1) http://geranium-project.org/publications/11583/2584393
+
+As we saw in the previous Chapter, the predicted triples are saved in the
+form of a JSON file that is then used to load the new facts in the knowledge
+base.
+The predicted triples are the ones that received the highest score by the
+DistMult decoder, thus being recognized as facts that, with an high likelihood,
+should belong to the knowledge base.
+
+Looking at the predictions obtained, we saw how the model was able to
+truly characterize the graph entities, thus predicting meaningful
+triples.
+For example, the model predicted for a publication regarding
+real-time tools for emergency management a new \emph{dc:subject} edge that
+links such publication to a DBpedia resource\footnote{Entity URI: \url{http://dbpedia.org/resource/List_of_software_reliability_models}}
+which collects the list of
+software reliability models, which looks like an appropriate suggestion.
+The model also predicted a new edge that connects the above publication to a
+researcher whose main field of research is in integrated circuits for aircraft
+applications, which is again a good prediction being the two topics fairly
+related.
+The above examples are just two among all the new, meaningful facts that
+the model has been able to predict.
+However, it is also true that there are predictions which are not correct, in
+particular the ones regarding researchers who have a very low amount of
+publications, for example students in their first years of PhD, or the ones
+of publications that have a very misunderstandable abstracts, thus leading to
+an incorrect topic extraction by TMF.
+Some possible solutions to such issues are proposed in the next Chapter, where
+are presented the possible future developments in this regard.
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % --------------------------- Conclusions and future work -------------------- %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Conclusions and future works}
+\chapter{Conclusions and Future Work}
 
-In this work we presented how starting from the metadata of the Politecnico di
-Torino publications we were able to build an Academic Knowledge Graph that
-links together researchers, publications, research topics and scientific
-journals through the use of semantic relations.
+%summary
+In this work we presented an Academic Knowledge Graph built on top of the
+metadata of the Politecnico di Torino publications.
+Such knowledge graph links together researchers, publications, research
+topics and scientific journals through the use of semantic relations.
 
 We detailed the software architecture developed for the creation, enhancement
 and visualization of such graph, particurlarly focusing our attention on the
@@ -2335,24 +2441,33 @@ Networks to obtain an encoder model capable of embedding the nodes
 characteristics into vector representations.
 Such representations allowed us to predict new facts, so to complete the
 information available in the knowledge base.
-The predicted facts are also used to empower a recommendation system whose
+We used such predicted facts to empower a recommendation system whose
 suggestions can be used by the researchers to explore new fields of
-study, or to find other researchers who share the same research interests.
+study, to discover other researchers who share the same research interests or
+for retrieving other useful insights about their scientific community.
 
-In our work we used the metadata made available by the Politecnico di
-Torino, however, the data of any other academic institutions could be used.
-Moreover, the metadata of different academic institutions can be grouped
-together to obtain an even bigger, and thus complete knowledge base.
+The scholarly data of any other academic institution could be used to
+build a similar graph.
+Moreover, metadata coming from different universities can be grouped
+together to obtain a bigger and more complete knowledge graph,
+representative of an even broader academic community. With this regard, we
+look forward to obtain the metadata of other universities who
+employ IRIS as their publications repository.
 \newline
 
+% future works
 Regarding the technological aspects, we would like in future releases to
-implement new factorization methods, so to test wether or not the use of
-different scoring functions can lead to even better results.
-Moreover, one of the limitations of the current implementation of the Enhancer
-Module is that it is not able to predict new facts that the
+implement new factorization methods, testing wether or not the use of
+different scoring functions can lead to even more accurate link prediction
+models.
+Moreover, one of the main limitations of the current implementation of the Enhancer
+Module is that it is not able to predict new facts regarding entities that the
 model has never seen during training. We would like to investigate in this
 regard for new solutions based on the extension of the current encoder
 architecture.
+We would also like to test the use of input features generated using a
+bag-of-words approach instead of the simple one-hot encoded vectors used for
+the current model.
 
 Another aspect that could be improved is the structure of the graph itself.
 In the current implementation there are no dependencies or relations between
@@ -2361,29 +2476,37 @@ a new layer of completeness by linking together the topics based on how they are
 related to each other.
 For example, \emph{Deep Learning} is a sub topic of \emph{Machine Learning},
 which in turn is a sub topic of \emph{Artificial Intelligence}, but at the time
-of writing this information is not present in the Polito Knowledge Graph.
+of writing this kind of information is not present in the Polito Knowledge Graph.
 Such improvement could be achieved by leveraging the structured information
 made available by the DBpedia project.
-\newline
+Moreover, the Dataset Builder could leverage such new information, keeping only
+the specialized topics and discarding the most general ones. This could help to
+obtain more characterized embeddings, as we already discussed in the previous
+chapter.
 
-Our work showed how is it possible to build new tools for the
-sharing and dissemination of the knowledge produced by an academic institution,
-leveraging technologies of the Semantic Web and state of the art machine
+Moreover, we would also like to collect some feedbacks from researchers,
+who are the main users for whom our tool has been designed.
+We could use such feedbacks to introduce a bias during the training phase, so
+to penalize possible incorrect facts that have been wrongly predicted by the
+Link Evaluator.
+
+% conclusion
+Our work has shown how is it possible to build new tools for the
+sharing and dissemination of the knowledge produced by an academic institution
+leveraging technologies of the Semantic Web and state-of-the-art machine
 learning algorithms.
-Our recommendation system is a first step in the direction of
+The recommendation system is a first step in the direction of
 offering new tools to the researchers for exploring both new research fields
 and the scientific community that study such fields.
 Hopefully, this could lead to the contamination between researchers belonging
-to different research fields but that are interested in the same topics,
-thus increasing the multidisciplinarity within the academic community.
-
-Among the other beneficial aspects, the Polito Knowledge Graph, and in
-particular the search engine built upon it, can be used to support the
-technological transfer between the Politecnico di Torino and external parties,
-such as private organization, acting as an expertise search engine.
-
-
-
+to different research areas but that are interested in the same research
+topics, thus increasing the multidisciplinarity within the Politecnico di
+Torino academic community.
+Moreover, the Polito Knowledge Graph in its enhanced version is used to empower
+as an expertise search engine made available to both the administration offices
+of the Polito di Torino and to external parties, such as private organizations
+or government agencies, who may be interested in finding expert profiles in a
+given research area.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -131,8 +131,78 @@
 
 \sommario
 
-To be written.
 
+The publication and sharing of new research results is one of the
+main goal of an academic institution. In recent years, many efforts have been
+made to collect and organize the scientific knowledge through new,
+comprehensive data repositories.
+To achieve such goal new tools that are able not only to store data, but also to 
+describe them are needed.
+
+Knowledge graphs are a particular class of graphs that are used to
+semantically describe the human knowledge in a specific domain by linking
+semantic entities through labeled and directed edges.
+In the latest years many private and public organizations have used such 
+new kind of data structure to organize and store semantic information.
+An example is the \emph{Google Knowledge Graph}, which is used to enhance the 
+Google search engine and virtual assistant capabilities, allowing to 
+retrieve punctual information about everything that has been classified 
+in its ontology and described in its knowledge base.
+Another example is the \emph{Open Academic Graph}, a Scientific Knowledge Graph 
+made by Microsoft and AMiner that collects more then three hundred 
+million academic papers, which is used to study citation networks and 
+papers content.
+
+In our work we present a novel semantic graph built on top of the
+scholarly data produced by the Politecnico di Torino researchers, and how we
+employed state-of-the-art machine learning techniques for the prediction
+of new facts in this new knowledge base.
+Such graph, built by leveraging Semantic Web and Natural Language Processing 
+technologies, links together publications, researchers, fields of study 
+and scientific journals in order to build a knowledge base that describes 
+the Politecnico di Torino scientific community.
+We decided to call such new academic graph the \emph{Polito Knowledge Graph}.
+
+We built such graph starting from the metadata made available by the 
+IRIS web portal, which collects all the scientific papers published by 
+the Politecnico di Torino researchers.
+We wanted to link each publication to its research topics, to do so 
+we employed TellMeFirst, a tool for the automatic extraction of semantic 
+concepts from a text, which uses DBpedia as its source of knowledge.
+Using the publications abstracts as input text for TellMeFirst, we
+have been able to extract such semantic topic and add them as 
+entities in the knowledge graph.
+\newline
+
+The availability of such a complex and informative data structure leads
+to the opening of interesting scenarios, especially when thinking about
+the latent information that can be extracted from it.
+
+In recent years, efforts have been made to develop machine learning 
+algorithms capable of taking as input graph data, both for the classification 
+of unseen nodes and for the prediction of new links.
+
+The prediction of non-existent links between graph nodes is one of the
+most challenging tasks in the field of statistical relational learning for graph 
+data, mainly because, in order to obtain meaningful predictions, the vector 
+representations of the graph nodes must embed their semantic characteristics.
+
+
+
+
+
+To accomplish such goal, we decided to employ Deep Learning architectures derived
+from the image recognition field and specifically adapted to the task of
+representation learning for graph data.
+Such architectures allowed us to obtain representations that have been
+directly learnt from the graph structure itself, without requiring any prior
+knowledge or feature engineering.
+
+Using such learnt representations, we have been able to obtain meaningful
+predictions about new, unseen facts in the knowledge base.
+We used such predictions to complete the information present in the
+knowledge graph and to build a recommendation system for the suggestion of useful
+insights to the Politecnico di Torino researchers.
 
 
 
