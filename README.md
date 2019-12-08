@@ -14,3 +14,9 @@ bibtex master_thesis_giovanni_garifo
 pdflatex master_thesis_giovanni_garifo
 pdflatex master_thesis_giovanni_garifo
 ```
+
+### Convert tex to docx
+
+```
+pandoc source.tex -o destination.docx
+```
